@@ -8,6 +8,7 @@
 #include <commctrl.h>
 #include <shellapi.h>
 #include <windowsx.h>
+#include <shobjidl_core.h>
 
 // C RunTime Header Files
 #include <cstdlib>

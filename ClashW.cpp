@@ -37,6 +37,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	if (!CheckOnlyOneInstance(L"Local\\com.ysc3839.clashw"))
 		return EXIT_FAILURE;
 
+	SetCurrentProcessExplicitAppUserModelID(L"com.ysc3839.clashw");
+
 	g_exePath = GetModuleFsPath(hInstance);
 	SetCurrentDirectoryW(g_exePath.c_str());
 	LoadTranslateData();
