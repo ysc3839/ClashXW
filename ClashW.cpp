@@ -33,6 +33,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	UNREFERENCED_PARAMETER(nCmdShow);
 
 	g_hInst = hInstance;
+
+	if (!CheckOnlyOneInstance(L"Local\\com.ysc3839.clashw"))
+		return EXIT_FAILURE;
+
 	g_exePath = GetModuleFsPath(hInstance);
 	SetCurrentDirectoryW(g_exePath.c_str());
 	LoadTranslateData();

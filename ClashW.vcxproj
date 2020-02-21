@@ -165,6 +165,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="Util.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClashW.cpp" />

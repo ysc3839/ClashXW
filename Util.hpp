@@ -39,3 +39,9 @@ auto GetModuleFsPath(HMODULE hModule)
 	path.resize(actualSize);
 	return fs::path(path).remove_filename();
 }
+
+bool CheckOnlyOneInstance(const wchar_t* mutexName)
+{
+	CreateMutex(nullptr, FALSE, mutexName);
+	return (GetLastError() != ERROR_ALREADY_EXISTS);
+}
