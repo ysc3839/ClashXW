@@ -41,6 +41,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	g_exePath = GetModuleFsPath(hInstance);
 	SetCurrentDirectoryW(g_exePath.c_str());
+	g_dataPath = GetAppDataPath() / L"ClashW" / L"";
+
 	LoadTranslateData();
 
 	WNDCLASSEXW wcex = {

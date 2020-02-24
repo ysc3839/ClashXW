@@ -45,3 +45,10 @@ bool CheckOnlyOneInstance(const wchar_t* mutexName)
 	CreateMutex(nullptr, FALSE, mutexName);
 	return (GetLastError() != ERROR_ALREADY_EXISTS);
 }
+
+auto GetAppDataPath()
+{
+	wil::unique_cotaskmem_string path;
+	SHGetKnownFolderPath(FOLDERID_RoamingAppData, 0, nullptr, &path);
+	return fs::path(path.get()).concat(L"\\");
+}

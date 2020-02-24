@@ -9,6 +9,7 @@
 #include <shellapi.h>
 #include <windowsx.h>
 #include <shobjidl_core.h>
+#include <shlobj_core.h>
 
 // C RunTime Header Files
 #include <cstdlib>
