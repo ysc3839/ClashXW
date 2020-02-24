@@ -35,5 +35,7 @@ constexpr UINT WM_PROCESSNOTIFY = WM_APP + 2; // wParam=exitCode
 #include "I18n.hpp"
 #include "MenuUtil.hpp"
 #include "ProcessManager.hpp"
+#include "ClashApi.hpp"
 
 std::unique_ptr<ProcessManager> g_processManager;
+std::unique_ptr<ClashApi> g_clashApi;

@@ -10,6 +10,7 @@
 #include <windowsx.h>
 #include <shobjidl_core.h>
 #include <shlobj_core.h>
+#include <winhttp.h>
 
 // C RunTime Header Files
 #include <cstdlib>

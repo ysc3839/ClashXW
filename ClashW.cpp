@@ -71,6 +71,31 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	return static_cast<int>(msg.wParam);
 }
 
+void StartClash()
+{
+	if (g_processManager->Start())
+	{
+		static size_t count;
+		count = 0;
+		SetTimer(g_hWnd, 1, 1000, [](HWND hWnd, UINT, UINT_PTR, DWORD) {
+			++count;
+			try
+			{
+				g_clashApi->Request(L"/version");
+			}
+			catch (...)
+			{
+				LOG_CAUGHT_EXCEPTION();
+				if (count >= 5)
+				{
+					g_processManager->ForceStop();
+					KillTimer(hWnd, 1);
+				}
+			}
+		});
+	}
+}
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	static UINT WM_TASKBAR_CREATED = 0;
@@ -98,7 +123,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		LOG_LAST_ERROR_IF(WM_TASKBAR_CREATED == 0);
 
 		g_processManager = std::make_unique<ProcessManager>(g_exePath / L"clash.exe", L"", fs::path());
-		g_processManager->Start();
+		g_clashApi = std::make_unique<ClashApi>(L"127.0.0.1", static_cast<INTERNET_PORT>(9090));
+
+		StartClash();
 	}
 	break;
 	case WM_COMMAND:
@@ -194,7 +221,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_PROCESSNOTIFY:
 		LOG_HR_MSG(E_FAIL, "Clash crashed with exit code: %d", wParam);
-		g_processManager->Start();
+		StartClash();
 	default:
 		if (WM_TASKBAR_CREATED && message == WM_TASKBAR_CREATED)
 		{
