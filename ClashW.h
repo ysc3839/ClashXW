@@ -29,7 +29,11 @@ fs::path g_dataPath;
 HWND g_hWnd;
 
 constexpr UINT WM_NOTIFYICON = WM_APP + 1;
+constexpr UINT WM_PROCESSNOTIFY = WM_APP + 2; // wParam=exitCode
 
 #include "Util.hpp"
 #include "I18n.hpp"
 #include "MenuUtil.hpp"
+#include "ProcessManager.hpp"
+
+std::unique_ptr<ProcessManager> g_processManager;

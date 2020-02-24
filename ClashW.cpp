@@ -96,6 +96,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		WM_TASKBAR_CREATED = RegisterWindowMessageW(L"TaskbarCreated");
 		LOG_LAST_ERROR_IF(WM_TASKBAR_CREATED == 0);
+
+		g_processManager = std::make_unique<ProcessManager>(g_exePath / L"clash.exe", L"", fs::path());
+		g_processManager->Start();
 	}
 	break;
 	case WM_COMMAND:
@@ -116,6 +119,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	}
 	break;
 	case WM_DESTROY:
+		g_processManager->ForceStop();
 		Shell_NotifyIconW(NIM_DELETE, &nid);
 		PostQuitMessage(0);
 		break;
@@ -188,6 +192,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 		}
 		break;
+	case WM_PROCESSNOTIFY:
+		LOG_HR_MSG(E_FAIL, "Clash crashed with exit code: %d", wParam);
+		g_processManager->Start();
 	default:
 		if (WM_TASKBAR_CREATED && message == WM_TASKBAR_CREATED)
 		{
