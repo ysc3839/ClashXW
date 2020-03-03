@@ -34,14 +34,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	g_hInst = hInstance;
 
-	if (!CheckOnlyOneInstance(L"Local\\com.ysc3839.clashw"))
-		return EXIT_FAILURE;
+	SetCurrentProcessExplicitAppUserModelID(CLASHW_APP_ID);
 
-	SetCurrentProcessExplicitAppUserModelID(L"com.ysc3839.clashw");
+	if (!CheckOnlyOneInstance(CLASHW_MUTEX_NAME))
+		return EXIT_FAILURE;
 
 	g_exePath = GetModuleFsPath(hInstance);
 	SetCurrentDirectoryW(g_exePath.c_str());
-	g_dataPath = GetAppDataPath() / L"ClashW" / L"";
+	g_dataPath = GetAppDataPath() / CLASHW_DIR_NAME;
 
 	LoadTranslateData();
 
@@ -122,7 +122,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		WM_TASKBAR_CREATED = RegisterWindowMessageW(L"TaskbarCreated");
 		LOG_LAST_ERROR_IF(WM_TASKBAR_CREATED == 0);
 
-		g_processManager = std::make_unique<ProcessManager>(g_exePath / L"clash.exe", L"", fs::path());
+		g_processManager = std::make_unique<ProcessManager>(g_exePath / CLASH_EXE_NAME, L"", fs::path());
 		g_clashApi = std::make_unique<ClashApi>(L"127.0.0.1", static_cast<INTERNET_PORT>(9090));
 
 		StartClash();

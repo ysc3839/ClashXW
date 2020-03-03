@@ -32,6 +32,11 @@ HWND g_hWnd;
 constexpr UINT WM_NOTIFYICON = WM_APP + 1;
 constexpr UINT WM_PROCESSNOTIFY = WM_APP + 2; // wParam=exitCode
 
+constexpr auto CLASHW_APP_ID = L"com.ysc3839.clashw";
+constexpr auto CLASHW_MUTEX_NAME = L"Local\\com.ysc3839.clashw";
+constexpr auto CLASHW_DIR_NAME = L"ClashW";
+constexpr auto CLASH_EXE_NAME = L"clash.exe";
+
 #include "Util.hpp"
 #include "I18n.hpp"
 #include "MenuUtil.hpp"
