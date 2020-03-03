@@ -20,4 +20,12 @@
 #include <wil/win32_helpers.h>
 #include <wil/result.h>
 
+// rapidjson
+#pragma warning(push)
+#pragma warning(disable:5054)
+#define RAPIDJSON_HAS_STDSTRING 1
+#include "rapidjson/document.h"
+#include "rapidjson/writer.h"
+#pragma warning(pop)
+
 #endif //PCH_H

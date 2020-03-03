@@ -26,6 +26,7 @@ namespace fs = std::filesystem;
 HINSTANCE g_hInst;
 fs::path g_exePath;
 fs::path g_dataPath;
+std::string g_clashVersion;
 HWND g_hWnd;
 
 constexpr UINT WM_NOTIFYICON = WM_APP + 1;

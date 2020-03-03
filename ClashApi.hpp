@@ -63,6 +63,22 @@ public:
 		}
 	}
 
+	std::string GetVersion()
+	{
+		auto respText = Request(L"/version");
+
+		rapidjson::Document json;
+		json.Parse(respText);
+		if (json.HasParseError())
+			THROW_HR(E_INVALIDARG);
+
+		auto it = json.FindMember("version");
+		if (it == json.MemberEnd() || !it->value.IsString())
+			THROW_HR(E_INVALIDARG);
+
+		return { it->value.GetString(), it->value.GetStringLength() };
+	}
+
 private:
 	void Connect()
 	{

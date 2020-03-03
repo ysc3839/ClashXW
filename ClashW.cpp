@@ -81,7 +81,7 @@ void StartClash()
 			++count;
 			try
 			{
-				g_clashApi->Request(L"/version");
+				g_clashVersion = g_clashApi->GetVersion();
 			}
 			catch (...)
 			{
