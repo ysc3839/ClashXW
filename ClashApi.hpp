@@ -19,13 +19,19 @@
 
 #pragma once
 
+struct Response
+{
+	uint32_t statusCode;
+	std::string data;
+};
+
 class ClashApi
 {
 public:
 	ClashApi(std::wstring hostName, INTERNET_PORT port) :
 		m_hostName(hostName), m_port(port) {}
 
-	std::string Request(const wchar_t* path, const wchar_t* method = L"GET")
+	Response Request(const wchar_t* path, const wchar_t* method = L"GET")
 	{
 		try
 		{
@@ -35,8 +41,11 @@ public:
 			THROW_LAST_ERROR_IF_NULL(hRequest);
 
 			THROW_IF_WIN32_BOOL_FALSE(WinHttpSendRequest(hRequest.get(), WINHTTP_NO_ADDITIONAL_HEADERS, 0, WINHTTP_NO_REQUEST_DATA, 0, 0, 0));
-
 			THROW_IF_WIN32_BOOL_FALSE(WinHttpReceiveResponse(hRequest.get(), nullptr));
+
+			DWORD statusCode;
+			DWORD statusCodeSize = sizeof(statusCode);
+			THROW_IF_WIN32_BOOL_FALSE(WinHttpQueryHeaders(hRequest.get(), WINHTTP_QUERY_STATUS_CODE | WINHTTP_QUERY_FLAG_NUMBER, nullptr, &statusCode, &statusCodeSize, WINHTTP_NO_HEADER_INDEX));
 
 			std::string data;
 			while (true)
@@ -54,7 +63,7 @@ public:
 				data.resize(offset + static_cast<size_t>(read));
 			}
 
-			return data;
+			return { static_cast<uint32_t>(statusCode), std::move(data) };
 		}
 		catch (...)
 		{
@@ -65,10 +74,13 @@ public:
 
 	std::string GetVersion()
 	{
-		auto respText = Request(L"/version");
+		auto res = Request(L"/version");
+
+		if (res.statusCode != 200)
+			throw res.statusCode;
 
 		rapidjson::Document json;
-		json.Parse(respText);
+		json.Parse(res.data);
 		if (json.HasParseError())
 			THROW_HR(E_INVALIDARG);
 
