@@ -170,6 +170,7 @@
     <ClInclude Include="ProcessManager.hpp" />
     <ClInclude Include="ClashApi.hpp" />
     <ClInclude Include="ClashW.h" />
+    <ClInclude Include="ConfigFileManager.hpp" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="MenuUtil.hpp" />
     <ClInclude Include="pch.h" />

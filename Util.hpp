@@ -52,3 +52,13 @@ auto GetAppDataPath()
 	SHGetKnownFolderPath(FOLDERID_RoamingAppData, 0, nullptr, &path);
 	return fs::path(path.get()).concat(L"\\");
 }
+
+void CreateDirectoryIgnoreExist(const wchar_t* path)
+{
+	if (!CreateDirectoryW(path, nullptr))
+	{
+		auto lastErr = GetLastError();
+		if (lastErr != ERROR_ALREADY_EXISTS)
+			THROW_WIN32(lastErr);
+	}
+}

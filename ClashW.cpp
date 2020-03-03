@@ -122,9 +122,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		WM_TASKBAR_CREATED = RegisterWindowMessageW(L"TaskbarCreated");
 		LOG_LAST_ERROR_IF(WM_TASKBAR_CREATED == 0);
 
-		g_processManager = std::make_unique<ProcessManager>(g_exePath / CLASH_EXE_NAME, L"", fs::path());
+		g_processManager = std::make_unique<ProcessManager>(g_exePath / CLASH_EXE_NAME, g_dataPath / CLASH_CONFIG_DIR_NAME, fs::path());
 		g_clashApi = std::make_unique<ClashApi>(L"127.0.0.1", static_cast<INTERNET_PORT>(9090));
 
+		SetupDataDirectory();
 		StartClash();
 	}
 	break;
