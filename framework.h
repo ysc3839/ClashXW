@@ -13,6 +13,7 @@
 #include <winhttp.h>
 #include <uxtheme.h>
 #include <richedit.h>
+#include <vssym32.h>
 
 // C RunTime Header Files
 #include <cstdlib>

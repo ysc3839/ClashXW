@@ -44,6 +44,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	g_dataPath = GetAppDataPath() / CLASHW_DIR_NAME;
 
 	LoadTranslateData();
+	InitDarkMode();
 
 	WNDCLASSEXW wcex = {
 		.cbSize = sizeof(wcex),
@@ -136,7 +137,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		switch (wmId)
 		{
 		case IDM_HELP_ABOUT:
-			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+			ShowOpenSourceLicensesDialog(hWnd);
+			//DialogBox(g_hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
 			break;
 		case IDM_QUIT:
 			DestroyWindow(hWnd);

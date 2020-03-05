@@ -45,6 +45,7 @@ constexpr auto CLASH_EXE_NAME = L"clash.exe";
 #include "ProcessManager.hpp"
 #include "ClashApi.hpp"
 #include "ConfigFileManager.hpp"
+#include "DarkMode.hpp"
 #include "OSLicensesDlg.hpp"
 
 std::unique_ptr<ProcessManager> g_processManager;
