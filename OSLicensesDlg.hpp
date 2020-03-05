@@ -76,6 +76,12 @@ INT_PTR CALLBACK RichEditDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM 
 		SETTEXTEX st = { ST_DEFAULT, CP_UTF8 };
 		SendMessageW(hRichEdit, EM_SETTEXTEX, reinterpret_cast<WPARAM>(&st), reinterpret_cast<LPARAM>(titleAndContent->content));
 
+		CHARFORMATW cf;
+		cf.cbSize = sizeof(cf);
+		cf.dwMask = CFM_FACE;
+		wcscpy_s(cf.szFaceName, L"Consolas");
+		SendMessageW(hRichEdit, EM_SETCHARFORMAT, SCF_ALL, reinterpret_cast<LPARAM>(&cf));
+
 		SetFocus(hRichEdit);
 
 		if (g_darkModeSupported)
