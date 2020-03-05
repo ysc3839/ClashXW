@@ -11,6 +11,8 @@
 #include <shobjidl_core.h>
 #include <shlobj_core.h>
 #include <winhttp.h>
+#include <uxtheme.h>
+#include <richedit.h>
 
 // C RunTime Header Files
 #include <cstdlib>
@@ -20,3 +22,4 @@
 #include <string>
 #include <filesystem>
 #include <thread>
+#include <array>

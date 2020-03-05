@@ -45,6 +45,12 @@
     <ClInclude Include="ConfigFileManager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="OSLicensesDlg.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HiDPI.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClashW.cpp">
