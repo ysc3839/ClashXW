@@ -64,6 +64,9 @@
     <ResourceCompile Include="ClashW.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+    <ResourceCompile Include="licenses\generated\LicensesText.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="ClashW.ico">

@@ -19,7 +19,7 @@
 
 #pragma once
 #include "HiDPI.hpp"
-#include "licenses/List.hpp"
+#include "licenses/generated/LicensesList.hpp"
 
 struct DialogTemplate
 {
@@ -125,7 +125,7 @@ INT_PTR CALLBACK OSLDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 	{
 		SetWindowTextW(hDlg, _(L"Open source licenses"));
 
-		int width = 300, height = 300;
+		int width = 200, height = 200;
 		CenterWindow(hDlg, width, height);
 
 		hListView = CreateWindowW(WC_LISTVIEWW, nullptr, WS_CHILD | WS_VISIBLE | LVS_REPORT | LVS_NOCOLUMNHEADER | LVS_SHOWSELALWAYS | LVS_SINGLESEL, 0, 0, width, height, hDlg, nullptr, g_hInst, nullptr);
@@ -164,7 +164,15 @@ INT_PTR CALLBACK OSLDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 		{
 			auto i = static_cast<size_t>(nmia->iItem);
 			if (i < licenseList.size())
-				ShowRichEditDialog(hDlg, licenseList[i], u8"Test content");
+			{
+				auto hRes = FindResourceW(g_hInst, MAKEINTRESOURCEW(i + 1), L"TEXT");
+				if (hRes)
+				{
+					auto hResData = LoadResource(g_hInst, hRes);
+					if (hResData)
+						ShowRichEditDialog(hDlg, licenseList[i], reinterpret_cast<const char8_t*>(hResData));
+				}
+			}
 		}
 	}
 	break;
