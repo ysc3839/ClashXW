@@ -140,6 +140,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			ShowOpenSourceLicensesDialog(hWnd);
 			//DialogBox(g_hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
 			break;
+		case IDM_DASHBOARD:
+			EdgeWebView2::Create(hWnd);
+			break;
 		case IDM_QUIT:
 			DestroyWindow(hWnd);
 			break;

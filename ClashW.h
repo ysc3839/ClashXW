@@ -22,6 +22,7 @@
 #include "resource.h"
 
 namespace fs = std::filesystem;
+namespace wrl = Microsoft::WRL;
 
 HINSTANCE g_hInst;
 fs::path g_exePath;
@@ -46,7 +47,9 @@ constexpr auto CLASH_EXE_NAME = L"clash.exe";
 #include "ClashApi.hpp"
 #include "ConfigFileManager.hpp"
 #include "DarkMode.hpp"
+#include "DialogUtil.hpp"
 #include "OSLicensesDlg.hpp"
+#include "EdgeWebView2.hpp"
 
 std::unique_ptr<ProcessManager> g_processManager;
 std::unique_ptr<ClashApi> g_clashApi;

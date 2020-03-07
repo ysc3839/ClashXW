@@ -14,6 +14,7 @@
 #include <uxtheme.h>
 #include <richedit.h>
 #include <vssym32.h>
+#include <wrl.h>
 
 // C RunTime Header Files
 #include <cstdlib>

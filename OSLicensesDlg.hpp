@@ -18,33 +18,7 @@
  */
 
 #pragma once
-#include "HiDPI.hpp"
 #include "licenses/generated/LicensesList.hpp"
-
-struct DialogTemplate
-{
-	DLGTEMPLATE tmpl;
-	WORD menu;
-	WORD className;
-	WORD title;
-};
-
-void CenterWindow(HWND hWnd, int& width, int& height)
-{
-	InitDPIAPI();
-	auto dpi = _GetDpiForWindow(hWnd);
-
-	width = Scale(width, dpi);
-	height = Scale(height, dpi);
-	const int cxScreen = GetSystemMetrics(SM_CXSCREEN), cyScreen = GetSystemMetrics(SM_CYSCREEN); // not influenced by dpi
-
-	RECT rc = { (cxScreen - width) / 2, (cyScreen - height) / 2 };
-	rc.right = rc.left + width;
-	rc.bottom = rc.top + height;
-
-	_AdjustWindowRectExForDpi(&rc, WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME, FALSE, WS_EX_DLGMODALFRAME, dpi);
-	SetWindowPos(hWnd, nullptr, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, SWP_NOZORDER | SWP_NOACTIVATE);
-}
 
 struct TitleAndContent
 {

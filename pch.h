@@ -19,6 +19,7 @@
 #include <wil/resource.h>
 #include <wil/win32_helpers.h>
 #include <wil/result.h>
+#include <wil/com.h>
 
 // rapidjson
 #pragma warning(push)
@@ -27,5 +28,8 @@
 #include "rapidjson/document.h"
 #include "rapidjson/writer.h"
 #pragma warning(pop)
+
+// Edge WebView2
+#include "WebView2.h"
 
 #endif //PCH_H

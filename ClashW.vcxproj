@@ -167,6 +167,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="DialogUtil.hpp" />
+    <ClInclude Include="EdgeWebView2.hpp" />
     <ClInclude Include="HiDPI.hpp" />
     <ClInclude Include="OSLicensesDlg.hpp" />
     <ClInclude Include="ProcessManager.hpp" />

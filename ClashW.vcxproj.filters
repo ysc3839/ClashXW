@@ -51,6 +51,12 @@
     <ClInclude Include="HiDPI.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="EdgeWebView2.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DialogUtil.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClashW.cpp">
@@ -75,6 +81,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="$(MSBuildThisFileDirectory)$(EffectivePlatform)\WebView2Loader.dll" />
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="ClashW.manifest">
