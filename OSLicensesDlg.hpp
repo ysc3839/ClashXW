@@ -49,7 +49,7 @@ void CenterWindow(HWND hWnd, int& width, int& height)
 struct TitleAndContent
 {
 	const wchar_t* title;
-	const char8_t* content;
+	std::u8string_view content;
 };
 
 INT_PTR CALLBACK RichEditDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
@@ -74,8 +74,17 @@ INT_PTR CALLBACK RichEditDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM 
 
 		hRichEdit = CreateWindowExW(0, MSFTEDIT_CLASS, nullptr, WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_HSCROLL | ES_NOIME | ES_NOOLEDRAGDROP | ES_MULTILINE | ES_READONLY, 0, 0, width, height, hDlg, nullptr, g_hInst, nullptr);
 
-		SETTEXTEX st = { ST_DEFAULT, CP_UTF8 };
-		SendMessageW(hRichEdit, EM_SETTEXTEX, reinterpret_cast<WPARAM>(&st), reinterpret_cast<LPARAM>(titleAndContent->content));
+		EDITSTREAM es = {
+			.dwCookie = reinterpret_cast<DWORD_PTR>(&titleAndContent->content),
+			.pfnCallback = [](DWORD_PTR dwCookie, LPBYTE pbBuff, LONG cb, LONG* pcb) -> DWORD {
+				auto strView = reinterpret_cast<std::u8string_view*>(dwCookie);
+				auto read = strView->copy(reinterpret_cast<char8_t*>(pbBuff), cb);
+				strView->remove_prefix(read);
+				*pcb = static_cast<LONG>(read);
+				return 0;
+			}
+		};
+		SendMessage(hRichEdit, EM_STREAMIN, MAKEWPARAM(SF_TEXT | SF_USECODEPAGE, CP_UTF8), reinterpret_cast<LPARAM>(&es));
 
 		CHARFORMATW cf;
 		cf.cbSize = sizeof(cf);
@@ -124,7 +133,7 @@ INT_PTR CALLBACK RichEditDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM 
 	return static_cast<INT_PTR>(FALSE);
 }
 
-void ShowRichEditDialog(HWND hWndParent, const wchar_t* title, const char8_t* content)
+void ShowRichEditDialog(HWND hWndParent, const wchar_t* title, std::u8string_view content)
 {
 	static bool opened = false;
 	if (!opened)
@@ -205,7 +214,11 @@ INT_PTR CALLBACK OSLDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 				{
 					auto hResData = LoadResource(g_hInst, hRes);
 					if (hResData)
-						ShowRichEditDialog(hDlg, licenseList[i], reinterpret_cast<const char8_t*>(hResData));
+					{
+						auto size = SizeofResource(g_hInst, hRes);
+						if (size)
+							ShowRichEditDialog(hDlg, licenseList[i], { reinterpret_cast<const char8_t*>(hResData), size });
+					}
 				}
 			}
 		}
