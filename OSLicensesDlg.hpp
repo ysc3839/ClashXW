@@ -24,8 +24,9 @@
 struct DialogTemplate
 {
 	DLGTEMPLATE tmpl;
-	// It seems that DialogBoxIndirectParam will access data out-of-bounds even when using a non-EX template, add this padding to fix it.
-	uint8_t padding[64];
+	WORD menu;
+	WORD className;
+	WORD title;
 };
 
 void CenterWindow(HWND hWnd, int& width, int& height)
