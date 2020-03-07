@@ -254,7 +254,7 @@ void ShowOpenSourceLicensesDialog(HWND hWndParent)
 
 		DialogTemplate dlgTmpl = { {
 			.style = WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME,
-			.dwExtendedStyle = WS_EX_DLGMODALFRAME
+			.dwExtendedStyle = WS_EX_DLGMODALFRAME | WS_EX_TOPMOST
 		} };
 		DialogBoxIndirectW(g_hInst, &dlgTmpl.tmpl, hWndParent, OSLDlgProc);
 
