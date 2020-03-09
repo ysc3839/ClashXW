@@ -4,4 +4,5 @@
 4 TEXT "..\MicrosoftDocs windows-uwp"
 5 TEXT "..\PolyHook_2_0"
 6 TEXT "..\RapidJSON"
-7 TEXT "..\Windows Implementation Libraries"
+7 TEXT "..\WebViewJavascriptBridge"
+8 TEXT "..\Windows Implementation Libraries"

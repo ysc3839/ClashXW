@@ -19,7 +19,87 @@
 
 #pragma once
 
-size_t g_edgeWebView2Count = 0;
+void HandleJSMessage(std::wstring_view handlerName, rapidjson::WValue& data, rapidjson::WWriter<rapidjson::WStringBuffer>& writer)
+{
+	LOG_HR_MSG(E_NOTIMPL, "HandleJSMessage: %ls", handlerName.data());
+	if (handlerName == L"ping")
+	{
+		// callHandler not implemented
+		writer.Bool(true);
+	}
+	else if (handlerName == L"readConfigString")
+	{
+		// FIXME not implemented
+		writer.String(L"");
+	}
+	else if (handlerName == L"getPasteboard")
+	{
+		// FIXME not implemented
+		writer.String(L"");
+	}
+	else if (handlerName == L"apiInfo")
+	{
+		writer.StartObject();
+		writer.Key(L"host");
+		writer.String(L"127.0.0.1");
+		writer.Key(L"port");
+		writer.String(L"9090");
+		writer.Key(L"secret");
+		writer.String(L"");
+		writer.EndObject();
+	}
+	else if (handlerName == L"setPasteboard")
+	{
+		LOG_HR_MSG(E_NOTIMPL, "setPasteboard: %ls", data.GetString());
+		writer.Bool(true);
+	}
+	else if (handlerName == L"writeConfigWithString")
+	{
+		writer.Bool(false);
+	}
+	else if (handlerName == L"setSystemProxy")
+	{
+		writer.Bool(true);
+	}
+	else if (handlerName == L"getStartAtLogin")
+	{
+		writer.Bool(true);
+	}
+	else if (handlerName == L"speedTest")
+	{
+		writer.Null();
+	}
+	else if (handlerName == L"setStartAtLogin")
+	{
+		writer.Bool(true);
+	}
+	else if (handlerName == L"isSystemProxySet")
+	{
+		writer.Bool(true);
+	}
+}
+
+constexpr auto OLD_PROTOCOL_SCHEME = L"wvjbscheme";
+constexpr auto NEW_PROTOCOL_SCHEME = L"https";
+constexpr auto BRIDGE_LOADED = L"__bridge_loaded__";
+// Minified version of EdgeWebView2JavascriptBridge.js
+constexpr auto JS_BRIDGE_CODE = LR"(!function(){function e(e,a){if(a){var r="cb_"+ ++i+"_"+ +new Date;n[r]=a,e.callbackId=r}window.chrome.webview.postMessage(e)}if(!window.WebViewJavascriptBridge){var a={},n={},i=0;window.chrome.webview.addEventListener("message",function(i){var r,t=i.data;if(t.responseId){if(r=n[t.responseId],!r)return;r(t.responseData),delete n[t.responseId]}else{if(t.callbackId){var o=t.callbackId;r=function(a){e({handlerName:t.handlerName,responseId:o,responseData:a})}}var s=a[t.handlerName];s?s(t.data,r):console.log("WebViewJavascriptBridge: WARNING: no handler for message from native:",t)}}),window.WebViewJavascriptBridge={registerHandler:function(e,n){a[e]=n},callHandler:function(a,n,i){2==arguments.length&&"function"==typeof n&&(i=n,n=null),e({handlerName:a,data:n},i)},disableJavscriptAlertBoxSafetyTimeout:function(){}},setTimeout(function(){var e=window.WVJBCallbacks;if(e){delete window.WVJBCallbacks;for(var a=0;a<e.length;++a)e[a](WebViewJavascriptBridge)}},0)}}();)";
+
+bool IsSchemeMatch(IUri* uri)
+{
+	wil::unique_bstr scheme;
+	if (FAILED(uri->GetSchemeName(&scheme)))
+		return false;
+	return (_wcsicmp(scheme.get(), NEW_PROTOCOL_SCHEME) == 0) || (_wcsicmp(scheme.get(), OLD_PROTOCOL_SCHEME) == 0);
+}
+
+bool IsBridgeLoadedURI(IUri* uri)
+{
+	wil::unique_bstr host;
+	if (FAILED(uri->GetHost(&host)))
+		return false;
+	return IsSchemeMatch(uri) && (_wcsicmp(host.get(), BRIDGE_LOADED) == 0);
+}
 
 class EdgeWebView2
 {
@@ -133,11 +213,74 @@ private:
 				RETURN_IF_FAILED(m_webViewHost->get_CoreWebView2(&webView));
 				RETURN_IF_FAILED(webView->QueryInterface(IID_PPV_ARGS(&m_webView)));
 
+				wil::com_ptr_nothrow<ICoreWebView2Settings> settings;
+				RETURN_IF_FAILED(m_webView->get_Settings(&settings));
+				settings->put_AreRemoteObjectsAllowed(FALSE);
+
+				EventRegistrationToken token;
+				RETURN_IF_FAILED(m_webView->add_FrameNavigationStarting(wrl::Callback<ICoreWebView2NavigationStartingEventHandler>(
+					[](ICoreWebView2* sender, ICoreWebView2NavigationStartingEventArgs* args) {
+						wil::unique_cotaskmem_string uriStr;
+						RETURN_IF_FAILED(args->get_Uri(&uriStr));
+
+						wil::com_ptr_nothrow<IUri> uri;
+						RETURN_IF_FAILED(CreateUri(uriStr.get(), Uri_CREATE_CANONICALIZE | Uri_CREATE_NO_DECODE_EXTRA_INFO, 0, &uri));
+
+						if (IsBridgeLoadedURI(uri.get()))
+						{
+							args->put_Cancel(TRUE);
+							sender->ExecuteScript(JS_BRIDGE_CODE, nullptr);
+						}
+						return S_OK;
+					}).Get(), &token));
+
+				(m_webView->add_WebMessageReceived(Microsoft::WRL::Callback<ICoreWebView2WebMessageReceivedEventHandler>(
+					[](ICoreWebView2* sender, ICoreWebView2WebMessageReceivedEventArgs* args) {
+						wil::unique_cotaskmem_string json;
+						RETURN_IF_FAILED(args->get_WebMessageAsJson(&json));
+
+						rapidjson::WDocument obj;
+						RETURN_HR_IF(E_INVALIDARG, obj.Parse(json.get()).HasParseError());
+						RETURN_HR_IF(E_INVALIDARG, !obj.IsObject());
+
+						auto responseId = obj.FindMember(L"responseId");
+						if (responseId != obj.MemberEnd() && responseId->value.IsString())
+						{
+							return E_NOTIMPL;
+						}
+						else
+						{
+							auto handlerName = obj.FindMember(L"handlerName");
+							RETURN_HR_IF(E_INVALIDARG, handlerName == obj.MemberEnd() || !handlerName->value.IsString());
+							auto callbackId = obj.FindMember(L"callbackId");
+							RETURN_HR_IF(E_INVALIDARG, callbackId == obj.MemberEnd() || !callbackId->value.IsString());
+
+							rapidjson::WStringBuffer buf;
+							rapidjson::WWriter<rapidjson::WStringBuffer> writer(buf);
+
+							writer.StartObject();
+							writer.Key(L"responseId");
+							writer.String(callbackId->value.GetString(), callbackId->value.GetStringLength());
+							writer.Key(L"responseData");
+
+							auto data = obj.FindMember(L"data");
+							rapidjson::WValue value;
+							if (data != obj.MemberEnd())
+								value = data->value;
+							HandleJSMessage({ handlerName->value.GetString(), handlerName->value.GetStringLength() }, value, writer);
+
+							writer.EndObject();
+
+							sender->PostWebMessageAsJson(buf.GetString());
+						}
+						return S_OK;
+					}).Get(), &token));
+
 				RECT clientRc;
 				GetClientRect(m_hWnd, &clientRc);
 				m_webViewHost->put_Bounds(clientRc);
 
-				m_webView->Navigate(L"chrome://version");
+				m_webView->Navigate(L"http://127.0.0.1:9090/ui/");
 
 				return S_OK;
 			}).Get());
