@@ -71,8 +71,13 @@ void HandleJSMessage(std::wstring_view handlerName, std::wstring_view callbackId
 	}
 	else if (handlerName == L"setPasteboard")
 	{
-		// FIXME not implemented
-		RespondJSMessage(webView, callbackId, false);
+		if (data.IsString())
+		{
+			SetClipboardText({ data.GetString(), data.GetStringLength() });
+			RespondJSMessage(webView, callbackId, true);
+		}
+		else
+			RespondJSMessage(webView, callbackId, false);
 	}
 	else if (handlerName == L"writeConfigWithString")
 	{

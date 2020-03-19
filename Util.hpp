@@ -73,3 +73,28 @@ void CreateShellLink(const wchar_t* linkPath, const wchar_t* target)
 	auto persistFile = shellLink.query<IPersistFile>();
 	THROW_IF_FAILED(persistFile->Save(linkPath, TRUE));
 }
+
+void SetClipboardText(std::wstring_view text)
+{
+	try
+	{
+		THROW_IF_WIN32_BOOL_FALSE(OpenClipboard(g_hWnd));
+		THROW_IF_WIN32_BOOL_FALSE(EmptyClipboard());
+
+		auto hGlobal = GlobalAlloc(GMEM_MOVEABLE, (text.size() + 1) * sizeof(wchar_t));
+		THROW_LAST_ERROR_IF_NULL(hGlobal);
+
+		{
+			wil::unique_hglobal_locked ptr(hGlobal);
+			THROW_LAST_ERROR_IF_NULL(ptr.get());
+
+			auto str = static_cast<wchar_t*>(ptr.get());
+			auto len = text.copy(str, text.size());
+			str[len] = 0;
+		}
+
+		SetClipboardData(CF_UNICODETEXT, hGlobal);
+	}
+	CATCH_LOG();
+	CloseClipboard();
+}
