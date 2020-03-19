@@ -100,8 +100,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>winhttp.lib;uxtheme.lib;urlmon.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <DelayLoadDLLs>WebView2Loader.dll;urlmon.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <AdditionalDependencies>winhttp.lib;uxtheme.lib;urlmon.lib;rasapi32.lib;wininet.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>WebView2Loader.dll;urlmon.dll;rasapi32.dll;wininet.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -119,8 +119,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>winhttp.lib;uxtheme.lib;urlmon.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <DelayLoadDLLs>WebView2Loader.dll;urlmon.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <AdditionalDependencies>winhttp.lib;uxtheme.lib;urlmon.lib;rasapi32.lib;wininet.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>WebView2Loader.dll;urlmon.dll;rasapi32.dll;wininet.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -144,8 +144,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalOptions>/PDBALTPATH:%_PDB% %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>winhttp.lib;uxtheme.lib;urlmon.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <DelayLoadDLLs>WebView2Loader.dll;urlmon.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <AdditionalDependencies>winhttp.lib;uxtheme.lib;urlmon.lib;rasapi32.lib;wininet.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>WebView2Loader.dll;urlmon.dll;rasapi32.dll;wininet.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -169,8 +169,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalOptions>/PDBALTPATH:%_PDB% %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>winhttp.lib;uxtheme.lib;urlmon.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <DelayLoadDLLs>WebView2Loader.dll;urlmon.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <AdditionalDependencies>winhttp.lib;uxtheme.lib;urlmon.lib;rasapi32.lib;wininet.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>WebView2Loader.dll;urlmon.dll;rasapi32.dll;wininet.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -187,6 +187,7 @@
     <ClInclude Include="MenuUtil.hpp" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="SysProxy.hpp" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Util.hpp" />
   </ItemGroup>
@@ -197,6 +198,12 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SysProxy.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

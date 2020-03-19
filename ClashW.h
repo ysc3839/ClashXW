@@ -52,6 +52,7 @@ constexpr auto CLASH_EXE_NAME = L"clash.exe";
 #include "DialogUtil.hpp"
 #include "OSLicensesDlg.hpp"
 #include "EdgeWebView2.hpp"
+#include "SysProxy.hpp"
 
 std::unique_ptr<ProcessManager> g_processManager;
 std::unique_ptr<ClashApi> g_clashApi;
