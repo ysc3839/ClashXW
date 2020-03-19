@@ -98,3 +98,26 @@ void SetClipboardText(std::wstring_view text)
 	CATCH_LOG();
 	CloseClipboard();
 }
+
+std::wstring GetClipboardText()
+{
+	std::wstring result;
+	try
+	{
+		if (!IsClipboardFormatAvailable(CF_UNICODETEXT))
+			return result;
+
+		THROW_IF_WIN32_BOOL_FALSE(OpenClipboard(g_hWnd));
+
+		auto hGlobal = GetClipboardData(CF_UNICODETEXT);
+		THROW_LAST_ERROR_IF_NULL(hGlobal);
+
+		wil::unique_hglobal_locked ptr(hGlobal);
+		THROW_LAST_ERROR_IF_NULL(ptr.get());
+
+		result = static_cast<wchar_t*>(ptr.get());
+	}
+	CATCH_LOG();
+	CloseClipboard();
+	return result;
+}
