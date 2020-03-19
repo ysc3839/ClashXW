@@ -187,6 +187,7 @@
     <ClInclude Include="MenuUtil.hpp" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="SettingsUtil.hpp" />
     <ClInclude Include="SysProxy.hpp" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Util.hpp" />

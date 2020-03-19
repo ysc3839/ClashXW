@@ -37,7 +37,7 @@ auto GetModuleFsPath(HMODULE hModule)
 	}
 
 	path.resize(actualSize);
-	return fs::path(path).remove_filename();
+	return fs::path(path);
 }
 
 bool CheckOnlyOneInstance(const wchar_t* mutexName)
@@ -46,10 +46,10 @@ bool CheckOnlyOneInstance(const wchar_t* mutexName)
 	return (GetLastError() != ERROR_ALREADY_EXISTS);
 }
 
-auto GetAppDataPath()
+auto GetKnownFolderFsPath(REFKNOWNFOLDERID rfid)
 {
 	wil::unique_cotaskmem_string path;
-	SHGetKnownFolderPath(FOLDERID_RoamingAppData, 0, nullptr, &path);
+	SHGetKnownFolderPath(rfid, 0, nullptr, &path);
 	return fs::path(path.get()).concat(L"\\");
 }
 
@@ -61,4 +61,15 @@ void CreateDirectoryIgnoreExist(const wchar_t* path)
 		if (lastErr != ERROR_ALREADY_EXISTS)
 			THROW_WIN32(lastErr);
 	}
+}
+
+void CreateShellLink(const wchar_t* linkPath, const wchar_t* target)
+{
+	auto guard = wil::CoInitializeEx();
+
+	auto shellLink = wil::CoCreateInstance<IShellLinkW>(CLSID_ShellLink);
+	THROW_IF_FAILED(shellLink->SetPath(target));
+
+	auto persistFile = shellLink.query<IPersistFile>();
+	THROW_IF_FAILED(persistFile->Save(linkPath, TRUE));
 }

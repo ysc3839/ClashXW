@@ -66,3 +66,9 @@ void ShowContextMenu(HWND hWnd, int x, int y)
 	}
 	CATCH_LOG_RETURN();
 }
+
+void UpdateContextMenu()
+{
+	CheckMenuItem(g_hContextMenu, 2, MF_BYPOSITION | (g_settings->systemProxy ? MF_CHECKED : MF_UNCHECKED));
+	CheckMenuItem(g_hContextMenu, 5, MF_BYPOSITION | (g_settings->startAtLogin ? MF_CHECKED : MF_UNCHECKED));
+}

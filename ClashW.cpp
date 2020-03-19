@@ -39,12 +39,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	if (!CheckOnlyOneInstance(CLASHW_MUTEX_NAME))
 		return EXIT_FAILURE;
 
-	g_exePath = GetModuleFsPath(hInstance);
+	g_exePath = GetModuleFsPath(hInstance).remove_filename();
 	SetCurrentDirectoryW(g_exePath.c_str());
-	g_dataPath = GetAppDataPath() / CLASHW_DIR_NAME;
+	g_dataPath = GetKnownFolderFsPath(FOLDERID_RoamingAppData) / CLASHW_DIR_NAME;
 
 	LoadTranslateData();
 	InitDarkMode();
+
+	// FIXME: move to LoadSettings()
+	g_settings.emplace();
 
 	WNDCLASSEXW wcex = {
 		.cbSize = sizeof(wcex),
@@ -136,6 +139,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// Parse the menu selections:
 		switch (wmId)
 		{
+		case IDM_STARTATLOGIN:
+			try
+			{
+				auto linkPath = GetKnownFolderFsPath(FOLDERID_Startup) / CLASHW_LINK_NAME;
+				bool startAtLogin = fs::is_regular_file(linkPath);
+				if (startAtLogin)
+					fs::remove(linkPath);
+				else
+					CreateShellLink(linkPath.c_str(), GetModuleFsPath(g_hInst).c_str());
+				g_settings->startAtLogin = fs::is_regular_file(linkPath);
+				UpdateContextMenu();
+			}
+			CATCH_LOG();
+			break;
 		case IDM_HELP_ABOUT:
 			ShowOpenSourceLicensesDialog(hWnd);
 			//DialogBox(g_hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
