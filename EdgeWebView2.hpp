@@ -19,63 +19,88 @@
 
 #pragma once
 
-void HandleJSMessage(std::wstring_view handlerName, rapidjson::WValue& data, rapidjson::WWriter<rapidjson::WStringBuffer>& writer)
+void RespondJSMessage(ICoreWebView2* webView, std::wstring_view callbackId, rapidjson::WValue data)
+{
+	rapidjson::WStringBuffer buf;
+	rapidjson::WWriter<rapidjson::WStringBuffer> writer(buf);
+
+	writer.StartObject();
+	writer.Key(L"responseId");
+	writer.String(callbackId.data(), callbackId.length());
+	writer.Key(L"responseData");
+	data.Accept(writer);
+	writer.EndObject();
+
+	webView->PostWebMessageAsJson(buf.GetString());
+}
+
+template <typename T>
+void RespondJSMessage(ICoreWebView2* webView, std::wstring_view callbackId, T data)
+{
+	RespondJSMessage(webView, callbackId, rapidjson::WValue(data));
+}
+
+void HandleJSMessage(std::wstring_view handlerName, std::wstring_view callbackId, rapidjson::WValue data, ICoreWebView2* webView)
 {
 	LOG_HR_MSG(E_NOTIMPL, "HandleJSMessage: %ls", handlerName.data());
 	if (handlerName == L"ping")
 	{
-		// callHandler not implemented
-		writer.Bool(true);
+		// FIXME callHandler not implemented
+		//bridge?.callHandler("pong")
+		RespondJSMessage(webView, callbackId, true);
 	}
 	else if (handlerName == L"readConfigString")
 	{
 		// FIXME not implemented
-		writer.String(L"");
+		RespondJSMessage(webView, callbackId, L"");
 	}
 	else if (handlerName == L"getPasteboard")
 	{
 		// FIXME not implemented
-		writer.String(L"");
+		RespondJSMessage(webView, callbackId, L"");
 	}
 	else if (handlerName == L"apiInfo")
 	{
-		writer.StartObject();
-		writer.Key(L"host");
-		writer.String(L"127.0.0.1");
-		writer.Key(L"port");
-		writer.String(L"9090");
-		writer.Key(L"secret");
-		writer.String(L"");
-		writer.EndObject();
+		// FIXME not implemented
+		rapidjson::WValue data(rapidjson::Type::kObjectType);
+		rapidjson::WValue::AllocatorType allocator;
+		data.AddMember(L"host", L"127.0.0.1", allocator);
+		data.AddMember(L"port", 9090, allocator);
+		data.AddMember(L"secret", L"", allocator);
+		RespondJSMessage(webView, callbackId, std::move(data));
 	}
 	else if (handlerName == L"setPasteboard")
 	{
-		LOG_HR_MSG(E_NOTIMPL, "setPasteboard: %ls", data.GetString());
-		writer.Bool(true);
+		// FIXME not implemented
+		RespondJSMessage(webView, callbackId, false);
 	}
 	else if (handlerName == L"writeConfigWithString")
 	{
-		writer.Bool(false);
+		// FIXME not implemented
+		RespondJSMessage(webView, callbackId, false);
 	}
 	else if (handlerName == L"setSystemProxy")
 	{
-		writer.Bool(true);
+		// FIXME not implemented
+		RespondJSMessage(webView, callbackId, false);
 	}
 	else if (handlerName == L"getStartAtLogin")
 	{
-		writer.Bool(true);
+		RespondJSMessage(webView, callbackId, g_settings->startAtLogin);
 	}
 	else if (handlerName == L"speedTest")
 	{
-		writer.Null();
+		// FIXME not implemented
+		RespondJSMessage(webView, callbackId, {});
 	}
 	else if (handlerName == L"setStartAtLogin")
 	{
-		writer.Bool(true);
+		// FIXME not implemented
+		RespondJSMessage(webView, callbackId, false);
 	}
 	else if (handlerName == L"isSystemProxySet")
 	{
-		writer.Bool(true);
+		RespondJSMessage(webView, callbackId, g_settings->systemProxy);
 	}
 }
 
@@ -255,23 +280,14 @@ private:
 							auto callbackId = obj.FindMember(L"callbackId");
 							RETURN_HR_IF(E_INVALIDARG, callbackId == obj.MemberEnd() || !callbackId->value.IsString());
 
-							rapidjson::WStringBuffer buf;
-							rapidjson::WWriter<rapidjson::WStringBuffer> writer(buf);
-
-							writer.StartObject();
-							writer.Key(L"responseId");
-							writer.String(callbackId->value.GetString(), callbackId->value.GetStringLength());
-							writer.Key(L"responseData");
-
 							auto data = obj.FindMember(L"data");
 							rapidjson::WValue value;
 							if (data != obj.MemberEnd())
 								value = data->value;
-							HandleJSMessage({ handlerName->value.GetString(), handlerName->value.GetStringLength() }, value, writer);
 
-							writer.EndObject();
-
-							sender->PostWebMessageAsJson(buf.GetString());
+							std::wstring_view handlerNameView{ handlerName->value.GetString(), handlerName->value.GetStringLength() };
+							std::wstring_view callbackIdView{ callbackId->value.GetString(), callbackId->value.GetStringLength() };
+							HandleJSMessage(handlerNameView, callbackIdView, std::move(value), sender);
 						}
 						return S_OK;
 					}).Get(), &token));
