@@ -19,7 +19,7 @@
 
 #pragma once
 
-wil::unique_hmenu g_hTopMenu;
+HMENU g_hTopMenu;
 HMENU g_hContextMenu;
 HMENU g_hProxyModeMenu;
 
@@ -36,10 +36,10 @@ BOOL SetMenuItemText(HMENU hMenu, UINT pos, const wchar_t* text)
 void SetupMenu()
 {
 	try {
-		g_hTopMenu.reset(LoadMenuW(g_hInst, MAKEINTRESOURCEW(IDC_MENU)));
+		g_hTopMenu = LoadMenuW(g_hInst, MAKEINTRESOURCEW(IDC_MENU));
 		THROW_LAST_ERROR_IF_NULL(g_hTopMenu);
 
-		g_hContextMenu = GetSubMenu(g_hTopMenu.get(), 0);
+		g_hContextMenu = GetSubMenu(g_hTopMenu, 0);
 		THROW_LAST_ERROR_IF_NULL(g_hContextMenu);
 
 		g_hProxyModeMenu = GetSubMenu(g_hContextMenu, 0);
