@@ -228,6 +228,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_PROCESSNOTIFY:
 		LOG_HR_MSG(E_FAIL, "Clash crashed with exit code: %d", wParam);
 		StartClash();
+		break;
+	case WM_RESUMECORO:
+		std::experimental::coroutine_handle<>::from_address(reinterpret_cast<void*>(wParam)).resume();
+		break;
 	default:
 		if (WM_TASKBAR_CREATED && message == WM_TASKBAR_CREATED)
 		{
