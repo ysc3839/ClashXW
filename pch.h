@@ -25,6 +25,8 @@
 #pragma warning(push)
 #pragma warning(disable:5054)
 #define RAPIDJSON_HAS_STDSTRING 1
+#define RAPIDJSON_SSE2 1
+#define RAPIDJSON_SSE42 1
 #include "rapidjson/document.h"
 #include "rapidjson/writer.h"
 #include "rapidjson/stringbuffer.h"
