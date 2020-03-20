@@ -1,0 +1,73 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-03-21 01:27+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ClashW.cpp:111
+msgid ""
+"Clash started, but failed to communiacte.\n"
+"Ensure `external-controller` is set to `127.0.0.1:9090` in config.yaml."
+msgstr ""
+
+#: ClashW.cpp:111 ClashW.cpp:115
+msgid "Error"
+msgstr ""
+
+#: ClashW.cpp:115
+msgid "Failed to start clash."
+msgstr ""
+
+#: ClashW.cpp:137
+msgid "ClashW"
+msgstr ""
+
+#: ClashW.cpp:240
+msgid "Copy shell command (External IP)\tCtrl+Shift+C"
+msgstr ""
+
+#: ClashW.cpp:241 MenuUtil.hpp:54
+msgid "Copy shell command\tCtrl+C"
+msgstr ""
+
+#: EdgeWebView2.hpp:202
+msgid "Dashboard"
+msgstr ""
+
+#: MenuUtil.hpp:88
+msgid "Global"
+msgstr ""
+
+#: MenuUtil.hpp:91
+msgid "Rule"
+msgstr ""
+
+#: MenuUtil.hpp:94
+msgid "Direct"
+msgstr ""
+
+#: MenuUtil.hpp:97
+msgid "Unknown"
+msgstr ""
+
+#: MenuUtil.hpp:101
+#, c-format
+msgid "Proxy Mode (%s)"
+msgstr ""
+
+#: OSLicensesDlg.hpp:136
+msgid "Open source licenses"
+msgstr ""
