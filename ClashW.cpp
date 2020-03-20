@@ -120,8 +120,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		nid.hIcon = LoadIconW(g_hInst, MAKEINTRESOURCEW(IDI_CLASHW));
 		wcscpy_s(nid.szTip, _(L"ClashW"));
 
-		FAIL_FAST_IF_WIN32_BOOL_FALSE(Shell_NotifyIconW(NIM_ADD, &nid));
-		FAIL_FAST_IF_WIN32_BOOL_FALSE(Shell_NotifyIconW(NIM_SETVERSION, &nid));
+		if (Shell_NotifyIconW(NIM_ADD, &nid))
+		{
+			FAIL_FAST_IF_WIN32_BOOL_FALSE(Shell_NotifyIconW(NIM_SETVERSION, &nid));
+		}
+		else
+		{
+			LOG_LAST_ERROR();
+		}
 
 		WM_TASKBAR_CREATED = RegisterWindowMessageW(L"TaskbarCreated");
 		LOG_LAST_ERROR_IF(WM_TASKBAR_CREATED == 0);
