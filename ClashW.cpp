@@ -140,18 +140,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		switch (wmId)
 		{
 		case IDM_STARTATLOGIN:
-			try
-			{
-				auto linkPath = GetKnownFolderFsPath(FOLDERID_Startup) / CLASHW_LINK_NAME;
-				bool startAtLogin = fs::is_regular_file(linkPath);
-				if (startAtLogin)
-					fs::remove(linkPath);
-				else
-					CreateShellLink(linkPath.c_str(), GetModuleFsPath(g_hInst).c_str());
-				g_settings->startAtLogin = fs::is_regular_file(linkPath);
-				UpdateContextMenu();
-			}
-			CATCH_LOG();
+			EnableStartAtLogin(!g_settings->startAtLogin);
 			break;
 		case IDM_HELP_ABOUT:
 			ShowOpenSourceLicensesDialog(hWnd);
@@ -238,6 +227,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case NIN_SELECT:
 		case NIN_KEYSELECT:
 		case WM_CONTEXTMENU:
+			UpdateContextMenu();
 			ShowContextMenu(hWnd, GET_X_LPARAM(wParam), GET_Y_LPARAM(wParam));
 			break;
 		}
