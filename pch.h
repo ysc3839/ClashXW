@@ -47,4 +47,7 @@ RAPIDJSON_NAMESPACE_END
 // Edge WebView2
 #include "WebView2.h"
 
+// C++/WinRT
+#include <winrt/base.h>
+
 #endif //PCH_H

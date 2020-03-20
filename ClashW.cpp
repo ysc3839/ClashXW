@@ -75,14 +75,27 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	return static_cast<int>(msg.wParam);
 }
 
-void StartClash()
+void ShowBalloon(const wchar_t* info, const wchar_t* title, DWORD flag = NIIF_INFO)
+{
+	NOTIFYICONDATAW nid = {
+		.cbSize = sizeof(nid),
+		.hWnd = g_hWnd,
+		.uFlags = NIF_INFO,
+		.dwInfoFlags = flag | NIIF_RESPECT_QUIET_TIME
+	};
+	wcscpy_s(nid.szInfoTitle, title);
+	wcscpy_s(nid.szInfo, info);
+	LOG_IF_WIN32_BOOL_FALSE(Shell_NotifyIconW(NIM_MODIFY, &nid));
+}
+
+winrt::fire_and_forget StartClash()
 {
 	if (g_processManager->Start())
 	{
-		static size_t count;
-		count = 0;
-		SetTimer(g_hWnd, 1, 1000, [](HWND hWnd, UINT, UINT_PTR, DWORD) {
-			++count;
+		for (size_t i = 0; i < 3; ++i)
+		{
+			using namespace std::chrono_literals;
+			co_await winrt::resume_after(1s);
 			try
 			{
 				g_clashVersion = g_clashApi->GetVersion();
@@ -90,13 +103,16 @@ void StartClash()
 			catch (...)
 			{
 				LOG_CAUGHT_EXCEPTION();
-				if (count >= 5)
-				{
-					g_processManager->ForceStop();
-					KillTimer(hWnd, 1);
-				}
+				continue;
 			}
-		});
+			g_clashOnline = true;
+			co_return;
+		}
+		ShowBalloon(_(L"Clash started, but failed to communiacte.\nEnsure `external-controller` is set to `127.0.0.1:9090` in config.yaml."), _(L"Error"), NIIF_ERROR);
+	}
+	else
+	{
+		ShowBalloon(_(L"Failed to start clash."), _(L"Error"), NIIF_ERROR);
 	}
 }
 

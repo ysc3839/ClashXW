@@ -27,6 +27,7 @@ namespace wrl = Microsoft::WRL;
 HINSTANCE g_hInst;
 fs::path g_exePath;
 fs::path g_dataPath;
+bool g_clashOnline = false;
 std::string g_clashVersion;
 HWND g_hWnd;
 
