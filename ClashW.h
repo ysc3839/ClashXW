@@ -39,7 +39,8 @@ constexpr auto CLASHW_APP_ID = L"com.ysc3839.clashw";
 constexpr auto CLASHW_MUTEX_NAME = L"Local\\com.ysc3839.clashw";
 constexpr auto CLASHW_DIR_NAME = L"ClashW";
 constexpr auto CLASHW_LINK_NAME = L"ClashW.lnk";
-constexpr auto CLASH_CONFIG_DIR_NAME = L"clash-configs";
+constexpr auto CLASH_CONFIG_DIR_NAME = L"Config";
+constexpr auto CLASH_ASSETS_DIR_NAME = L"ClashAssets";
 constexpr auto CLASH_DEF_CONFIG_NAME = L"config.yaml";
 constexpr auto CLASH_EXE_NAME = L"clash.exe";
 

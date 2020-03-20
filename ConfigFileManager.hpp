@@ -27,6 +27,7 @@ allow-lan: false
 mode: Rule
 log-level: info
 external-controller: 127.0.0.1:9090
+external-ui: Dashboard
 
 Proxy:
 
