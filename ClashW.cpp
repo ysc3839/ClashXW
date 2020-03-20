@@ -249,7 +249,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case NIN_SELECT:
 		case NIN_KEYSELECT:
 		case WM_CONTEXTMENU:
-			UpdateContextMenu();
+			g_clashApi->GetConfigs();
+			UpdateMenus();
 			ShowContextMenu(hWnd, GET_X_LPARAM(wParam), GET_Y_LPARAM(wParam));
 			break;
 		}

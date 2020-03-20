@@ -25,6 +25,35 @@ struct Response
 	std::string data;
 };
 
+enum struct ClashProxyMode
+{
+	Global,
+	Rule,
+	Direct,
+	Unknown
+};
+
+enum struct ClashLogLevel
+{
+	Error,
+	Warning,
+	Info,
+	Debug,
+	Silent,
+	Unknown
+};
+
+struct ClashConfig
+{
+	uint16_t port;
+	uint16_t socksPort;
+	bool allowLan;
+	ClashProxyMode mode;
+	ClashLogLevel logLevel;
+};
+
+ClashConfig g_clashConfig = {};
+
 class ClashApi
 {
 public:
@@ -89,6 +118,55 @@ public:
 			THROW_HR(E_INVALIDARG);
 
 		return { it->value.GetString(), it->value.GetStringLength() };
+	}
+
+	void GetConfigs()
+	{
+		auto res = Request(L"/configs");
+
+		if (res.statusCode != 200)
+			return;
+
+		rapidjson::Document json;
+		json.Parse(res.data);
+		if (json.HasParseError() || !json.IsObject())
+			return;
+
+		for (auto it = json.MemberBegin(); it != json.MemberEnd(); ++it)
+		{
+			if (it->name == "port" && it->value.IsUint())
+				g_clashConfig.port = static_cast<uint16_t>(it->value.GetUint());
+			else if (it->name == "socks-port" && it->value.IsUint())
+				g_clashConfig.socksPort = static_cast<uint16_t>(it->value.GetUint());
+			else if (it->name == "allow-lan" && it->value.IsBool())
+				g_clashConfig.allowLan = it->value.GetBool();
+			else if (it->name == "mode" && it->value.IsString())
+			{
+				if (it->value == "Global")
+					g_clashConfig.mode = ClashProxyMode::Global;
+				else if (it->value == "Rule")
+					g_clashConfig.mode = ClashProxyMode::Rule;
+				else if (it->value == "Direct")
+					g_clashConfig.mode = ClashProxyMode::Direct;
+				else
+					g_clashConfig.mode = ClashProxyMode::Unknown;
+			}
+			else if (it->name == "log-level" && it->value.IsString())
+			{
+				if (it->value == "error")
+					g_clashConfig.logLevel = ClashLogLevel::Error;
+				else if (it->value == "warning")
+					g_clashConfig.logLevel = ClashLogLevel::Warning;
+				else if (it->value == "info")
+					g_clashConfig.logLevel = ClashLogLevel::Info;
+				else if (it->value == "debug")
+					g_clashConfig.logLevel = ClashLogLevel::Debug;
+				else if (it->value == "silent")
+					g_clashConfig.logLevel = ClashLogLevel::Silent;
+				else
+					g_clashConfig.logLevel = ClashLogLevel::Unknown;
+			}
+		}
 	}
 
 private:

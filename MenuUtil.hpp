@@ -22,6 +22,7 @@
 HMENU g_hTopMenu;
 HMENU g_hContextMenu;
 HMENU g_hProxyModeMenu;
+HMENU g_hLogLevelMenu;
 
 BOOL SetMenuItemText(HMENU hMenu, UINT pos, const wchar_t* text)
 {
@@ -45,7 +46,11 @@ void SetupMenu()
 		g_hProxyModeMenu = GetSubMenu(g_hContextMenu, 0);
 		THROW_LAST_ERROR_IF_NULL(g_hProxyModeMenu);
 
-		SetMenuItemText(g_hContextMenu, 0, _(L"Proxy Mode (FIXME)")); // FIXME
+		HMENU hHelpMenu = GetSubMenu(g_hContextMenu, 13);
+		THROW_LAST_ERROR_IF_NULL(g_hProxyModeMenu);
+		g_hLogLevelMenu = GetSubMenu(hHelpMenu, 2);
+		THROW_LAST_ERROR_IF_NULL(g_hProxyModeMenu);
+
 		SetMenuItemText(g_hContextMenu, 3, _(L"Copy shell command\tCtrl+C"));
 	}
 	CATCH_FAIL_FAST();
@@ -71,4 +76,41 @@ void UpdateContextMenu()
 {
 	CheckMenuItem(g_hContextMenu, 2, MF_BYPOSITION | (g_settings->systemProxy ? MF_CHECKED : MF_UNCHECKED));
 	CheckMenuItem(g_hContextMenu, 5, MF_BYPOSITION | (g_settings->startAtLogin ? MF_CHECKED : MF_UNCHECKED));
+	CheckMenuItem(g_hContextMenu, 7, MF_BYPOSITION | (g_clashConfig.allowLan ? MF_CHECKED : MF_UNCHECKED));
+}
+
+void UpdateProxyModeMenu()
+{
+	const wchar_t* modeText;
+	switch (g_clashConfig.mode)
+	{
+	case ClashProxyMode::Global:
+		modeText = _(L"Global");
+		break;
+	case ClashProxyMode::Rule:
+		modeText = _(L"Rule");
+		break;
+	case ClashProxyMode::Direct:
+		modeText = _(L"Direct");
+		break;
+	default:
+		modeText = _(L"Unknown");
+		break;
+	}
+	wchar_t text[32];
+	swprintf_s(text, _(L"Proxy Mode (%s)"), modeText);
+	SetMenuItemText(g_hContextMenu, 0, text);
+	CheckMenuRadioItem(g_hProxyModeMenu, 0, 2, static_cast<UINT>(g_clashConfig.mode), MF_BYPOSITION);
+}
+
+void UpdateLogLevelMenu()
+{
+	CheckMenuRadioItem(g_hLogLevelMenu, 0, 4, static_cast<UINT>(g_clashConfig.logLevel), MF_BYPOSITION);
+}
+
+void UpdateMenus()
+{
+	UpdateContextMenu();
+	UpdateProxyModeMenu();
+	UpdateLogLevelMenu();
 }
