@@ -146,9 +146,9 @@ public:
 	static HWND Create(HWND hWndParent)
 	{
 		DialogTemplate dlgTmpl = { {
-			.style = WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_VISIBLE,
-			.dwExtendedStyle = WS_EX_DLGMODALFRAME,
-			.cx = 500,
+			.style = WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_VISIBLE | DS_CENTER,
+			.dwExtendedStyle = WS_EX_DLGMODALFRAME | WS_EX_APPWINDOW,
+			.cx = 550,
 			.cy = 400
 		} };
 		return CreateDialogIndirectParamW(g_hInst, &dlgTmpl.tmpl, hWndParent, DlgProcStatic, 0);
@@ -199,6 +199,7 @@ private:
 		{
 		case WM_INITDIALOG:
 		{
+			SetWindowTextW(hDlg, _(L"Dashboard"));
 			CreateWebView();
 			return static_cast<INT_PTR>(TRUE);
 		}
