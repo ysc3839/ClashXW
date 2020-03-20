@@ -216,3 +216,39 @@ template <typename T, typename TExecutor>
 
 	return awaitable{};
 }
+
+[[nodiscard]] inline auto ResumeAfterTimer(std::chrono::duration<UINT, std::milli> duration) noexcept
+{
+	using std::experimental::coroutine_handle;
+
+	struct awaitable
+	{
+		explicit awaitable(std::chrono::duration<UINT, std::milli> duration) noexcept :
+			m_duration(duration) {}
+
+		bool await_ready() const noexcept
+		{
+			return m_duration.count() <= 0;
+		}
+
+		void await_suspend(coroutine_handle<> handle)
+		{
+			// The id is safe to hold a pointer.
+			// https://devblogs.microsoft.com/oldnewthing/20191009-00/?p=102974
+			SetTimer(g_hWnd, reinterpret_cast<UINT_PTR>(handle.address()), m_duration.count(), callback);
+		}
+
+		void await_resume() const noexcept {}
+
+	private:
+		static void CALLBACK callback(HWND hWnd, UINT, UINT_PTR id, DWORD) noexcept
+		{
+			KillTimer(hWnd, id);
+			coroutine_handle<>::from_address(reinterpret_cast<void*>(id)).resume();
+		}
+
+		std::chrono::duration<UINT, std::milli> m_duration;
+	};
+
+	return awaitable{ duration };
+}
