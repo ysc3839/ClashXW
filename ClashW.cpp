@@ -163,6 +163,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// Parse the menu selections:
 		switch (wmId)
 		{
+		case IDM_SYSTEMPROXY:
+			EnableSystemProxy(!g_settings->systemProxy);
+			break;
 		case IDM_STARTATLOGIN:
 			EnableStartAtLogin(!g_settings->startAtLogin);
 			break;

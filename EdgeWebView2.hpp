@@ -90,8 +90,13 @@ void HandleJSMessage(std::wstring_view handlerName, std::wstring_view callbackId
 	}
 	else if (handlerName == L"setSystemProxy")
 	{
-		// FIXME not implemented
-		RespondJSMessage(webView, callbackId, false);
+		if (data.IsBool())
+		{
+			EnableSystemProxy(data.GetBool());
+			RespondJSMessage(webView, callbackId, true);
+		}
+		else
+			RespondJSMessage(webView, callbackId, false);
 	}
 	else if (handlerName == L"getStartAtLogin")
 	{

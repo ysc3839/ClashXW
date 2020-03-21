@@ -115,7 +115,7 @@ BEGIN
             MENUITEM "Direct\tShift+D",             IDM_MODE_DIRECT, INACTIVE
         END
         MENUITEM SEPARATOR
-        MENUITEM "Set as system proxy\tCtrl+S", IDM_SYSTEMPROXY, INACTIVE
+        MENUITEM "Set as system proxy\tCtrl+S", IDM_SYSTEMPROXY
         MENUITEM " ",                           IDM_COPYCOMMAND, INACTIVE
         MENUITEM SEPARATOR
         MENUITEM "Start at login",              IDM_STARTATLOGIN

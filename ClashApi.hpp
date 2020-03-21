@@ -25,35 +25,6 @@ struct Response
 	std::string data;
 };
 
-enum struct ClashProxyMode
-{
-	Global,
-	Rule,
-	Direct,
-	Unknown
-};
-
-enum struct ClashLogLevel
-{
-	Error,
-	Warning,
-	Info,
-	Debug,
-	Silent,
-	Unknown
-};
-
-struct ClashConfig
-{
-	uint16_t port;
-	uint16_t socksPort;
-	bool allowLan;
-	ClashProxyMode mode;
-	ClashLogLevel logLevel;
-};
-
-ClashConfig g_clashConfig = {};
-
 class ClashApi
 {
 public:
