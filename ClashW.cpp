@@ -61,8 +61,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	RegisterClassExW(&wcex);
 
-	g_hWnd = CreateWindowW(L"ClashW", nullptr, WS_POPUP, 0, 0, 0, 0, nullptr, nullptr, hInstance, nullptr);
-	if (!g_hWnd)
+	auto hWnd = CreateWindowW(L"ClashW", nullptr, WS_POPUP, 0, 0, 0, 0, nullptr, nullptr, hInstance, nullptr);
+	if (!hWnd)
 		return EXIT_FAILURE;
 
 	MSG msg;
@@ -130,6 +130,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_CREATE:
 	{
+		g_hWnd = hWnd;
+
 		SetupMenu();
 
 		nid.hWnd = hWnd;
