@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
+# Copyright (C) YEAR Richard Yu <yurichard3839@gmail.com>
+# This file is distributed under the same license as the ClashW package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: ClashW\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-03-21 01:27+0800\n"
+"POT-Creation-Date: 2020-03-30 17:42+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -31,19 +31,19 @@ msgstr ""
 msgid "Failed to start clash."
 msgstr ""
 
-#: ClashW.cpp:137
+#: ClashW.cpp:139
 msgid "ClashW"
 msgstr ""
 
-#: ClashW.cpp:240
+#: ClashW.cpp:246
 msgid "Copy shell command (External IP)\tCtrl+Shift+C"
 msgstr ""
 
-#: ClashW.cpp:241 MenuUtil.hpp:54
+#: ClashW.cpp:247 MenuUtil.hpp:54
 msgid "Copy shell command\tCtrl+C"
 msgstr ""
 
-#: EdgeWebView2.hpp:202
+#: EdgeWebView2.hpp:207
 msgid "Dashboard"
 msgstr ""
 
