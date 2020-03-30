@@ -88,6 +88,9 @@
     <ResourceCompile Include="translate\rc\ClashW-translatable.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+    <ResourceCompile Include="translate\generated\translate.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="ClashW.ico">
