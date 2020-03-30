@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "6bfa6a40e593d64d1765d3da9de848d5000b055856f815592605deb00a0803fa"
+            "sha256": "2b799f802c2434ba405bbfbb2f4101742ff05f59947e59f97cb3b9b766028cc2"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -24,11 +24,9 @@
             "version": "==1.14.0"
         },
         "translate-toolkit": {
-            "hashes": [
-                "sha256:e9f19c5ebbef8d2c551319d9ff42f6799d65ed5a102e0a2cea77ee93dcfe7c5f"
-            ],
-            "index": "pypi",
-            "version": "==2.5.0"
+            "editable": true,
+            "git": "https://github.com/ysc3839/translate.git",
+            "ref": "70417ecb510ac940828732755fb916bb0e6bb6bb"
         }
     },
     "develop": {}

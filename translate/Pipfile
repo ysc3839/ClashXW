@@ -6,7 +6,7 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-translate-toolkit = "*"
+translate-toolkit = {editable = true,git = "https://github.com/ysc3839/translate.git"}
 
 [requires]
 python_version = "3.7"
