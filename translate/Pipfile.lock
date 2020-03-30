@@ -26,7 +26,7 @@
         "translate-toolkit": {
             "editable": true,
             "git": "https://github.com/ysc3839/translate.git",
-            "ref": "70417ecb510ac940828732755fb916bb0e6bb6bb"
+            "ref": "3070162bb995264f07acaf479672c229336682ca"
         }
     },
     "develop": {}
