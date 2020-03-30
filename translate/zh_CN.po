@@ -1,0 +1,76 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Richard Yu <yurichard3839@gmail.com>
+# This file is distributed under the same license as the ClashW package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-03-30 17:42+0800\n"
+"PO-Revision-Date: 2020-03-30 17:44+0800\n"
+"Last-Translator: Richard Yu <yurichard3839@gmail.com>\n"
+"Language-Team: \n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.3\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#: ClashW.cpp:111
+msgid ""
+"Clash started, but failed to communiacte.\n"
+"Ensure `external-controller` is set to `127.0.0.1:9090` in config.yaml."
+msgstr ""
+"Clash 已启动，但是无法通信。\n"
+"请确认 config.yaml 中 `external-controller` 已设置为 `127.0.0.1:9090` 。"
+
+#: ClashW.cpp:111 ClashW.cpp:115
+msgid "Error"
+msgstr "错误"
+
+#: ClashW.cpp:115
+msgid "Failed to start clash."
+msgstr "Clash 启动失败。"
+
+#: ClashW.cpp:139
+msgid "ClashW"
+msgstr ""
+
+#: ClashW.cpp:246
+msgid "Copy shell command (External IP)\tCtrl+Shift+C"
+msgstr "复制终端代理命令 (外部IP)\tCtrl+Shift+C"
+
+#: ClashW.cpp:247 MenuUtil.hpp:54
+msgid "Copy shell command\tCtrl+C"
+msgstr "复制终端代理命令\tCtrl+C"
+
+#: EdgeWebView2.hpp:207
+msgid "Dashboard"
+msgstr "控制台"
+
+#: MenuUtil.hpp:88
+msgid "Global"
+msgstr "全局"
+
+#: MenuUtil.hpp:91
+msgid "Rule"
+msgstr "规则"
+
+#: MenuUtil.hpp:94
+msgid "Direct"
+msgstr "直连"
+
+#: MenuUtil.hpp:97
+msgid "Unknown"
+msgstr "未知"
+
+#: MenuUtil.hpp:101
+#, c-format
+msgid "Proxy Mode (%s)"
+msgstr "出站模式 (%s)"
+
+#: OSLicensesDlg.hpp:136
+msgid "Open source licenses"
+msgstr "开放源代码许可"
