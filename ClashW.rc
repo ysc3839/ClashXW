@@ -18,10 +18,10 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// English (United States) resources
+// Neutral resources
 
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NEU)
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -31,41 +31,6 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDI_CLASHW              ICON                    "ClashW.ico"
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Dialog
-//
-
-IDD_ABOUTBOX DIALOGEX 0, 0, 170, 62
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "About ClashW"
-FONT 8, "MS Shell Dlg", 0, 0, 0x1
-BEGIN
-    LTEXT           "ClashW, Version 1.0",IDC_STATIC,42,14,114,8,SS_NOPREFIX
-    LTEXT           "Copyright (c) 2020",IDC_STATIC,42,26,114,8
-    DEFPUSHBUTTON   "OK",IDOK,113,41,50,14,WS_GROUP
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// DESIGNINFO
-//
-
-#ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO
-BEGIN
-    IDD_ABOUTBOX, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 163
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 55
-    END
-END
-#endif    // APSTUDIO_INVOKED
 
 
 #ifdef APSTUDIO_INVOKED
@@ -97,75 +62,6 @@ BEGIN
 END
 
 #endif    // APSTUDIO_INVOKED
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Menu
-//
-
-IDC_MENU MENU
-BEGIN
-    POPUP ""
-    BEGIN
-        POPUP " "
-        BEGIN
-            MENUITEM "Global\tShift+G",             IDM_MODE_GLOBAL, INACTIVE
-            MENUITEM "Rule\tShift+R",               IDM_MODE_RULE, INACTIVE
-            MENUITEM "Direct\tShift+D",             IDM_MODE_DIRECT, INACTIVE
-        END
-        MENUITEM SEPARATOR
-        MENUITEM "Set as system proxy\tCtrl+S", IDM_SYSTEMPROXY
-        MENUITEM " ",                           IDM_COPYCOMMAND, INACTIVE
-        MENUITEM SEPARATOR
-        MENUITEM "Start at login",              IDM_STARTATLOGIN
-        MENUITEM "Show network indicator",      IDM_SHOWINDICATOR, INACTIVE
-        MENUITEM "Allow connect from Lan",      IDM_ALLOWFROMLAN, INACTIVE
-        MENUITEM SEPARATOR
-        MENUITEM "Benchmark\tCtrl+T",           IDM_BENCHMARK, INACTIVE
-        MENUITEM "Dashboard\tCtrl+D",           IDM_DASHBOARD
-        MENUITEM SEPARATOR
-        POPUP "Config", INACTIVE
-        BEGIN
-            MENUITEM "config",                      IDM_CONFIG_CONFIG
-            MENUITEM SEPARATOR
-            MENUITEM "Open config Folder\tCtrl+O",  IDM_CONFIG_OPENFOLDER
-            MENUITEM "Reload config\tCtrl+R",       IDM_CONFIG_RELOAD
-            POPUP "Remote Config"
-            BEGIN
-                MENUITEM "Manage\tCtrl+M",              IDM_REMOTECONFIG_MANAGE
-                MENUITEM "Update\tCtrl+U",              IDM_REMOTECONFIG_UPDATE
-                MENUITEM "Auto Update",                 IDM_REMOTECONFIG_AUTOUPDATE, CHECKED
-            END
-            POPUP "Experimental"
-            BEGIN
-                MENUITEM "TODO",                        IDM_EXPERIMENTAL_TODO
-            END
-        END
-        POPUP "Help"
-        BEGIN
-            MENUITEM "About",                       IDM_HELP_ABOUT
-            MENUITEM "Check Update",                IDM_HELP_CHECKUPDATE, INACTIVE
-            POPUP "Log level"
-            BEGIN
-                MENUITEM "ERROR",                       IDM_LOGLEVEL_ERROR, INACTIVE
-                MENUITEM "WARNING",                     IDM_LOGLEVEL_WARNING, INACTIVE
-                MENUITEM "INFO",                        IDM_LOGLEVEL_INFO, INACTIVE
-                MENUITEM "DEBUG",                       IDM_LOGLEVEL_DEBUG, INACTIVE
-                MENUITEM "SILENT",                      IDM_LOGLEVEL_SILENT, INACTIVE
-            END
-            MENUITEM "Show Log",                    IDM_HELP_SHOWLOG, INACTIVE
-            POPUP "Ports"
-            BEGIN
-                MENUITEM "Http Port: 7890",             IDM_PORTS_HTTPPORT, INACTIVE
-                MENUITEM "Socks Port: 7891",            IDM_PORTS_SOCKSPORT, INACTIVE
-                MENUITEM "Api Port: 9090",              IDM_PORTS_APIPORT, INACTIVE
-                MENUITEM "IP:",                         IDM_PORTS_IP, INACTIVE
-            END
-        END
-        MENUITEM "Quit\tCtrl+Q",                IDM_QUIT
-    END
-END
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -206,7 +102,7 @@ BEGIN
     END
 END
 
-#endif    // English (United States) resources
+#endif    // Neutral resources
 /////////////////////////////////////////////////////////////////////////////
 
 

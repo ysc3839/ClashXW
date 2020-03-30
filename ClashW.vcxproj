@@ -212,6 +212,7 @@
   <ItemGroup>
     <ResourceCompile Include="ClashW.rc" />
     <ResourceCompile Include="licenses\generated\LicensesText.rc" />
+    <ResourceCompile Include="translate\rc\ClashW-translatable.rc" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="ClashW.ico" />
