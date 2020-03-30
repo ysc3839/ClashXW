@@ -36,7 +36,7 @@ struct YMOData
 
 void LoadTranslateData()
 {
-	auto hRes = FindResourceW(g_hInst, MAKEINTRESOURCEW(1), L"YMO");
+	auto hRes = FindResourceExW(g_hInst, L"YMO", MAKEINTRESOURCEW(1), GetThreadUILanguage());
 	if (hRes)
 	{
 		auto hResData = LoadResource(g_hInst, hRes);
