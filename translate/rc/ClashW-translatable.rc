@@ -76,7 +76,7 @@ END
 //
 
 IDC_MENU MENU
-BEGIN
+{
     POPUP ""
     BEGIN
         POPUP " "
@@ -136,7 +136,7 @@ BEGIN
         END
         MENUITEM "Quit\tCtrl+Q",                IDM_QUIT
     END
-END
+}
 
 
 /////////////////////////////////////////////////////////////////////////////

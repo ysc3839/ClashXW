@@ -1,0 +1,181 @@
+#. extracted from ./rc\ClashW-translatable.rc
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-03-30 22:32+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Accelerator-Marker: &\n"
+"X-Generator: Translate Toolkit 2.5.0\n"
+"X-Merge-On: location\n"
+
+#: DIALOGEX.IDD_ABOUTBOX.CAPTION
+msgid "About ClashW"
+msgstr ""
+
+#: DIALOGEX.IDD_ABOUTBOX.LTEXT.IDC_STATIC
+msgid "ClashW, Version 1.0"
+msgstr ""
+
+#: DIALOGEX.IDD_ABOUTBOX.LTEXT.IDC_STATIC_
+msgid "Copyright (c) 2020"
+msgstr ""
+
+#: DIALOGEX.IDD_ABOUTBOX.DEFPUSHBUTTON.IDOK
+msgid "OK"
+msgstr ""
+
+#: MENU.IDC_MENU.POPUP
+msgctxt "MENU.IDC_MENU.POPUP"
+msgid " "
+msgstr ""
+
+#: MENU.IDC_MENU.MENUITEM.IDM_MODE_GLOBAL,
+msgid "Global\tShift+G"
+msgstr ""
+
+#: MENU.IDC_MENU.MENUITEM.IDM_MODE_RULE,
+msgid "Rule\tShift+R"
+msgstr ""
+
+#: MENU.IDC_MENU.MENUITEM.IDM_MODE_DIRECT,
+msgid "Direct\tShift+D"
+msgstr ""
+
+#: MENU.IDC_MENU.MENUITEM.IDM_SYSTEMPROXY
+msgid "Set as system proxy\tCtrl+S"
+msgstr ""
+
+#: MENU.IDC_MENU.MENUITEM.IDM_COPYCOMMAND,
+msgctxt "MENU.IDC_MENU.MENUITEM.IDM_COPYCOMMAND,"
+msgid " "
+msgstr ""
+
+#: MENU.IDC_MENU.MENUITEM.IDM_STARTATLOGIN
+msgid "Start at login"
+msgstr ""
+
+#: MENU.IDC_MENU.MENUITEM.IDM_SHOWINDICATOR,
+msgid "Show network indicator"
+msgstr ""
+
+#: MENU.IDC_MENU.MENUITEM.IDM_ALLOWFROMLAN,
+msgid "Allow connect from Lan"
+msgstr ""
+
+#: MENU.IDC_MENU.MENUITEM.IDM_BENCHMARK,
+msgid "Benchmark\tCtrl+T"
+msgstr ""
+
+#: MENU.IDC_MENU.MENUITEM.IDM_DASHBOARD
+msgid "Dashboard\tCtrl+D"
+msgstr ""
+
+#: MENU.IDC_MENU.POPUP_
+msgid "Config"
+msgstr ""
+
+#: MENU.IDC_MENU.MENUITEM.IDM_CONFIG_CONFIG
+msgid "config"
+msgstr ""
+
+#: MENU.IDC_MENU.MENUITEM.IDM_CONFIG_OPENFOLDER
+msgid "Open config Folder\tCtrl+O"
+msgstr ""
+
+#: MENU.IDC_MENU.MENUITEM.IDM_CONFIG_RELOAD
+msgid "Reload config\tCtrl+R"
+msgstr ""
+
+#: MENU.IDC_MENU.POPUP__
+msgid "Remote Config"
+msgstr ""
+
+#: MENU.IDC_MENU.MENUITEM.IDM_REMOTECONFIG_MANAGE
+msgid "Manage\tCtrl+M"
+msgstr ""
+
+#: MENU.IDC_MENU.MENUITEM.IDM_REMOTECONFIG_UPDATE
+msgid "Update\tCtrl+U"
+msgstr ""
+
+#: MENU.IDC_MENU.MENUITEM.IDM_REMOTECONFIG_AUTOUPDATE,
+msgid "Auto Update"
+msgstr ""
+
+#: MENU.IDC_MENU.POPUP___
+msgid "Experimental"
+msgstr ""
+
+#: MENU.IDC_MENU.MENUITEM.IDM_EXPERIMENTAL_TODO
+msgid "TODO"
+msgstr ""
+
+#: MENU.IDC_MENU.POPUP____
+msgid "Help"
+msgstr ""
+
+#: MENU.IDC_MENU.MENUITEM.IDM_HELP_ABOUT
+msgid "About"
+msgstr ""
+
+#: MENU.IDC_MENU.MENUITEM.IDM_HELP_CHECKUPDATE,
+msgid "Check Update"
+msgstr ""
+
+#: MENU.IDC_MENU.POPUP_____
+msgid "Log level"
+msgstr ""
+
+#: MENU.IDC_MENU.MENUITEM.IDM_LOGLEVEL_ERROR,
+msgid "ERROR"
+msgstr ""
+
+#: MENU.IDC_MENU.MENUITEM.IDM_LOGLEVEL_WARNING,
+msgid "WARNING"
+msgstr ""
+
+#: MENU.IDC_MENU.MENUITEM.IDM_LOGLEVEL_INFO,
+msgid "INFO"
+msgstr ""
+
+#: MENU.IDC_MENU.MENUITEM.IDM_LOGLEVEL_DEBUG,
+msgid "DEBUG"
+msgstr ""
+
+#: MENU.IDC_MENU.MENUITEM.IDM_LOGLEVEL_SILENT,
+msgid "SILENT"
+msgstr ""
+
+#: MENU.IDC_MENU.MENUITEM.IDM_HELP_SHOWLOG,
+msgid "Show Log"
+msgstr ""
+
+#: MENU.IDC_MENU.POPUP______
+msgid "Ports"
+msgstr ""
+
+#: MENU.IDC_MENU.MENUITEM.IDM_PORTS_HTTPPORT,
+msgid "Http Port: 7890"
+msgstr ""
+
+#: MENU.IDC_MENU.MENUITEM.IDM_PORTS_SOCKSPORT,
+msgid "Socks Port: 7891"
+msgstr ""
+
+#: MENU.IDC_MENU.MENUITEM.IDM_PORTS_APIPORT,
+msgid "Api Port: 9090"
+msgstr ""
+
+#: MENU.IDC_MENU.MENUITEM.IDM_PORTS_IP,
+msgid "IP:"
+msgstr ""
+
+#: MENU.IDC_MENU.MENUITEM.IDM_QUIT
+msgid "Quit\tCtrl+Q"
+msgstr ""
