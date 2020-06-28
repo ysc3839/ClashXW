@@ -3,10 +3,10 @@
   <assemblyIdentity
     version="1.0.0.0"
     processorArchitecture="*"
-    name="com.ysc3839.clashw"
+    name="com.ysc3839.clashxw"
     type="win32"
   />
-  <description>ClashW</description>
+  <description>ClashXW</description>
   <dependency>
     <dependentAssembly>
       <assemblyIdentity

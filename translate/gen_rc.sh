@@ -1,6 +1,6 @@
 #!/bin/sh
 
-pipenv run po2rc --charset=utf-16le --lang=LANG_CHINESE --sublang=SUBLANG_CHINESE_SIMPLIFIED -t ./rc/ClashW-translatable.rc ./rc/zh_CN.po ./generated/zh_CN.rc
+pipenv run po2rc --charset=utf-16le --lang=LANG_CHINESE --sublang=SUBLANG_CHINESE_SIMPLIFIED -t ./rc/ClashXW-translatable.rc ./rc/zh_CN.po ./generated/zh_CN.rc
 echo '#include "zh_CN.rc"' > ./generated/translate.rc
 
 pipenv run po2ymo.py ./source/zh_CN.po ./generated/zh_CN.ymo

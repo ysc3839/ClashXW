@@ -24,7 +24,7 @@
     <ClInclude Include="Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ClashW.h">
+    <ClInclude Include="ClashXW.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="pch.h">
@@ -68,7 +68,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ClashW.cpp">
+    <ClCompile Include="ClashXW.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
@@ -79,13 +79,13 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="ClashW.rc">
+    <ResourceCompile Include="ClashXW.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
     <ResourceCompile Include="licenses\generated\LicensesText.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
-    <ResourceCompile Include="translate\rc\ClashW-translatable.rc">
+    <ResourceCompile Include="translate\rc\ClashXW-translatable.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
     <ResourceCompile Include="translate\generated\translate.rc">
@@ -93,7 +93,7 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="ClashW.ico">
+    <Image Include="ClashXW.ico">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
@@ -102,7 +102,7 @@
     <None Include="$(MSBuildThisFileDirectory)$(EffectivePlatform)\WebView2Loader.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Manifest Include="ClashW.manifest">
+    <Manifest Include="ClashXW.manifest">
       <Filter>Resource Files</Filter>
     </Manifest>
   </ItemGroup>

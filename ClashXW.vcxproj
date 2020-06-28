@@ -23,7 +23,7 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{848B91AF-E667-4999-AC38-6DFF6AE7FAAF}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>ClashW</RootNamespace>
+    <RootNamespace>ClashXW</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <CppWinRTLibs>false</CppWinRTLibs>
     <CppWinRTOptimized>true</CppWinRTOptimized>
@@ -183,7 +183,7 @@
     <ClInclude Include="OSLicensesDlg.hpp" />
     <ClInclude Include="ProcessManager.hpp" />
     <ClInclude Include="ClashApi.hpp" />
-    <ClInclude Include="ClashW.h" />
+    <ClInclude Include="ClashXW.h" />
     <ClInclude Include="ConfigFileManager.hpp" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="MenuUtil.hpp" />
@@ -195,7 +195,7 @@
     <ClInclude Include="Util.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ClashW.cpp" />
+    <ClCompile Include="ClashXW.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -210,19 +210,19 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="ClashW.rc" />
+    <ResourceCompile Include="ClashXW.rc" />
     <ResourceCompile Include="licenses\generated\LicensesText.rc" />
     <ResourceCompile Include="translate\generated\translate.rc" />
-    <ResourceCompile Include="translate\rc\ClashW-translatable.rc" />
+    <ResourceCompile Include="translate\rc\ClashXW-translatable.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="ClashW.ico" />
+    <Image Include="ClashXW.ico" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Manifest Include="ClashW.manifest" />
+    <Manifest Include="ClashXW.manifest" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

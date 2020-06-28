@@ -1,20 +1,20 @@
 /*
  * Copyright (C) 2020 Richard Yu <yurichard3839@gmail.com>
  *
- * This file is part of ClashW.
+ * This file is part of ClashXW.
  *
- * ClashW is free software: you can redistribute it and/or modify
+ * ClashXW is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * ClashW is distributed in the hope that it will be useful,
+ * ClashXW is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with ClashW.  If not, see <https://www.gnu.org/licenses/>.
+ * along with ClashXW.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #pragma once
@@ -145,7 +145,7 @@ private:
 	{
 		if (!m_hSession)
 		{
-			m_hSession.reset(WinHttpOpen(L"ClashW/1.0", WINHTTP_ACCESS_TYPE_NO_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0));
+			m_hSession.reset(WinHttpOpen(L"ClashXW/1.0", WINHTTP_ACCESS_TYPE_NO_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0));
 			THROW_LAST_ERROR_IF_NULL(m_hSession);
 		}
 		if (!m_hConnect)

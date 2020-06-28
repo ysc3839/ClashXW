@@ -1,9 +1,9 @@
-#. extracted from ./rc\ClashW-translatable.rc
+#. extracted from ./rc\ClashXW-translatable.rc
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-03-30 22:32+0800\n"
+"POT-Creation-Date: 2020-06-28 21:55+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,11 +15,11 @@ msgstr ""
 "X-Merge-On: location\n"
 
 #: DIALOGEX.IDD_ABOUTBOX.CAPTION
-msgid "About ClashW"
+msgid "About ClashXW"
 msgstr ""
 
 #: DIALOGEX.IDD_ABOUTBOX.LTEXT.IDC_STATIC
-msgid "ClashW, Version 1.0"
+msgid "ClashXW, Version 1.0"
 msgstr ""
 
 #: DIALOGEX.IDD_ABOUTBOX.LTEXT.IDC_STATIC_

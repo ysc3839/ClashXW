@@ -1,24 +1,24 @@
 /*
  * Copyright (C) 2020 Richard Yu <yurichard3839@gmail.com>
  *
- * This file is part of ClashW.
+ * This file is part of ClashXW.
  *
- * ClashW is free software: you can redistribute it and/or modify
+ * ClashXW is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * ClashW is distributed in the hope that it will be useful,
+ * ClashXW is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with ClashW.  If not, see <https://www.gnu.org/licenses/>.
+ * along with ClashXW.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #include "pch.h"
-#include "ClashW.h"
+#include "ClashXW.h"
 
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
@@ -34,14 +34,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	g_hInst = hInstance;
 
-	SetCurrentProcessExplicitAppUserModelID(CLASHW_APP_ID);
+	SetCurrentProcessExplicitAppUserModelID(CLASHXW_APP_ID);
 
-	if (!CheckOnlyOneInstance(CLASHW_MUTEX_NAME))
+	if (!CheckOnlyOneInstance(CLASHXW_MUTEX_NAME))
 		return EXIT_FAILURE;
 
 	g_exePath = GetModuleFsPath(hInstance).remove_filename();
 	SetCurrentDirectoryW(g_exePath.c_str());
-	g_dataPath = GetKnownFolderFsPath(FOLDERID_RoamingAppData) / CLASHW_DIR_NAME;
+	g_dataPath = GetKnownFolderFsPath(FOLDERID_RoamingAppData) / CLASHXW_DIR_NAME;
 
 	LoadTranslateData();
 	InitDarkMode();
@@ -53,15 +53,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		.cbSize = sizeof(wcex),
 		.lpfnWndProc = WndProc,
 		.hInstance = hInstance,
-		.hIcon = LoadIconW(hInstance, MAKEINTRESOURCEW(IDI_CLASHW)),
+		.hIcon = LoadIconW(hInstance, MAKEINTRESOURCEW(IDI_CLASHXW)),
 		.hCursor = LoadCursorW(nullptr, IDC_ARROW),
-		.lpszClassName = L"ClashW",
-		.hIconSm = LoadIconW(hInstance, MAKEINTRESOURCEW(IDI_CLASHW))
+		.lpszClassName = L"ClashXW",
+		.hIconSm = LoadIconW(hInstance, MAKEINTRESOURCEW(IDI_CLASHXW))
 	};
 
 	RegisterClassExW(&wcex);
 
-	auto hWnd = CreateWindowW(L"ClashW", nullptr, WS_POPUP, 0, 0, 0, 0, nullptr, nullptr, hInstance, nullptr);
+	auto hWnd = CreateWindowW(L"ClashXW", nullptr, WS_POPUP, 0, 0, 0, 0, nullptr, nullptr, hInstance, nullptr);
 	if (!hWnd)
 		return EXIT_FAILURE;
 
@@ -135,8 +135,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		SetupMenu();
 
 		nid.hWnd = hWnd;
-		nid.hIcon = LoadIconW(g_hInst, MAKEINTRESOURCEW(IDI_CLASHW));
-		wcscpy_s(nid.szTip, _(L"ClashW"));
+		nid.hIcon = LoadIconW(g_hInst, MAKEINTRESOURCEW(IDI_CLASHXW));
+		wcscpy_s(nid.szTip, _(L"ClashXW"));
 
 		if (Shell_NotifyIconW(NIM_ADD, &nid))
 		{

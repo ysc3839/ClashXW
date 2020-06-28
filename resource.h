@@ -1,8 +1,8 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by ClashW.rc
+// Used by ClashXW.rc
 //
-#define IDI_CLASHW                      1
+#define IDI_CLASHXW                     1
 #define IDC_MENU                        1
 #define IDD_ABOUTBOX                    1000
 #define IDM_MODE_GLOBAL                 1

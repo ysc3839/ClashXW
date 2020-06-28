@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR Richard Yu <yurichard3839@gmail.com>
-# This file is distributed under the same license as the ClashW package.
+# This file is distributed under the same license as the ClashXW package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: ClashW\n"
+"Project-Id-Version: ClashXW\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-03-30 17:42+0800\n"
+"POT-Creation-Date: 2020-06-28 21:55+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,29 +17,29 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ClashW.cpp:111
+#: ClashXW.cpp:111
 msgid ""
 "Clash started, but failed to communiacte.\n"
 "Ensure `external-controller` is set to `127.0.0.1:9090` in config.yaml."
 msgstr ""
 
-#: ClashW.cpp:111 ClashW.cpp:115
+#: ClashXW.cpp:111 ClashXW.cpp:115
 msgid "Error"
 msgstr ""
 
-#: ClashW.cpp:115
+#: ClashXW.cpp:115
 msgid "Failed to start clash."
 msgstr ""
 
-#: ClashW.cpp:139
-msgid "ClashW"
+#: ClashXW.cpp:139
+msgid "ClashXW"
 msgstr ""
 
-#: ClashW.cpp:246
+#: ClashXW.cpp:246
 msgid "Copy shell command (External IP)\tCtrl+Shift+C"
 msgstr ""
 
-#: ClashW.cpp:247 MenuUtil.hpp:54
+#: ClashXW.cpp:247 MenuUtil.hpp:54
 msgid "Copy shell command\tCtrl+C"
 msgstr ""
 
