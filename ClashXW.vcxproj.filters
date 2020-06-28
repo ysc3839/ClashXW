@@ -98,8 +98,8 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
     <None Include="$(MSBuildThisFileDirectory)$(EffectivePlatform)\WebView2Loader.dll" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="ClashXW.manifest">

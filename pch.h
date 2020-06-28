@@ -45,7 +45,11 @@ RAPIDJSON_NAMESPACE_END
 #pragma warning(pop)
 
 // Edge WebView2
+#pragma warning(push)
+#pragma warning(disable:4458)
 #include "WebView2.h"
+#include "WebView2EnvironmentOptions.h"
+#pragma warning(pop)
 
 // C++/WinRT
 #include <winrt/base.h>
