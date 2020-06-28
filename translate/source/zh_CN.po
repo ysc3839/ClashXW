@@ -7,18 +7,18 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-03-30 17:42+0800\n"
-"PO-Revision-Date: 2020-03-30 17:44+0800\n"
+"POT-Creation-Date: 2020-06-28 21:55+0800\n"
+"PO-Revision-Date: 2020-06-28 22:30+0800\n"
 "Last-Translator: Richard Yu <yurichard3839@gmail.com>\n"
 "Language-Team: \n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.3\n"
+"X-Generator: Poedit 2.3.1\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ClashW.cpp:111
+#: ClashXW.cpp:111
 msgid ""
 "Clash started, but failed to communiacte.\n"
 "Ensure `external-controller` is set to `127.0.0.1:9090` in config.yaml."
@@ -26,23 +26,23 @@ msgstr ""
 "Clash 已启动，但是无法通信。\n"
 "请确认 config.yaml 中 `external-controller` 已设置为 `127.0.0.1:9090` 。"
 
-#: ClashW.cpp:111 ClashW.cpp:115
+#: ClashXW.cpp:111 ClashXW.cpp:115
 msgid "Error"
 msgstr "错误"
 
-#: ClashW.cpp:115
+#: ClashXW.cpp:115
 msgid "Failed to start clash."
 msgstr "Clash 启动失败。"
 
-#: ClashW.cpp:139
-msgid "ClashW"
+#: ClashXW.cpp:139
+msgid "ClashXW"
 msgstr ""
 
-#: ClashW.cpp:246
+#: ClashXW.cpp:246
 msgid "Copy shell command (External IP)\tCtrl+Shift+C"
 msgstr "复制终端代理命令 (外部IP)\tCtrl+Shift+C"
 
-#: ClashW.cpp:247 MenuUtil.hpp:54
+#: ClashXW.cpp:247 MenuUtil.hpp:54
 msgid "Copy shell command\tCtrl+C"
 msgstr "复制终端代理命令\tCtrl+C"
 
