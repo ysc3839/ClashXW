@@ -175,7 +175,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 		case IDM_DASHBOARD:
 			if (EdgeWebView2::GetCount() == 0)
-				EdgeWebView2::Create(hWnd);
+				EdgeWebView2::Create(nullptr);
 			break;
 		case IDM_QUIT:
 			DestroyWindow(hWnd);

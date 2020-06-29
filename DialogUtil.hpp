@@ -28,7 +28,7 @@ struct DialogTemplate
 	WORD title;
 };
 
-void CenterWindow(HWND hWnd, int& width, int& height)
+void CenterWindow(HWND hWnd, int& width, int& height, DWORD style = WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME, DWORD exStyle = WS_EX_DLGMODALFRAME)
 {
 	InitDPIAPI();
 	auto dpi = _GetDpiForWindow(hWnd);
@@ -41,6 +41,6 @@ void CenterWindow(HWND hWnd, int& width, int& height)
 	rc.right = rc.left + width;
 	rc.bottom = rc.top + height;
 
-	_AdjustWindowRectExForDpi(&rc, WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME, FALSE, WS_EX_DLGMODALFRAME, dpi);
+	_AdjustWindowRectExForDpi(&rc, style, FALSE, exStyle, dpi);
 	SetWindowPos(hWnd, nullptr, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, SWP_NOZORDER | SWP_NOACTIVATE);
 }

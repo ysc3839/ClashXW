@@ -18,6 +18,7 @@
  */
 
 #pragma once
+#undef CreateWindow
 
 void RespondJSMessage(ICoreWebView2* webView, std::wstring_view callbackId, rapidjson::WValue data)
 {
@@ -148,15 +149,31 @@ bool IsBridgeLoadedURI(IUri* uri)
 class EdgeWebView2
 {
 public:
-	static HWND Create(HWND hWndParent)
+	static void Create(HWND hWndParent)
 	{
-		DialogTemplate dlgTmpl = { {
-			.style = WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_VISIBLE | DS_CENTER,
-			.dwExtendedStyle = WS_EX_DLGMODALFRAME | WS_EX_APPWINDOW,
-			.cx = 550,
-			.cy = 400
-		} };
-		return CreateDialogIndirectParamW(g_hInst, &dlgTmpl.tmpl, hWndParent, DlgProcStatic, 0);
+		if (s_webViewEnv)
+		{
+			CreateWindow(hWndParent);
+		}
+		else
+		{
+			auto options = wrl::Make<CoreWebView2EnvironmentOptions>();
+			options->put_AdditionalBrowserArguments(LR"(--user-agent="ClashX Runtime")");
+			HRESULT hr = CreateCoreWebView2EnvironmentWithOptions(nullptr, g_dataPath.c_str(), options.Get(),
+				wrl::Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>(
+					[hWndParent](HRESULT result, ICoreWebView2Environment* env) {
+						RETURN_IF_FAILED(result);
+						s_webViewEnv = env;
+						CreateWindow(hWndParent);
+						return S_OK;
+					}).Get());
+
+			if (FAILED(hr))
+			{
+				LOG_HR(hr);
+				TaskDialog(nullptr, nullptr, _(L"Error"), nullptr, _(L"Failed to load Edge WebView2."), TDCBF_OK_BUTTON, TD_ERROR_ICON, nullptr);
+			}
+		}
 	}
 
 	static auto GetCount() { return s_instances; }
@@ -172,149 +189,167 @@ private:
 		}
 	}
 
-	static INT_PTR CALLBACK DlgProcStatic(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+	static LRESULT CALLBACK WebViewWndProcStatic(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		EdgeWebView2* self = nullptr;
-		if (message == WM_INITDIALOG)
+		if (message == WM_NCCREATE)
 		{
-			self = new EdgeWebView2(hDlg);
-			SetWindowLongPtr(hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(self));
+			self = new EdgeWebView2(hWnd);
+			SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(self));
 		}
 		else
-			self = reinterpret_cast<EdgeWebView2*>(GetWindowLongPtrW(hDlg, GWLP_USERDATA));
+			self = reinterpret_cast<EdgeWebView2*>(GetWindowLongPtrW(hWnd, GWLP_USERDATA));
 		if (self)
 		{
-			auto result = self->DlgProc(hDlg, message, wParam, lParam);
+			auto result = self->WndProc(hWnd, message, wParam, lParam);
 			if (message == WM_NCDESTROY)
 			{
-				SetWindowLongPtr(hDlg, GWLP_USERDATA, NULL);
+				SetWindowLongPtr(hWnd, GWLP_USERDATA, NULL);
 				delete self;
 			}
 			return result;
 		}
-		return static_cast<INT_PTR>(FALSE);
+		return DefWindowProcW(hWnd, message, wParam, lParam);
 	}
 
-	INT_PTR CALLBACK DlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+	LRESULT CALLBACK WndProc(HWND hWnd, UINT message, [[maybe_unused]] WPARAM wParam, LPARAM lParam)
 	{
-		UNREFERENCED_PARAMETER(hDlg);
-		UNREFERENCED_PARAMETER(wParam);
-		UNREFERENCED_PARAMETER(lParam);
 		switch (message)
 		{
-		case WM_INITDIALOG:
+		case WM_CREATE:
 		{
-			SetWindowTextW(hDlg, _(L"Dashboard"));
-			CreateWebView();
-			return static_cast<INT_PTR>(TRUE);
+			int width = 920, height = 580;
+			CenterWindow(hWnd, width, height, WS_OVERLAPPEDWINDOW, 0);
+
+			HRESULT hr = CreateWebViewController();
+			if (FAILED(hr))
+			{
+				LOG_HR(hr);
+				return -1;
+			}
 		}
-		case WM_CLOSE:
-			DestroyWindow(hDlg);
-			break;
 		case WM_DESTROY:
-			m_webViewHost->Close();
+			if (m_webViewController)
+				m_webViewController->Close();
 			break;
 		case WM_SIZE:
 		{
-			int clientWidth = GET_X_LPARAM(lParam), clientHeight = GET_Y_LPARAM(lParam);
-			m_webViewHost->put_Bounds({ 0, 0, clientWidth, clientHeight });
+			if (m_webViewController)
+			{
+				const int clientWidth = GET_X_LPARAM(lParam), clientHeight = GET_Y_LPARAM(lParam);
+				m_webViewController->put_Bounds({ 0, 0, clientWidth, clientHeight });
+			}
 		}
 		break;
 		case WM_MOVE:
 		case WM_MOVING:
-			m_webViewHost->NotifyParentWindowPositionChanged();
+			if (m_webViewController)
+				m_webViewController->NotifyParentWindowPositionChanged();
 			break;
+		default:
+			return DefWindowProcW(hWnd, message, wParam, lParam);
 		}
-		return static_cast<INT_PTR>(FALSE);
+		return 0;
 	}
 
-	void CreateWebView()
+	static void CreateWindow(HWND hWndParent)
 	{
-		if (s_webViewEnv)
+		static ATOM classAtom = 0;
+		if (!classAtom)
 		{
-			CreateWebViewHost();
+			WNDCLASSEXW wcex = {
+				.cbSize = sizeof(wcex),
+				.lpfnWndProc = WebViewWndProcStatic,
+				.hInstance = g_hInst,
+				.hIcon = LoadIconW(g_hInst, MAKEINTRESOURCEW(IDI_CLASHXW)),
+				.hCursor = LoadCursorW(nullptr, IDC_ARROW),
+				.lpszClassName = L"ClashXW_WebView",
+				.hIconSm = wcex.hIcon
+			};
+			classAtom = RegisterClassExW(&wcex);
+		}
+
+		auto hWnd = CreateWindowW(L"ClashXW_WebView", _(L"Dashboard"), WS_OVERLAPPEDWINDOW, 0, 0, 0, 0, hWndParent, nullptr, g_hInst, nullptr);
+		if (hWnd)
+		{
+			ShowWindow(hWnd, SW_SHOW);
+			UpdateWindow(hWnd);
+		}
+	}
+
+	HRESULT OnFrameNavigationStarting(ICoreWebView2* sender, ICoreWebView2NavigationStartingEventArgs* args)
+	{
+		wil::unique_cotaskmem_string uriStr;
+		RETURN_IF_FAILED(args->get_Uri(&uriStr));
+
+		wil::com_ptr_nothrow<IUri> uri;
+		RETURN_IF_FAILED(CreateUri(uriStr.get(), Uri_CREATE_CANONICALIZE | Uri_CREATE_NO_DECODE_EXTRA_INFO, 0, &uri));
+
+		if (IsBridgeLoadedURI(uri.get()))
+		{
+			args->put_Cancel(TRUE);
+			sender->ExecuteScript(JS_BRIDGE_CODE, nullptr);
+		}
+
+		return S_OK;
+	}
+
+	HRESULT OnWebMessageReceived(ICoreWebView2* sender, ICoreWebView2WebMessageReceivedEventArgs* args)
+	{
+		wil::unique_cotaskmem_string json;
+		RETURN_IF_FAILED(args->get_WebMessageAsJson(&json));
+
+		rapidjson::WDocument obj;
+		RETURN_HR_IF(E_INVALIDARG, obj.Parse(json.get()).HasParseError());
+		RETURN_HR_IF(E_INVALIDARG, !obj.IsObject());
+
+		auto responseId = obj.FindMember(L"responseId");
+		if (responseId != obj.MemberEnd() && responseId->value.IsString())
+		{
+			return E_NOTIMPL;
 		}
 		else
 		{
-			CreateCoreWebView2EnvironmentWithDetails(nullptr, g_dataPath.c_str(), LR"(--user-agent="ClashX Runtime")",
-				wrl::Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>(
-					[this](HRESULT result, ICoreWebView2Environment* env) {
-						RETURN_IF_FAILED(result);
-						RETURN_IF_FAILED(env->QueryInterface(IID_PPV_ARGS(&s_webViewEnv)));
-						CreateWebViewHost();
-						return S_OK;
-					}).Get());
+			auto handlerName = obj.FindMember(L"handlerName");
+			RETURN_HR_IF(E_INVALIDARG, handlerName == obj.MemberEnd() || !handlerName->value.IsString());
+			auto callbackId = obj.FindMember(L"callbackId");
+			RETURN_HR_IF(E_INVALIDARG, callbackId == obj.MemberEnd() || !callbackId->value.IsString());
+
+			auto data = obj.FindMember(L"data");
+			rapidjson::WValue value;
+			if (data != obj.MemberEnd())
+				value = data->value;
+
+			std::wstring_view handlerNameView{ handlerName->value.GetString(), handlerName->value.GetStringLength() };
+			std::wstring_view callbackIdView{ callbackId->value.GetString(), callbackId->value.GetStringLength() };
+			HandleJSMessage(handlerNameView, callbackIdView, std::move(value), sender);
 		}
+		return S_OK;
 	}
 
-	void CreateWebViewHost()
+	HRESULT CreateWebViewController()
 	{
-		s_webViewEnv->CreateCoreWebView2Host(m_hWnd, wrl::Callback<ICoreWebView2CreateCoreWebView2HostCompletedHandler>(
-			[this](HRESULT result, ICoreWebView2Host* host) {
+		return s_webViewEnv->CreateCoreWebView2Controller(m_hWnd, wrl::Callback<ICoreWebView2CreateCoreWebView2ControllerCompletedHandler>(
+			[this](HRESULT result, ICoreWebView2Controller* controller) {
 				RETURN_IF_FAILED(result);
-				RETURN_IF_FAILED(host->QueryInterface(IID_PPV_ARGS(&m_webViewHost)));
+				m_webViewController = controller;
 
-				ICoreWebView2* webView;
-				RETURN_IF_FAILED(m_webViewHost->get_CoreWebView2(&webView));
-				RETURN_IF_FAILED(webView->QueryInterface(IID_PPV_ARGS(&m_webView)));
+				RETURN_IF_FAILED(m_webViewController->get_CoreWebView2(&m_webView));
 
 				wil::com_ptr_nothrow<ICoreWebView2Settings> settings;
 				RETURN_IF_FAILED(m_webView->get_Settings(&settings));
-				settings->put_AreRemoteObjectsAllowed(FALSE);
+				settings->put_AreHostObjectsAllowed(FALSE);
 
 				EventRegistrationToken token;
 				RETURN_IF_FAILED(m_webView->add_FrameNavigationStarting(wrl::Callback<ICoreWebView2NavigationStartingEventHandler>(
-					[](ICoreWebView2* sender, ICoreWebView2NavigationStartingEventArgs* args) {
-						wil::unique_cotaskmem_string uriStr;
-						RETURN_IF_FAILED(args->get_Uri(&uriStr));
+					this, &EdgeWebView2::OnFrameNavigationStarting).Get(), &token));
 
-						wil::com_ptr_nothrow<IUri> uri;
-						RETURN_IF_FAILED(CreateUri(uriStr.get(), Uri_CREATE_CANONICALIZE | Uri_CREATE_NO_DECODE_EXTRA_INFO, 0, &uri));
-
-						if (IsBridgeLoadedURI(uri.get()))
-						{
-							args->put_Cancel(TRUE);
-							sender->ExecuteScript(JS_BRIDGE_CODE, nullptr);
-						}
-						return S_OK;
-					}).Get(), &token));
-
-				(m_webView->add_WebMessageReceived(Microsoft::WRL::Callback<ICoreWebView2WebMessageReceivedEventHandler>(
-					[](ICoreWebView2* sender, ICoreWebView2WebMessageReceivedEventArgs* args) {
-						wil::unique_cotaskmem_string json;
-						RETURN_IF_FAILED(args->get_WebMessageAsJson(&json));
-
-						rapidjson::WDocument obj;
-						RETURN_HR_IF(E_INVALIDARG, obj.Parse(json.get()).HasParseError());
-						RETURN_HR_IF(E_INVALIDARG, !obj.IsObject());
-
-						auto responseId = obj.FindMember(L"responseId");
-						if (responseId != obj.MemberEnd() && responseId->value.IsString())
-						{
-							return E_NOTIMPL;
-						}
-						else
-						{
-							auto handlerName = obj.FindMember(L"handlerName");
-							RETURN_HR_IF(E_INVALIDARG, handlerName == obj.MemberEnd() || !handlerName->value.IsString());
-							auto callbackId = obj.FindMember(L"callbackId");
-							RETURN_HR_IF(E_INVALIDARG, callbackId == obj.MemberEnd() || !callbackId->value.IsString());
-
-							auto data = obj.FindMember(L"data");
-							rapidjson::WValue value;
-							if (data != obj.MemberEnd())
-								value = data->value;
-
-							std::wstring_view handlerNameView{ handlerName->value.GetString(), handlerName->value.GetStringLength() };
-							std::wstring_view callbackIdView{ callbackId->value.GetString(), callbackId->value.GetStringLength() };
-							HandleJSMessage(handlerNameView, callbackIdView, std::move(value), sender);
-						}
-						return S_OK;
-					}).Get(), &token));
+				RETURN_IF_FAILED(m_webView->add_WebMessageReceived(Microsoft::WRL::Callback<ICoreWebView2WebMessageReceivedEventHandler>(
+					this, &EdgeWebView2::OnWebMessageReceived).Get(), &token));
 
 				RECT clientRc;
 				GetClientRect(m_hWnd, &clientRc);
-				m_webViewHost->put_Bounds(clientRc);
+				m_webViewController->put_Bounds(clientRc);
 
 				m_webView->Navigate(L"http://127.0.0.1:9090/ui/");
 
@@ -323,7 +358,7 @@ private:
 	}
 
 	HWND m_hWnd;
-	wil::com_ptr_nothrow<ICoreWebView2Host> m_webViewHost;
+	wil::com_ptr_nothrow<ICoreWebView2Controller> m_webViewController;
 	wil::com_ptr_nothrow<ICoreWebView2> m_webView;
 	inline static wil::com_ptr_nothrow<ICoreWebView2Environment> s_webViewEnv;
 	inline static size_t s_instances = 0;
