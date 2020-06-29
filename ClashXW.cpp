@@ -177,6 +177,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			if (EdgeWebView2::GetCount() == 0)
 				EdgeWebView2::Create(nullptr);
 			break;
+		case IDM_CONFIG_OPENFOLDER:
+			ShellExecuteW(hWnd, nullptr, (g_dataPath / CLASH_CONFIG_DIR_NAME).c_str(), nullptr, nullptr, SW_SHOWNORMAL);
+			break;
 		case IDM_QUIT:
 			DestroyWindow(hWnd);
 			break;
