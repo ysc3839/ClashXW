@@ -22,8 +22,8 @@
 class ProcessManager
 {
 public:
-	ProcessManager(fs::path exePath, fs::path homeDir, fs::path configFile) :
-		m_running(false), m_exePath(exePath), m_homeDir(homeDir), m_configFile(configFile) {}
+	ProcessManager(fs::path exePath, fs::path homeDir, fs::path configFile, fs::path uiDir, std::wstring ctlAddr, std::wstring ctlSecret) :
+		m_running(false), m_exePath(exePath), m_homeDir(homeDir), m_configFile(configFile), m_uiDir(uiDir), m_ctlAddr(ctlAddr), m_ctlSecret(ctlSecret) {}
 
 	~ProcessManager()
 	{
@@ -60,6 +60,23 @@ public:
 				cmd.append(m_configFile);
 				cmd.append(LR"(")");
 			}
+			if (!m_uiDir.empty())
+			{
+				cmd.append(LR"( -ext-ui ")");
+				cmd.append(m_uiDir);
+				cmd.append(LR"(")");
+			}
+			if (!m_ctlAddr.empty())
+			{
+				cmd.append(LR"( -ext-ctl ")");
+				cmd.append(m_ctlAddr);
+				cmd.append(LR"(")");
+			}
+
+			// Override secret even if empty
+			cmd.append(LR"( -secret ")");
+			cmd.append(m_ctlSecret);
+			cmd.append(LR"(")");
 
 			STARTUPINFO si = { .cb = sizeof(si) };
 			THROW_IF_WIN32_BOOL_FALSE(CreateProcessW(m_exePath.c_str(), cmd.data(), nullptr, nullptr, FALSE, CREATE_NO_WINDOW, nullptr, nullptr, &si, &m_procInfo));
@@ -124,7 +141,8 @@ private:
 	}
 
 	bool m_running;
-	fs::path m_exePath, m_homeDir, m_configFile;
+	fs::path m_exePath, m_homeDir, m_configFile, m_uiDir;
+	std::wstring m_ctlAddr, m_ctlSecret;
 	wil::unique_handle m_hJob;
 	wil::unique_process_information m_procInfo;
 	std::thread m_monitorThread;

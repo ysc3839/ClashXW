@@ -41,8 +41,11 @@ constexpr auto CLASHXW_DIR_NAME = L"ClashXW";
 constexpr auto CLASHXW_LINK_NAME = L"ClashXW.lnk";
 constexpr auto CLASH_CONFIG_DIR_NAME = L"Config";
 constexpr auto CLASH_ASSETS_DIR_NAME = L"ClashAssets";
+constexpr auto CLASH_DASHBOARD_DIR_NAME = L"Dashboard";
 constexpr auto CLASH_DEF_CONFIG_NAME = L"config.yaml";
 constexpr auto CLASH_EXE_NAME = L"clash.exe";
+constexpr auto CLASH_CTL_ADDR = L"127.0.0.1:9090";
+constexpr auto CLASH_CTL_SECRET = L"";
 
 #include "Coroutine.hpp"
 #include "Util.hpp"
