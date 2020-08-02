@@ -15,14 +15,11 @@
 #define RESULT_DIAGNOSTICS_LEVEL 1
 #endif
 
-#pragma warning(push)
-#pragma warning(disable:4716)
 #include <wil/common.h>
 #include <wil/resource.h>
 #include <wil/win32_helpers.h>
 #include <wil/result.h>
 #include <wil/com.h>
-#pragma warning(pop)
 
 // rapidjson
 #pragma warning(push)
@@ -45,11 +42,8 @@ RAPIDJSON_NAMESPACE_END
 #pragma warning(pop)
 
 // Edge WebView2
-#pragma warning(push)
-#pragma warning(disable:4458)
 #include "WebView2.h"
 #include "WebView2EnvironmentOptions.h"
-#pragma warning(pop)
 
 // C++/WinRT
 #include <winrt/base.h>
