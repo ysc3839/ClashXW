@@ -47,5 +47,6 @@ RAPIDJSON_NAMESPACE_END
 
 // C++/WinRT
 #include <winrt/base.h>
+#include <winrt/Windows.Foundation.h>
 
 #endif //PCH_H

@@ -17,10 +17,10 @@ std::optional<Settings> g_settings;
 
 enum struct ClashProxyMode
 {
+	Unknown,
 	Global,
 	Rule,
-	Direct,
-	Unknown
+	Direct
 };
 
 enum struct ClashLogLevel

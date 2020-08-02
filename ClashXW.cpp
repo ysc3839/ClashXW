@@ -34,6 +34,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	g_hInst = hInstance;
 
+	winrt::init_apartment();
+
 	SetCurrentProcessExplicitAppUserModelID(CLASHXW_APP_ID);
 
 	if (!CheckOnlyOneInstance(CLASHXW_MUTEX_NAME))
@@ -94,7 +96,6 @@ winrt::fire_and_forget StartClash()
 	{
 		for (size_t i = 0; i < 3; ++i)
 		{
-			using namespace std::chrono_literals;
 			co_await winrt::resume_after(1s);
 			try
 			{
@@ -114,6 +115,16 @@ winrt::fire_and_forget StartClash()
 	{
 		ShowBalloon(_(L"Failed to start clash."), _(L"Error"), NIIF_ERROR);
 	}
+}
+
+IAsyncAction UpdateConfigsAsync()
+{
+	co_await winrt::resume_background();
+	try
+	{
+		g_clashApi->GetConfigs();
+	}
+	CATCH_LOG();
 }
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -259,7 +270,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case NIN_SELECT:
 		case NIN_KEYSELECT:
 		case WM_CONTEXTMENU:
-			g_clashApi->GetConfigs();
+			UpdateConfigsAsync().wait_for(500ms);
 			UpdateMenus();
 			ShowContextMenu(hWnd, GET_X_LPARAM(wParam), GET_Y_LPARAM(wParam));
 			break;

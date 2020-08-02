@@ -23,6 +23,8 @@
 
 namespace fs = std::filesystem;
 namespace wrl = Microsoft::WRL;
+using winrt::Windows::Foundation::IAsyncAction;
+using namespace std::chrono_literals;
 
 HINSTANCE g_hInst;
 fs::path g_exePath;

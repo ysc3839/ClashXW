@@ -24,7 +24,7 @@ HMENU g_hContextMenu;
 HMENU g_hProxyModeMenu;
 HMENU g_hLogLevelMenu;
 
-BOOL SetMenuItemText(HMENU hMenu, UINT pos, const wchar_t* text)
+BOOL SetMenuItemText(HMENU hMenu, UINT pos, const wchar_t* text) noexcept
 {
 	MENUITEMINFOW mii = {
 		.cbSize = sizeof(mii),
@@ -34,7 +34,7 @@ BOOL SetMenuItemText(HMENU hMenu, UINT pos, const wchar_t* text)
 	return SetMenuItemInfoW(hMenu, pos, TRUE, &mii);
 }
 
-void SetupMenu()
+void SetupMenu() noexcept
 {
 	try {
 		g_hTopMenu = LoadMenuW(g_hInst, MAKEINTRESOURCEW(IDC_MENU));
@@ -56,7 +56,7 @@ void SetupMenu()
 	CATCH_FAIL_FAST();
 }
 
-void ShowContextMenu(HWND hWnd, int x, int y)
+void ShowContextMenu(HWND hWnd, int x, int y) noexcept
 {
 	try {
 		THROW_IF_WIN32_BOOL_FALSE(SetForegroundWindow(hWnd));
@@ -72,7 +72,7 @@ void ShowContextMenu(HWND hWnd, int x, int y)
 	CATCH_LOG_RETURN();
 }
 
-void UpdateContextMenu()
+void UpdateContextMenu() noexcept
 {
 	CheckMenuItem(g_hContextMenu, 2, MF_BYPOSITION | (g_settings->systemProxy ? MF_CHECKED : MF_UNCHECKED));
 	CheckMenuItem(g_hContextMenu, 5, MF_BYPOSITION | (g_settings->startAtLogin ? MF_CHECKED : MF_UNCHECKED));
@@ -100,10 +100,10 @@ void UpdateProxyModeMenu()
 	wchar_t text[32];
 	swprintf_s(text, _(L"Proxy Mode (%s)"), modeText);
 	SetMenuItemText(g_hContextMenu, 0, text);
-	CheckMenuRadioItem(g_hProxyModeMenu, 0, 2, static_cast<UINT>(g_clashConfig.mode), MF_BYPOSITION);
+	CheckMenuRadioItem(g_hProxyModeMenu, 0, 2, static_cast<UINT>(g_clashConfig.mode) - 1, MF_BYPOSITION);
 }
 
-void UpdateLogLevelMenu()
+void UpdateLogLevelMenu() noexcept
 {
 	CheckMenuRadioItem(g_hLogLevelMenu, 0, 4, static_cast<UINT>(g_clashConfig.logLevel), MF_BYPOSITION);
 }
