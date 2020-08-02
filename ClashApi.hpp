@@ -81,12 +81,10 @@ public:
 
 		rapidjson::Document json;
 		json.Parse(res.data);
-		if (json.HasParseError())
-			THROW_HR(E_INVALIDARG);
+		THROW_HR_IF(E_INVALIDARG, json.HasParseError());
 
 		auto it = json.FindMember("version");
-		if (it == json.MemberEnd() || !it->value.IsString())
-			THROW_HR(E_INVALIDARG);
+		THROW_HR_IF(E_INVALIDARG, it == json.MemberEnd() || !it->value.IsString());
 
 		return { it->value.GetString(), it->value.GetStringLength() };
 	}
