@@ -117,7 +117,7 @@ winrt::fire_and_forget StartClash()
 	}
 }
 
-IAsyncAction UpdateConfigsAsync()
+IAsyncAction GetConfigsAsync()
 {
 	co_await winrt::resume_background();
 	try
@@ -125,6 +125,76 @@ IAsyncAction UpdateConfigsAsync()
 		g_clashApi->GetConfigs();
 	}
 	CATCH_LOG();
+}
+
+IAsyncAction UpdateConfigsByCommandAsync(int id)
+{
+	co_await winrt::resume_background();
+
+	rapidjson::Value json(rapidjson::Type::kObjectType);
+	rapidjson::Value::AllocatorType allocator;
+
+	switch (id)
+	{
+	case IDM_MODE_GLOBAL:
+	case IDM_MODE_RULE:
+	case IDM_MODE_DIRECT:
+	{
+		const char* modeName = nullptr;
+		switch (id)
+		{
+		case IDM_MODE_GLOBAL:
+			modeName = "global"; break;
+		case IDM_MODE_RULE:
+			modeName = "rule"; break;
+		case IDM_MODE_DIRECT:
+			modeName = "direct"; break;
+		}
+		json.AddMember("mode", rapidjson::Value::StringRefType(modeName), allocator);
+	}
+	break;
+	case IDM_ALLOWFROMLAN:
+		json.AddMember("allow-lan", !g_clashConfig.allowLan, allocator);
+		break;
+	case IDM_LOGLEVEL_ERROR:
+	case IDM_LOGLEVEL_WARNING:
+	case IDM_LOGLEVEL_INFO:
+	case IDM_LOGLEVEL_DEBUG:
+	case IDM_LOGLEVEL_SILENT:
+	{
+		const char* logLevel = nullptr;
+		switch (id)
+		{
+		case IDM_LOGLEVEL_ERROR:
+			logLevel = "error"; break;
+		case IDM_LOGLEVEL_WARNING:
+			logLevel = "warning"; break;
+		case IDM_LOGLEVEL_INFO:
+			logLevel = "info"; break;
+		case IDM_LOGLEVEL_DEBUG:
+			logLevel = "debug"; break;
+		case IDM_LOGLEVEL_SILENT:
+			logLevel = "silent"; break;
+		}
+		json.AddMember("log-level", rapidjson::Value::StringRefType(logLevel), allocator);
+	}
+	break;
+	}
+
+	try
+	{
+		if (!g_clashApi->PatchConfigs(json))
+			co_return;
+		g_clashApi->GetConfigs();
+	}
+	catch (...)
+	{
+		LOG_CAUGHT_EXCEPTION();
+		co_return;
+	}
+
+	co_await ResumeForeground();
+	UpdateMenus();
 }
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -175,6 +245,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		// Parse the menu selections:
 		switch (wmId)
 		{
+		case IDM_MODE_GLOBAL:
+		case IDM_MODE_RULE:
+		case IDM_MODE_DIRECT:
+		case IDM_ALLOWFROMLAN:
+		case IDM_LOGLEVEL_ERROR:
+		case IDM_LOGLEVEL_WARNING:
+		case IDM_LOGLEVEL_INFO:
+		case IDM_LOGLEVEL_DEBUG:
+		case IDM_LOGLEVEL_SILENT:
+			UpdateConfigsByCommandAsync(wmId);
+			break;
 		case IDM_SYSTEMPROXY:
 			EnableSystemProxy(!g_settings->systemProxy);
 			break;
@@ -270,7 +351,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case NIN_SELECT:
 		case NIN_KEYSELECT:
 		case WM_CONTEXTMENU:
-			UpdateConfigsAsync().wait_for(500ms);
+			GetConfigsAsync().wait_for(500ms);
 			UpdateMenus();
 			ShowContextMenu(hWnd, GET_X_LPARAM(wParam), GET_Y_LPARAM(wParam));
 			break;

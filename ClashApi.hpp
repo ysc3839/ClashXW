@@ -72,6 +72,33 @@ public:
 		}
 	}
 
+	uint32_t PatchRequest(const wchar_t* path, std::string_view data, const wchar_t* method = L"PATCH")
+	{
+		try
+		{
+			Connect();
+
+			wil::unique_winhttp_hinternet hRequest(WinHttpOpenRequest(m_hConnect.get(), method, path, nullptr, WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, 0));
+			THROW_LAST_ERROR_IF_NULL(hRequest);
+
+			THROW_IF_WIN32_BOOL_FALSE(WinHttpSendRequest(hRequest.get(), WINHTTP_NO_ADDITIONAL_HEADERS, 0, WINHTTP_NO_REQUEST_DATA, 0, static_cast<DWORD>(data.size()), 0));
+			DWORD written;
+			THROW_IF_WIN32_BOOL_FALSE(WinHttpWriteData(hRequest.get(), data.data(), static_cast<DWORD>(data.size()), &written));
+			THROW_IF_WIN32_BOOL_FALSE(WinHttpReceiveResponse(hRequest.get(), nullptr));
+
+			DWORD statusCode;
+			DWORD statusCodeSize = sizeof(statusCode);
+			THROW_IF_WIN32_BOOL_FALSE(WinHttpQueryHeaders(hRequest.get(), WINHTTP_QUERY_STATUS_CODE | WINHTTP_QUERY_FLAG_NUMBER, nullptr, &statusCode, &statusCodeSize, WINHTTP_NO_HEADER_INDEX));
+
+			return static_cast<uint32_t>(statusCode);
+		}
+		catch (...)
+		{
+			Cleanup();
+			throw;
+		}
+	}
+
 	std::string GetVersion()
 	{
 		auto res = Request(L"/version");
@@ -111,11 +138,11 @@ public:
 				g_clashConfig.allowLan = it->value.GetBool();
 			else if (it->name == "mode" && it->value.IsString())
 			{
-				if (it->value == "Global")
+				if (it->value == "global")
 					g_clashConfig.mode = ClashProxyMode::Global;
-				else if (it->value == "Rule")
+				else if (it->value == "rule")
 					g_clashConfig.mode = ClashProxyMode::Rule;
-				else if (it->value == "Direct")
+				else if (it->value == "direct")
 					g_clashConfig.mode = ClashProxyMode::Direct;
 				else
 					g_clashConfig.mode = ClashProxyMode::Unknown;
@@ -136,6 +163,17 @@ public:
 					g_clashConfig.logLevel = ClashLogLevel::Unknown;
 			}
 		}
+	}
+
+	bool PatchConfigs(const rapidjson::Value& json)
+	{
+		rapidjson::StringBuffer buf;
+		rapidjson::Writer<rapidjson::StringBuffer> writer(buf);
+		json.Accept(writer);
+
+		std::string_view data(buf.GetString(), buf.GetLength());
+
+		return PatchRequest(L"/configs", data) == 204; // HTTP 204 No Content
 	}
 
 private:
