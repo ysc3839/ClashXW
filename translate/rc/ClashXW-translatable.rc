@@ -125,7 +125,6 @@ IDC_MENU MENU
                 MENUITEM "DEBUG",                       IDM_LOGLEVEL_DEBUG
                 MENUITEM "SILENT",                      IDM_LOGLEVEL_SILENT
             END
-            MENUITEM "Show Log",                    IDM_HELP_SHOWLOG, INACTIVE
             POPUP "Ports"
             BEGIN
                 MENUITEM "Http Port: 7890",             IDM_PORTS_HTTPPORT, INACTIVE

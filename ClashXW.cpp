@@ -318,8 +318,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			if (!shiftState) id = IDM_REMOTECONFIG_MANAGE; break;
 		case 0x15: // ^U
 			if (!shiftState) id = IDM_REMOTECONFIG_UPDATE; break;
-		case 0x0C: // ^L
-			if (!shiftState) id = IDM_HELP_SHOWLOG; break;
 		case 0x11: // ^Q
 			if (!shiftState) id = IDM_QUIT; break;
 		}

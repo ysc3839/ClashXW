@@ -30,12 +30,11 @@
 #define IDM_LOGLEVEL_INFO               23
 #define IDM_LOGLEVEL_DEBUG              24
 #define IDM_LOGLEVEL_SILENT             25
-#define IDM_HELP_SHOWLOG                26
-#define IDM_PORTS_HTTPPORT              27
-#define IDM_PORTS_SOCKSPORT             28
-#define IDM_PORTS_APIPORT               29
-#define IDM_PORTS_IP                    30
-#define IDM_QUIT                        31
+#define IDM_PORTS_HTTPPORT              26
+#define IDM_PORTS_SOCKSPORT             27
+#define IDM_PORTS_APIPORT               28
+#define IDM_PORTS_IP                    29
+#define IDM_QUIT                        30
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
