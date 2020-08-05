@@ -286,6 +286,7 @@ private:
 				.hInstance = g_hInst,
 				.hIcon = LoadIconW(g_hInst, MAKEINTRESOURCEW(IDI_CLASHXW)),
 				.hCursor = LoadCursorW(nullptr, IDC_ARROW),
+				.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1),
 				.lpszClassName = L"ClashXW_WebView",
 				.hIconSm = wcex.hIcon
 			};
