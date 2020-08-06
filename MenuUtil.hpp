@@ -23,6 +23,7 @@ HMENU g_hTopMenu;
 HMENU g_hContextMenu;
 HMENU g_hProxyModeMenu;
 HMENU g_hLogLevelMenu;
+HMENU g_hPortsMenu;
 
 BOOL SetMenuItemText(HMENU hMenu, UINT pos, const wchar_t* text) noexcept
 {
@@ -47,9 +48,13 @@ void SetupMenu() noexcept
 		THROW_LAST_ERROR_IF_NULL(g_hProxyModeMenu);
 
 		HMENU hHelpMenu = GetSubMenu(g_hContextMenu, 13);
-		THROW_LAST_ERROR_IF_NULL(g_hProxyModeMenu);
+		THROW_LAST_ERROR_IF_NULL(hHelpMenu);
+
 		g_hLogLevelMenu = GetSubMenu(hHelpMenu, 2);
-		THROW_LAST_ERROR_IF_NULL(g_hProxyModeMenu);
+		THROW_LAST_ERROR_IF_NULL(g_hLogLevelMenu);
+
+		g_hPortsMenu = GetSubMenu(hHelpMenu, 3);
+		THROW_LAST_ERROR_IF_NULL(g_hPortsMenu);
 
 		SetMenuItemText(g_hContextMenu, 3, _(L"Copy shell command\tCtrl+C"));
 	}
@@ -108,9 +113,23 @@ void UpdateLogLevelMenu() noexcept
 	CheckMenuRadioItem(g_hLogLevelMenu, 0, 4, static_cast<UINT>(g_clashConfig.logLevel), MF_BYPOSITION);
 }
 
+void UpdatePortsMenu()
+{
+	wchar_t text[32];
+	swprintf_s(text, _(L"Http Port: %hu"), g_clashConfig.port);
+	SetMenuItemText(g_hPortsMenu, 0, text);
+
+	swprintf_s(text, _(L"Socks Port: %hu"), g_clashConfig.socksPort);
+	SetMenuItemText(g_hPortsMenu, 1, text);
+
+	swprintf_s(text, _(L"Mixed Port: %hu"), g_clashConfig.mixedPort);
+	SetMenuItemText(g_hPortsMenu, 2, text);
+}
+
 void UpdateMenus()
 {
 	UpdateContextMenu();
 	UpdateProxyModeMenu();
 	UpdateLogLevelMenu();
+	UpdatePortsMenu();
 }

@@ -127,8 +127,9 @@ IDC_MENU MENU
             END
             POPUP "Ports"
             BEGIN
-                MENUITEM "Http Port: 7890",             IDM_PORTS_HTTPPORT, INACTIVE
-                MENUITEM "Socks Port: 7891",            IDM_PORTS_SOCKSPORT, INACTIVE
+                MENUITEM " ",                           IDM_PORTS_HTTPPORT, INACTIVE
+                MENUITEM " ",                           IDM_PORTS_SOCKSPORT, INACTIVE
+                MENUITEM " ",                           IDM_PORTS_MIXEDPORT, INACTIVE
                 MENUITEM "Api Port: 9090",              IDM_PORTS_APIPORT, INACTIVE
                 MENUITEM "IP:",                         IDM_PORTS_IP, INACTIVE
             END
