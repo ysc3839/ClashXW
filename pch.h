@@ -21,25 +21,9 @@
 #include <wil/result.h>
 #include <wil/com.h>
 
-// rapidjson
-#pragma warning(push)
-#pragma warning(disable:5054)
-#define RAPIDJSON_HAS_STDSTRING 1
-#define RAPIDJSON_SSE2 1
-#define RAPIDJSON_SSE42 1
-#include "rapidjson/document.h"
-#include "rapidjson/writer.h"
-#include "rapidjson/stringbuffer.h"
-
-RAPIDJSON_NAMESPACE_BEGIN
-using WDocument = GenericDocument<UTF16<>>;
-using WValue = GenericValue<UTF16<>>;
-using WStringBuffer = GenericStringBuffer<UTF16<>>;
-template<typename OutputStream>
-using WWriter = Writer<OutputStream, UTF16<>, UTF16<>>;
-RAPIDJSON_NAMESPACE_END
-
-#pragma warning(pop)
+// nlohmann-json
+#define JSON_USE_IMPLICIT_CONVERSIONS 0
+#include "nlohmann/json.hpp"
 
 // Edge WebView2
 #include "WebView2.h"

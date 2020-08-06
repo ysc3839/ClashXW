@@ -20,107 +20,73 @@
 #pragma once
 #undef CreateWindow
 
-void RespondJSMessage(ICoreWebView2* webView, std::wstring_view callbackId, rapidjson::WValue data)
+void HandleJSMessage(std::string_view handlerName, std::string_view callbackId, json data, ICoreWebView2* webView)
 {
-	rapidjson::WStringBuffer buf;
-	rapidjson::WWriter<rapidjson::WStringBuffer> writer(buf);
+	auto responseCallback = [&](json responseData) {
+		json j = {
+			{"responseId", callbackId},
+			{"responseData", responseData}
+		};
+		webView->PostWebMessageAsJson(Utf8ToUtf16(j.dump()).c_str());
+	};
 
-	writer.StartObject();
-	writer.Key(L"responseId");
-	writer.String(callbackId.data(), static_cast<rapidjson::SizeType>(callbackId.length()));
-	writer.Key(L"responseData");
-	data.Accept(writer);
-	writer.EndObject();
-
-	webView->PostWebMessageAsJson(buf.GetString());
-}
-
-void RespondJSMessage(ICoreWebView2* webView, std::wstring_view callbackId, std::wstring_view data)
-{
-	RespondJSMessage(webView, callbackId, rapidjson::WValue(data.data(), static_cast<rapidjson::SizeType>(data.length())));
-}
-
-template <typename T>
-void RespondJSMessage(ICoreWebView2* webView, std::wstring_view callbackId, T data)
-{
-	RespondJSMessage(webView, callbackId, rapidjson::WValue(data));
-}
-
-void HandleJSMessage(std::wstring_view handlerName, std::wstring_view callbackId, rapidjson::WValue data, ICoreWebView2* webView)
-{
-	if (handlerName == L"ping")
+	if (handlerName == "isSystemProxySet")
+	{
+		responseCallback(g_settings->systemProxy);
+	}
+	else if (handlerName == "setSystemProxy")
+	{
+		if (data.is_boolean())
+		{
+			EnableSystemProxy(data.get<bool>());
+			responseCallback(true);
+		}
+		else
+			responseCallback(false);
+	}
+	else if (handlerName == "getStartAtLogin")
+	{
+		responseCallback(g_settings->startAtLogin);
+	}
+	else if (handlerName == "setStartAtLogin")
+	{
+		if (data.is_boolean())
+		{
+			EnableStartAtLogin(data.get<bool>());
+			responseCallback(true);
+		}
+		else
+			responseCallback(false);
+	}
+	else if (handlerName == "getBreakConnections")
+	{
+		// FIXME not implemented
+		responseCallback(false);
+	}
+	else if (handlerName == "setBreakConnections")
+	{
+		// FIXME not implemented
+		responseCallback(false);
+	}
+	else if (handlerName == "speedTest")
+	{
+		// FIXME not implemented
+		responseCallback(nullptr);
+	}
+	else if (handlerName == "apiInfo")
+	{
+		// FIXME not implemented
+		responseCallback({
+			{"host", "127.0.0.1"},
+			{"port", 9090},
+			{"secret", ""}
+		});
+	}
+	else if (handlerName == "ping")
 	{
 		// FIXME callHandler not implemented
 		//bridge?.callHandler("pong")
-		RespondJSMessage(webView, callbackId, true);
-	}
-	else if (handlerName == L"readConfigString")
-	{
-		// FIXME not implemented
-		RespondJSMessage(webView, callbackId, std::wstring_view(L""));
-	}
-	else if (handlerName == L"getPasteboard")
-	{
-		auto text = GetClipboardText();
-		RespondJSMessage(webView, callbackId, std::wstring_view(text));
-	}
-	else if (handlerName == L"apiInfo")
-	{
-		// FIXME not implemented
-		rapidjson::WValue info(rapidjson::Type::kObjectType);
-		rapidjson::WValue::AllocatorType allocator;
-		info.AddMember(L"host", L"127.0.0.1", allocator);
-		info.AddMember(L"port", 9090, allocator);
-		info.AddMember(L"secret", L"", allocator);
-		RespondJSMessage(webView, callbackId, std::move(info));
-	}
-	else if (handlerName == L"setPasteboard")
-	{
-		if (data.IsString())
-		{
-			SetClipboardText({ data.GetString(), data.GetStringLength() });
-			RespondJSMessage(webView, callbackId, true);
-		}
-		else
-			RespondJSMessage(webView, callbackId, false);
-	}
-	else if (handlerName == L"writeConfigWithString")
-	{
-		// FIXME not implemented
-		RespondJSMessage(webView, callbackId, false);
-	}
-	else if (handlerName == L"setSystemProxy")
-	{
-		if (data.IsBool())
-		{
-			EnableSystemProxy(data.GetBool());
-			RespondJSMessage(webView, callbackId, true);
-		}
-		else
-			RespondJSMessage(webView, callbackId, false);
-	}
-	else if (handlerName == L"getStartAtLogin")
-	{
-		RespondJSMessage(webView, callbackId, g_settings->startAtLogin);
-	}
-	else if (handlerName == L"speedTest")
-	{
-		// FIXME not implemented
-		RespondJSMessage(webView, callbackId, rapidjson::WValue());
-	}
-	else if (handlerName == L"setStartAtLogin")
-	{
-		if (data.IsBool())
-		{
-			EnableStartAtLogin(data.GetBool());
-			RespondJSMessage(webView, callbackId, true);
-		}
-		else
-			RespondJSMessage(webView, callbackId, false);
-	}
-	else if (handlerName == L"isSystemProxySet")
-	{
-		RespondJSMessage(webView, callbackId, g_settings->systemProxy);
+		responseCallback(true);
 	}
 }
 
@@ -318,38 +284,25 @@ private:
 		return S_OK;
 	}
 
-	HRESULT OnWebMessageReceived(ICoreWebView2* sender, ICoreWebView2WebMessageReceivedEventArgs* args)
+	HRESULT OnWebMessageReceived(ICoreWebView2* sender, ICoreWebView2WebMessageReceivedEventArgs* args) noexcept try
 	{
-		wil::unique_cotaskmem_string json;
-		RETURN_IF_FAILED(args->get_WebMessageAsJson(&json));
+		wil::unique_cotaskmem_string jsonStr;
+		THROW_IF_FAILED(args->get_WebMessageAsJson(&jsonStr));
 
-		rapidjson::WDocument obj;
-		RETURN_HR_IF(E_INVALIDARG, obj.Parse(json.get()).HasParseError());
-		RETURN_HR_IF(E_INVALIDARG, !obj.IsObject());
+		json j = json::parse(std::wstring_view(jsonStr.get()));
 
-		auto responseId = obj.FindMember(L"responseId");
-		if (responseId != obj.MemberEnd() && responseId->value.IsString())
+		auto& responseId = j["responseId"];
+		if (responseId.is_string())
 		{
-			return E_NOTIMPL;
+			THROW_HR(E_NOTIMPL);
 		}
 		else
 		{
-			auto handlerName = obj.FindMember(L"handlerName");
-			RETURN_HR_IF(E_INVALIDARG, handlerName == obj.MemberEnd() || !handlerName->value.IsString());
-			auto callbackId = obj.FindMember(L"callbackId");
-			RETURN_HR_IF(E_INVALIDARG, callbackId == obj.MemberEnd() || !callbackId->value.IsString());
-
-			auto data = obj.FindMember(L"data");
-			rapidjson::WValue value;
-			if (data != obj.MemberEnd())
-				value = data->value;
-
-			std::wstring_view handlerNameView{ handlerName->value.GetString(), handlerName->value.GetStringLength() };
-			std::wstring_view callbackIdView{ callbackId->value.GetString(), callbackId->value.GetStringLength() };
-			HandleJSMessage(handlerNameView, callbackIdView, std::move(value), sender);
+			HandleJSMessage(j["handlerName"].get<std::string_view>(), j["callbackId"].get<std::string_view>(), j["data"], sender);
 		}
 		return S_OK;
 	}
+	CATCH_LOG_RETURN_HR(S_OK);
 
 	HRESULT CreateWebViewController()
 	{

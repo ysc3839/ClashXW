@@ -31,7 +31,7 @@ public:
 	ClashApi(std::wstring hostName, INTERNET_PORT port) :
 		m_hostName(hostName), m_port(port) {}
 
-	Response Request(const wchar_t* path, const wchar_t* method = L"GET")
+	Response Request(const wchar_t* path, const wchar_t* method = L"GET", json parameters = nullptr)
 	{
 		try
 		{
@@ -40,7 +40,17 @@ public:
 			wil::unique_winhttp_hinternet hRequest(WinHttpOpenRequest(m_hConnect.get(), method, path, nullptr, WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, 0));
 			THROW_LAST_ERROR_IF_NULL(hRequest);
 
-			THROW_IF_WIN32_BOOL_FALSE(WinHttpSendRequest(hRequest.get(), WINHTTP_NO_ADDITIONAL_HEADERS, 0, WINHTTP_NO_REQUEST_DATA, 0, 0, 0));
+			if (!parameters.is_null())
+			{
+				auto data = parameters.dump(); // must remains valid until after WinHttpWriteData completes
+				const auto length = static_cast<DWORD>(data.size());
+				THROW_IF_WIN32_BOOL_FALSE(WinHttpSendRequest(hRequest.get(), WINHTTP_NO_ADDITIONAL_HEADERS, 0, WINHTTP_NO_REQUEST_DATA, 0, length, 0));
+				DWORD written;
+				THROW_IF_WIN32_BOOL_FALSE(WinHttpWriteData(hRequest.get(), data.data(), length, &written));
+			}
+			else
+				THROW_IF_WIN32_BOOL_FALSE(WinHttpSendRequest(hRequest.get(), WINHTTP_NO_ADDITIONAL_HEADERS, 0, WINHTTP_NO_REQUEST_DATA, 0, 0, 0));
+
 			THROW_IF_WIN32_BOOL_FALSE(WinHttpReceiveResponse(hRequest.get(), nullptr));
 
 			DWORD statusCode;
@@ -72,33 +82,6 @@ public:
 		}
 	}
 
-	uint32_t PatchRequest(const wchar_t* path, std::string_view data, const wchar_t* method = L"PATCH")
-	{
-		try
-		{
-			Connect();
-
-			wil::unique_winhttp_hinternet hRequest(WinHttpOpenRequest(m_hConnect.get(), method, path, nullptr, WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, 0));
-			THROW_LAST_ERROR_IF_NULL(hRequest);
-
-			THROW_IF_WIN32_BOOL_FALSE(WinHttpSendRequest(hRequest.get(), WINHTTP_NO_ADDITIONAL_HEADERS, 0, WINHTTP_NO_REQUEST_DATA, 0, static_cast<DWORD>(data.size()), 0));
-			DWORD written;
-			THROW_IF_WIN32_BOOL_FALSE(WinHttpWriteData(hRequest.get(), data.data(), static_cast<DWORD>(data.size()), &written));
-			THROW_IF_WIN32_BOOL_FALSE(WinHttpReceiveResponse(hRequest.get(), nullptr));
-
-			DWORD statusCode;
-			DWORD statusCodeSize = sizeof(statusCode);
-			THROW_IF_WIN32_BOOL_FALSE(WinHttpQueryHeaders(hRequest.get(), WINHTTP_QUERY_STATUS_CODE | WINHTTP_QUERY_FLAG_NUMBER, nullptr, &statusCode, &statusCodeSize, WINHTTP_NO_HEADER_INDEX));
-
-			return static_cast<uint32_t>(statusCode);
-		}
-		catch (...)
-		{
-			Cleanup();
-			throw;
-		}
-	}
-
 	std::string GetVersion()
 	{
 		auto res = Request(L"/version");
@@ -106,74 +89,35 @@ public:
 		if (res.statusCode != 200)
 			throw res.statusCode;
 
-		rapidjson::Document json;
-		json.Parse(res.data);
-		THROW_HR_IF(E_INVALIDARG, json.HasParseError());
-
-		auto it = json.FindMember("version");
-		THROW_HR_IF(E_INVALIDARG, it == json.MemberEnd() || !it->value.IsString());
-
-		return { it->value.GetString(), it->value.GetStringLength() };
+		return json::parse(res.data).at("version").get<std::string>();
 	}
 
-	void GetConfigs()
+	ClashConfig GetConfig()
 	{
 		auto res = Request(L"/configs");
 
 		if (res.statusCode != 200)
-			return;
+			throw res.statusCode;
 
-		rapidjson::Document json;
-		json.Parse(res.data);
-		if (json.HasParseError() || !json.IsObject())
-			return;
-
-		for (auto it = json.MemberBegin(); it != json.MemberEnd(); ++it)
-		{
-			if (it->name == "port" && it->value.IsUint())
-				g_clashConfig.port = static_cast<uint16_t>(it->value.GetUint());
-			else if (it->name == "socks-port" && it->value.IsUint())
-				g_clashConfig.socksPort = static_cast<uint16_t>(it->value.GetUint());
-			else if (it->name == "allow-lan" && it->value.IsBool())
-				g_clashConfig.allowLan = it->value.GetBool();
-			else if (it->name == "mode" && it->value.IsString())
-			{
-				if (it->value == "global")
-					g_clashConfig.mode = ClashProxyMode::Global;
-				else if (it->value == "rule")
-					g_clashConfig.mode = ClashProxyMode::Rule;
-				else if (it->value == "direct")
-					g_clashConfig.mode = ClashProxyMode::Direct;
-				else
-					g_clashConfig.mode = ClashProxyMode::Unknown;
-			}
-			else if (it->name == "log-level" && it->value.IsString())
-			{
-				if (it->value == "error")
-					g_clashConfig.logLevel = ClashLogLevel::Error;
-				else if (it->value == "warning")
-					g_clashConfig.logLevel = ClashLogLevel::Warning;
-				else if (it->value == "info")
-					g_clashConfig.logLevel = ClashLogLevel::Info;
-				else if (it->value == "debug")
-					g_clashConfig.logLevel = ClashLogLevel::Debug;
-				else if (it->value == "silent")
-					g_clashConfig.logLevel = ClashLogLevel::Silent;
-				else
-					g_clashConfig.logLevel = ClashLogLevel::Unknown;
-			}
-		}
+		return json::parse(res.data).get<ClashConfig>();
 	}
 
-	bool PatchConfigs(const rapidjson::Value& json)
+	bool UpdateProxyMode(ClashProxyMode mode)
 	{
-		rapidjson::StringBuffer buf;
-		rapidjson::Writer<rapidjson::StringBuffer> writer(buf);
-		json.Accept(writer);
+		auto res = Request(L"/configs", L"PATCH", { {"mode", mode} });
+		return res.statusCode == 204; // HTTP 204 No Content
+	}
 
-		std::string_view data(buf.GetString(), buf.GetLength());
+	bool UpdateLogLevel(ClashLogLevel level)
+	{
+		auto res = Request(L"/configs", L"PATCH", { {"log-level", level} });
+		return res.statusCode == 204; // HTTP 204 No Content
+	}
 
-		return PatchRequest(L"/configs", data) == 204; // HTTP 204 No Content
+	bool UpdateAllowLan(bool allow)
+	{
+		auto res = Request(L"/configs", L"PATCH", { {"allow-lan", allow} });
+		return res.statusCode == 204; // HTTP 204 No Content
 	}
 
 private:

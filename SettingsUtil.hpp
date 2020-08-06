@@ -23,23 +23,49 @@ enum struct ClashProxyMode
 	Direct
 };
 
+NLOHMANN_JSON_SERIALIZE_ENUM(ClashProxyMode, {
+	{ClashProxyMode::Unknown, nullptr},
+	{ClashProxyMode::Global, "global"},
+	{ClashProxyMode::Rule, "rule"},
+	{ClashProxyMode::Direct, "direct"},
+})
+
 enum struct ClashLogLevel
 {
+	Unknown,
 	Error,
 	Warning,
 	Info,
 	Debug,
-	Silent,
-	Unknown
+	Silent
 };
+
+NLOHMANN_JSON_SERIALIZE_ENUM(ClashLogLevel, {
+	{ClashLogLevel::Unknown, nullptr},
+	{ClashLogLevel::Error, "error"},
+	{ClashLogLevel::Warning, "warning"},
+	{ClashLogLevel::Info, "info"},
+	{ClashLogLevel::Debug, "debug"},
+	{ClashLogLevel::Silent, "silent"},
+})
 
 struct ClashConfig
 {
 	uint16_t port;
 	uint16_t socksPort;
+	uint16_t mixedPort;
 	bool allowLan;
 	ClashProxyMode mode;
 	ClashLogLevel logLevel;
+
+	friend void from_json(const json& j, ClashConfig& c) {
+		j.at("port").get_to(c.port);
+		j.at("socks-port").get_to(c.socksPort);
+		j.at("mixed-port").get_to(c.mixedPort);
+		j.at("allow-lan").get_to(c.allowLan);
+		j.at("mode").get_to(c.mode);
+		j.at("log-level").get_to(c.logLevel);
+	}
 };
 
 ClashConfig g_clashConfig = {};

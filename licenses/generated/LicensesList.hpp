@@ -6,6 +6,7 @@ constexpr std::array licenseList = {
 	L"cppwinrt",
 	L"Microsoft.Web.WebView2",
 	L"MicrosoftDocs windows-uwp",
+	L"nlohmann-json",
 	L"PolyHook_2_0",
 	L"sysproxy",
 	L"WebViewJavascriptBridge",

@@ -12,7 +12,8 @@ i = 1
 for f in os.scandir('..'):
     if not f.is_file():
         continue
-    rc.write(f'{i} TEXT "{f.path}"\n')
+    path = f.path.replace("\\", "\\\\")
+    rc.write(f'{i} TEXT "{path}"\n')
     hpp.write(f'\tL"{f.name}",\n')
     i += 1
 
