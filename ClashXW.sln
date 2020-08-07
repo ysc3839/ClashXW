@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.29806.167
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ClashXW", "ClashXW.vcxproj", "{848B91AF-E667-4999-AC38-6DFF6AE7FAAF}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "uxtheme-stub", "uxtheme-stub\uxtheme-stub.vcxproj", "{0873B090-7FFD-4ABD-9B42-619A06C5041F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,14 @@ Global
 		{848B91AF-E667-4999-AC38-6DFF6AE7FAAF}.Release|x64.Build.0 = Release|x64
 		{848B91AF-E667-4999-AC38-6DFF6AE7FAAF}.Release|x86.ActiveCfg = Release|Win32
 		{848B91AF-E667-4999-AC38-6DFF6AE7FAAF}.Release|x86.Build.0 = Release|Win32
+		{0873B090-7FFD-4ABD-9B42-619A06C5041F}.Debug|x64.ActiveCfg = Debug|x64
+		{0873B090-7FFD-4ABD-9B42-619A06C5041F}.Debug|x64.Build.0 = Debug|x64
+		{0873B090-7FFD-4ABD-9B42-619A06C5041F}.Debug|x86.ActiveCfg = Debug|Win32
+		{0873B090-7FFD-4ABD-9B42-619A06C5041F}.Debug|x86.Build.0 = Debug|Win32
+		{0873B090-7FFD-4ABD-9B42-619A06C5041F}.Release|x64.ActiveCfg = Release|x64
+		{0873B090-7FFD-4ABD-9B42-619A06C5041F}.Release|x64.Build.0 = Release|x64
+		{0873B090-7FFD-4ABD-9B42-619A06C5041F}.Release|x86.ActiveCfg = Release|Win32
+		{0873B090-7FFD-4ABD-9B42-619A06C5041F}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

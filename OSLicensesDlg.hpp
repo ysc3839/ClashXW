@@ -73,7 +73,7 @@ INT_PTR CALLBACK RichEditDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM 
 			SetWindowTheme(hRichEdit, L"Explorer", nullptr); // DarkMode
 
 			UpdateDarkModeEnabled();
-			_AllowDarkModeForWindow(hDlg, g_darkModeEnabled);
+			AllowDarkModeForWindow(hDlg, g_darkModeEnabled);
 			RefreshTitleBarThemeColor(hDlg);
 			UpdateRichEditColor(hRichEdit);
 		}
@@ -147,7 +147,7 @@ INT_PTR CALLBACK OSLDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 		if (g_darkModeSupported)
 		{
 			UpdateDarkModeEnabled();
-			_AllowDarkModeForWindow(hDlg, g_darkModeEnabled);
+			AllowDarkModeForWindow(hDlg, g_darkModeEnabled);
 			RefreshTitleBarThemeColor(hDlg);
 			UpdateListViewColor(hListView);
 		}

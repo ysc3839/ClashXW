@@ -100,8 +100,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>winhttp.lib;uxtheme.lib;urlmon.lib;rasapi32.lib;wininet.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <DelayLoadDLLs>WebView2Loader.dll;urlmon.dll;rasapi32.dll;wininet.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <AdditionalDependencies>winhttp.lib;uxtheme.lib;urlmon.lib;rasapi32.lib;wininet.lib;comctl32.lib;ntdll.lib;OneCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>WebView2Loader.dll;urlmon.dll;rasapi32.dll;wininet.dll;uxtheme.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -118,8 +118,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>winhttp.lib;uxtheme.lib;urlmon.lib;rasapi32.lib;wininet.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <DelayLoadDLLs>WebView2Loader.dll;urlmon.dll;rasapi32.dll;wininet.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <AdditionalDependencies>winhttp.lib;uxtheme.lib;urlmon.lib;rasapi32.lib;wininet.lib;comctl32.lib;ntdll.lib;OneCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>WebView2Loader.dll;urlmon.dll;rasapi32.dll;wininet.dll;uxtheme.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -143,8 +143,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalOptions>/PDBALTPATH:%_PDB% %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>winhttp.lib;uxtheme.lib;urlmon.lib;rasapi32.lib;wininet.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <DelayLoadDLLs>WebView2Loader.dll;urlmon.dll;rasapi32.dll;wininet.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <AdditionalDependencies>winhttp.lib;uxtheme.lib;urlmon.lib;rasapi32.lib;wininet.lib;comctl32.lib;ntdll.lib;OneCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>WebView2Loader.dll;urlmon.dll;rasapi32.dll;wininet.dll;uxtheme.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -167,8 +167,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalOptions>/PDBALTPATH:%_PDB% %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>winhttp.lib;uxtheme.lib;urlmon.lib;rasapi32.lib;wininet.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <DelayLoadDLLs>WebView2Loader.dll;urlmon.dll;rasapi32.dll;wininet.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <AdditionalDependencies>winhttp.lib;uxtheme.lib;urlmon.lib;rasapi32.lib;wininet.lib;comctl32.lib;ntdll.lib;OneCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>WebView2Loader.dll;urlmon.dll;rasapi32.dll;wininet.dll;uxtheme.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -219,6 +219,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="uxtheme-stub\uxtheme-stub.vcxproj">
+      <Project>{0873b090-7ffd-4abd-9b42-619a06c5041f}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
