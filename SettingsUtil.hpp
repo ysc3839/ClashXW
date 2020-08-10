@@ -10,6 +10,7 @@ struct Settings
 
 	bool systemProxy;
 	bool startAtLogin;
+	std::wstring benchmarkUrl;
 };
 
 // Don't init before WinMain

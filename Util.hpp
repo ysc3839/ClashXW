@@ -190,3 +190,28 @@ std::wstring GetClipboardText()
 	CloseClipboard();
 	return result;
 }
+
+bool IsUrlVaild(const wchar_t* url)
+{
+	try
+	{
+		if (*url == 0)
+			return false;
+
+		wil::com_ptr<IUri> uri;
+		THROW_IF_FAILED(CreateUri(url, Uri_CREATE_CANONICALIZE | Uri_CREATE_NO_DECODE_EXTRA_INFO, 0, &uri));
+
+		wil::unique_bstr host;
+		THROW_IF_FAILED(uri->GetHost(&host));
+
+		if (*host.get() == 0)
+			return false;
+
+		DWORD scheme = URL_SCHEME_UNKNOWN;
+		THROW_IF_FAILED(uri->GetScheme(&scheme));
+
+		return scheme == URL_SCHEME_HTTP || scheme == URL_SCHEME_HTTPS;
+	}
+	CATCH_LOG();
+	return false;
+}

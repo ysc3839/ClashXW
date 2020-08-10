@@ -16,6 +16,7 @@
 #include <vssym32.h>
 #include <wrl.h>
 #include <urlmon.h>
+#include <shlwapi.h>
 
 // C RunTime Header Files
 #include <cstdlib>

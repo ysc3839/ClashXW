@@ -22,7 +22,7 @@
 #define IDM_REMOTECONFIG_MANAGE         15
 #define IDM_REMOTECONFIG_UPDATE         16
 #define IDM_REMOTECONFIG_AUTOUPDATE     17
-#define IDM_EXPERIMENTAL_TODO           18
+#define IDM_EXPERIMENTAL_SETBENCHURL    18
 #define IDM_HELP_ABOUT                  19
 #define IDM_HELP_CHECKUPDATE            20
 #define IDM_LOGLEVEL_ERROR              21

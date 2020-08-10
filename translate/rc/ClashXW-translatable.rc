@@ -110,7 +110,7 @@ IDC_MENU MENU
             END
             POPUP "Experimental"
             BEGIN
-                MENUITEM "TODO",                        IDM_EXPERIMENTAL_TODO
+                MENUITEM "Set benchmark url",           IDM_EXPERIMENTAL_SETBENCHURL
             END
         END
         POPUP "Help"
