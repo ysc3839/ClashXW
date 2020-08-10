@@ -25,6 +25,8 @@ struct Response
 	std::string data;
 };
 
+using u16milliseconds = std::chrono::duration<uint16_t, std::milli>;
+
 class ClashApi
 {
 public:
@@ -37,7 +39,7 @@ public:
 		{
 			Connect();
 
-			wil::unique_winhttp_hinternet hRequest(WinHttpOpenRequest(m_hConnect.get(), method, path, nullptr, WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, 0));
+			wil::unique_winhttp_hinternet hRequest(WinHttpOpenRequest(m_hConnect.get(), method, path, nullptr, WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, WINHTTP_FLAG_ESCAPE_PERCENT));
 			THROW_LAST_ERROR_IF_NULL(hRequest);
 
 			if (!parameters.is_null())
@@ -116,6 +118,22 @@ public:
 	{
 		auto res = Request(L"/configs", L"PATCH", { {"allow-lan", allow} });
 		return res.statusCode == 204; // HTTP 204 No Content
+	}
+
+	u16milliseconds GetProxyDelay(std::string_view proxyName)
+	{
+		std::wstring path = L"/proxies/";
+		path.append(Utf8ToUtf16(proxyName));
+		path.append(L"/delay"); // "/proxies/\(proxyName.encoded)/delay"
+
+		path.append(L"?timeout=5000&url=");
+		path.append(g_settings->benchmarkUrl);
+
+		auto res = Request(path.c_str());
+
+		THROW_HR_IF(HTTP_E_STATUS_UNEXPECTED, res.statusCode != 200);
+
+		return u16milliseconds(json::parse(res.data).at("delay").get<uint16_t>());
 	}
 
 private:

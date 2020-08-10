@@ -22,7 +22,7 @@
 
 void HandleJSMessage(std::string_view handlerName, std::string_view callbackId, json data, ICoreWebView2* webView)
 {
-	auto responseCallback = [&](json responseData) {
+	auto responseCallback = [callbackId = std::string(callbackId), webView = wil::com_ptr<ICoreWebView2>(webView)](json responseData) {
 		json j = {
 			{"responseId", callbackId},
 			{"responseData", responseData}
@@ -70,8 +70,21 @@ void HandleJSMessage(std::string_view handlerName, std::string_view callbackId, 
 	}
 	else if (handlerName == "speedTest")
 	{
-		// FIXME not implemented
-		responseCallback(nullptr);
+		// Web message callback is run in UI thread, so run GetProxyDelay in background thread.
+		[](std::string name, auto responseCallback) -> winrt::fire_and_forget {
+			co_await winrt::resume_background();
+			u16milliseconds delay;
+			try
+			{
+				delay = g_clashApi->GetProxyDelay(name);
+			}
+			catch (...)
+			{
+				LOG_CAUGHT_EXCEPTION();
+				delay = {};
+			}
+			responseCallback(delay.count());
+		}(data.get<std::string>(), responseCallback);
 	}
 	else if (handlerName == "apiInfo")
 	{
