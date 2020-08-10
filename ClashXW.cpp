@@ -47,6 +47,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	LoadTranslateData();
 	InitDarkMode();
+	InitDPIAPI();
 
 	// FIXME: move to LoadSettings()
 	g_settings.emplace();

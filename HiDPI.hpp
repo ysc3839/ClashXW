@@ -40,7 +40,7 @@ void InitDPIAPI()
 			_fnAdjustWindowRectExForDpi = GetProcAddressByFunctionDeclaration(hUser, AdjustWindowRectExForDpi);
 			_fnGetDpiForWindow = GetProcAddressByFunctionDeclaration(hUser, GetDpiForWindow);
 			//_fnGetSystemMetricsForDpi = GetProcAddressByFunctionDeclaration(hUser, GetSystemMetricsForDpi);
-			//_fnSystemParametersInfoForDpi = GetProcAddressByFunctionDeclaration(hUser, SystemParametersInfoForDpi);
+			_fnSystemParametersInfoForDpi = GetProcAddressByFunctionDeclaration(hUser, SystemParametersInfoForDpi);
 
 			init = true;
 		}

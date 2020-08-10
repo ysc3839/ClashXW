@@ -30,7 +30,6 @@ struct DialogTemplate
 
 void CenterWindow(HWND hWnd, int& width, int& height, DWORD style = WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME, DWORD exStyle = WS_EX_DLGMODALFRAME)
 {
-	InitDPIAPI();
 	auto dpi = _GetDpiForWindow(hWnd);
 
 	width = Scale(width, dpi);

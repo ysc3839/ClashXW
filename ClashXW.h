@@ -63,6 +63,7 @@ constexpr auto CLASH_CTL_SECRET = L"";
 #include "DialogUtil.hpp"
 #include "OSLicensesDlg.hpp"
 #include "EdgeWebView2.hpp"
+#include "TaskDialogInput.hpp"
 
 std::unique_ptr<ProcessManager> g_processManager;
 std::unique_ptr<ClashApi> g_clashApi;
