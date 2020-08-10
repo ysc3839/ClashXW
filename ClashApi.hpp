@@ -86,8 +86,7 @@ public:
 	{
 		auto res = Request(L"/version");
 
-		if (res.statusCode != 200)
-			throw res.statusCode;
+		THROW_HR_IF(HTTP_E_STATUS_UNEXPECTED, res.statusCode != 200);
 
 		return json::parse(res.data).at("version").get<std::string>();
 	}
@@ -96,8 +95,7 @@ public:
 	{
 		auto res = Request(L"/configs");
 
-		if (res.statusCode != 200)
-			throw res.statusCode;
+		THROW_HR_IF(HTTP_E_STATUS_UNEXPECTED, res.statusCode != 200);
 
 		return json::parse(res.data).get<ClashConfig>();
 	}
