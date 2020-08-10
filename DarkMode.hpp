@@ -162,7 +162,8 @@ void _AllowDarkModeForApp(bool allow)
 
 void FixDarkScrollBar()
 {
-	HMODULE hComctl = LoadLibraryExW(L"comctl32.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
+	// Must loaded because it's static imported.
+	HMODULE hComctl = GetModuleHandleW(L"comctl32.dll");
 	if (hComctl)
 	{
 		auto addr = FindDelayLoadThunkInModule(hComctl, "uxtheme.dll", 49); // OpenNcThemeData
