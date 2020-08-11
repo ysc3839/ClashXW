@@ -238,7 +238,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			EnableSystemProxy(!g_settings->systemProxy);
 			break;
 		case IDM_STARTATLOGIN:
-			EnableStartAtLogin(!g_settings->startAtLogin);
+			StartAtLogin::SetEnable(!StartAtLogin::IsEnabled());
 			break;
 		case IDM_HELP_ABOUT:
 			ShowOpenSourceLicensesDialog(hWnd);

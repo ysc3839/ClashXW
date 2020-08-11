@@ -46,13 +46,13 @@ void HandleJSMessage(std::string_view handlerName, std::string_view callbackId, 
 	}
 	else if (handlerName == "getStartAtLogin")
 	{
-		responseCallback(g_settings->startAtLogin);
+		responseCallback(StartAtLogin::IsEnabled());
 	}
 	else if (handlerName == "setStartAtLogin")
 	{
 		if (data.is_boolean())
 		{
-			EnableStartAtLogin(data.get<bool>());
+			StartAtLogin::SetEnable(data.get<bool>());
 			responseCallback(true);
 		}
 		else

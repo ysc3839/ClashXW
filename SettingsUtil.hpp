@@ -2,19 +2,14 @@
 
 struct Settings
 {
-	Settings() :
-		systemProxy(false)
-	{
-		startAtLogin = fs::is_regular_file(GetKnownFolderFsPath(FOLDERID_Startup) / CLASHXW_LINK_NAME);
-	}
-
 	bool systemProxy;
-	bool startAtLogin;
 	std::wstring benchmarkUrl;
 };
 
 // Don't init before WinMain
 std::optional<Settings> g_settings;
+
+
 
 enum struct ClashProxyMode
 {
@@ -71,18 +66,25 @@ struct ClashConfig
 
 ClashConfig g_clashConfig = {};
 
-void EnableStartAtLogin(bool enable)
+namespace StartAtLogin
 {
-	try
+	bool IsEnabled()
 	{
-		auto linkPath = GetKnownFolderFsPath(FOLDERID_Startup) / CLASHXW_LINK_NAME;
-		if (enable)
-			CreateShellLink(linkPath.c_str(), GetModuleFsPath(g_hInst).c_str());
-		else
-			fs::remove(linkPath);
-		g_settings->startAtLogin = fs::is_regular_file(linkPath);
+		return fs::is_regular_file(GetKnownFolderFsPath(FOLDERID_Startup) / CLASHXW_LINK_NAME);
 	}
-	CATCH_LOG();
+
+	void SetEnable(bool enable)
+	{
+		try
+		{
+			auto linkPath = GetKnownFolderFsPath(FOLDERID_Startup) / CLASHXW_LINK_NAME;
+			if (enable)
+				CreateShellLink(linkPath.c_str(), GetModuleFsPath(g_hInst).c_str());
+			else
+				fs::remove(linkPath);
+		}
+		CATCH_LOG();
+	}
 }
 
 void EnableSystemProxy(bool enable)
