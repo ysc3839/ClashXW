@@ -111,6 +111,7 @@ IDC_MENU MENU
             POPUP "Experimental"
             BEGIN
                 MENUITEM "Set benchmark url",           IDM_EXPERIMENTAL_SETBENCHURL
+                MENUITEM "Open dashboard in browser",   IDM_EXPERIMENTAL_OPENDASHBOARDINBROWSER
             END
         END
         POPUP "Help"

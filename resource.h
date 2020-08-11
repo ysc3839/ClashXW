@@ -23,19 +23,20 @@
 #define IDM_REMOTECONFIG_UPDATE         16
 #define IDM_REMOTECONFIG_AUTOUPDATE     17
 #define IDM_EXPERIMENTAL_SETBENCHURL    18
-#define IDM_HELP_ABOUT                  19
-#define IDM_HELP_CHECKUPDATE            20
-#define IDM_LOGLEVEL_ERROR              21
-#define IDM_LOGLEVEL_WARNING            22
-#define IDM_LOGLEVEL_INFO               23
-#define IDM_LOGLEVEL_DEBUG              24
-#define IDM_LOGLEVEL_SILENT             25
-#define IDM_PORTS_HTTPPORT              26
-#define IDM_PORTS_SOCKSPORT             27
-#define IDM_PORTS_MIXEDPORT             28
-#define IDM_PORTS_APIPORT               29
-#define IDM_PORTS_IP                    30
-#define IDM_QUIT                        31
+#define IDM_EXPERIMENTAL_OPENDASHBOARDINBROWSER 19
+#define IDM_HELP_ABOUT                  20
+#define IDM_HELP_CHECKUPDATE            21
+#define IDM_LOGLEVEL_ERROR              22
+#define IDM_LOGLEVEL_WARNING            23
+#define IDM_LOGLEVEL_INFO               24
+#define IDM_LOGLEVEL_DEBUG              25
+#define IDM_LOGLEVEL_SILENT             26
+#define IDM_PORTS_HTTPPORT              27
+#define IDM_PORTS_SOCKSPORT             28
+#define IDM_PORTS_MIXEDPORT             29
+#define IDM_PORTS_APIPORT               30
+#define IDM_PORTS_IP                    31
+#define IDM_QUIT                        32
 #define IDC_STATIC                      -1
 
 // Next default values for new objects

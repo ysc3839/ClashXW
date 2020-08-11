@@ -7,15 +7,18 @@ struct Settings
 {
 	bool systemProxy;
 	std::wstring benchmarkUrl;
+	bool openDashboardInBrowser;
 
 	friend void to_json(json& j, const Settings& value) {
 		JSON_TO(systemProxy);
 		try { j["benchmarkUrl"] = Utf16ToUtf8(value.benchmarkUrl); } CATCH_LOG();
+		JSON_TO(openDashboardInBrowser);
 	}
 
 	friend void from_json(const json& j, Settings& value) {
 		JSON_TRY_FROM(systemProxy);
 		try { value.benchmarkUrl = Utf8ToUtf16(j.at("benchmarkUrl").get<std::string_view>()); } CATCH_LOG();
+		JSON_TRY_FROM(openDashboardInBrowser);
 	}
 };
 
@@ -25,6 +28,7 @@ void DefaultSettings()
 {
 	g_settings.systemProxy = false;
 	g_settings.benchmarkUrl = L"http://cp.cloudflare.com/generate_204";
+	g_settings.openDashboardInBrowser = false;
 }
 
 void LoadSettings()

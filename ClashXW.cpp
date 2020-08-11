@@ -244,8 +244,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			//DialogBox(g_hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
 			break;
 		case IDM_DASHBOARD:
-			if (EdgeWebView2::GetCount() == 0)
-				EdgeWebView2::Create(nullptr);
+			if (g_settings.openDashboardInBrowser)
+				ShellExecuteW(hWnd, nullptr, L"http://127.0.0.1:9090/ui/", nullptr, nullptr, SW_SHOWNORMAL);
+			else
+			{
+				if (EdgeWebView2::GetCount() == 0)
+					EdgeWebView2::Create(nullptr);
+			}
 			break;
 		case IDM_CONFIG_OPENFOLDER:
 			ShellExecuteW(hWnd, nullptr, (g_dataPath / CLASH_CONFIG_DIR_NAME).c_str(), nullptr, nullptr, SW_SHOWNORMAL);
@@ -260,6 +265,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				TaskDialog(hWnd, nullptr, _(L"Warning"), nullptr, _(L"URL is not valid"), TDCBF_OK_BUTTON, TD_WARNING_ICON, nullptr);
 		}
 		break;
+		case IDM_EXPERIMENTAL_OPENDASHBOARDINBROWSER:
+			g_settings.openDashboardInBrowser = !g_settings.openDashboardInBrowser;
+			CheckMenuItem(g_hContextMenu, IDM_EXPERIMENTAL_OPENDASHBOARDINBROWSER, MF_BYCOMMAND | (g_settings.openDashboardInBrowser ? MF_CHECKED : MF_UNCHECKED));
+			break;
 		case IDM_QUIT:
 			DestroyWindow(hWnd);
 			break;

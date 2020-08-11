@@ -57,6 +57,8 @@ void SetupMenu() noexcept
 		THROW_LAST_ERROR_IF_NULL(g_hPortsMenu);
 
 		SetMenuItemText(g_hContextMenu, 3, _(L"Copy shell command\tCtrl+C"));
+
+		CheckMenuItem(g_hContextMenu, IDM_EXPERIMENTAL_OPENDASHBOARDINBROWSER, MF_BYCOMMAND | (g_settings.openDashboardInBrowser ? MF_CHECKED : MF_UNCHECKED));
 	}
 	CATCH_FAIL_FAST();
 }
