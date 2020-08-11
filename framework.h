@@ -30,5 +30,6 @@
 #include <optional>
 #include <exception>
 #include <experimental/coroutine>
+#include <fstream>
 
 #include <delayimp.h>

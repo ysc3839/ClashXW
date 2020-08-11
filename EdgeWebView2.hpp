@@ -32,7 +32,7 @@ void HandleJSMessage(std::string_view handlerName, std::string_view callbackId, 
 
 	if (handlerName == "isSystemProxySet")
 	{
-		responseCallback(g_settings->systemProxy);
+		responseCallback(g_settings.systemProxy);
 	}
 	else if (handlerName == "setSystemProxy")
 	{

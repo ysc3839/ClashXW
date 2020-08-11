@@ -79,7 +79,7 @@ void ShowContextMenu(HWND hWnd, int x, int y) noexcept
 
 void UpdateContextMenu() noexcept
 {
-	CheckMenuItem(g_hContextMenu, 2, MF_BYPOSITION | (g_settings->systemProxy ? MF_CHECKED : MF_UNCHECKED));
+	CheckMenuItem(g_hContextMenu, 2, MF_BYPOSITION | (g_settings.systemProxy ? MF_CHECKED : MF_UNCHECKED));
 	CheckMenuItem(g_hContextMenu, 5, MF_BYPOSITION | (StartAtLogin::IsEnabled() ? MF_CHECKED : MF_UNCHECKED));
 	CheckMenuItem(g_hContextMenu, 7, MF_BYPOSITION | (g_clashConfig.allowLan ? MF_CHECKED : MF_UNCHECKED));
 }

@@ -1,15 +1,56 @@
 #pragma once
 
+#define JSON_TO(k) j[#k] = value.k;
+#define JSON_TRY_FROM(k) try { j.at(#k).get_to(value.k); } CATCH_LOG()
+
 struct Settings
 {
 	bool systemProxy;
 	std::wstring benchmarkUrl;
+
+	friend void to_json(json& j, const Settings& value) {
+		JSON_TO(systemProxy);
+		try { j["benchmarkUrl"] = Utf16ToUtf8(value.benchmarkUrl); } CATCH_LOG();
+	}
+
+	friend void from_json(const json& j, Settings& value) {
+		JSON_TRY_FROM(systemProxy);
+		try { value.benchmarkUrl = Utf8ToUtf16(j.at("benchmarkUrl").get<std::string_view>()); } CATCH_LOG();
+	}
 };
 
-// Don't init before WinMain
-std::optional<Settings> g_settings;
+Settings g_settings;
 
+void DefaultSettings()
+{
+	g_settings.systemProxy = false;
+	g_settings.benchmarkUrl = L"http://cp.cloudflare.com/generate_204";
+}
 
+void LoadSettings()
+{
+	try
+	{
+		DefaultSettings();
+
+		std::ifstream i(g_dataPath / CLASHXW_CONFIG_NAME);
+		json j;
+		i >> j;
+		j.get_to(g_settings);
+	}
+	CATCH_LOG();
+}
+
+void SaveSettings()
+{
+	try
+	{
+		std::ofstream o(g_dataPath / CLASHXW_CONFIG_NAME);
+		json j = g_settings;
+		o << j;
+	}
+	CATCH_LOG();
+}
 
 enum struct ClashProxyMode
 {
@@ -97,5 +138,5 @@ void EnableSystemProxy(bool enable)
 	}
 	else
 		SetSystemProxy(nullptr);
-	g_settings->systemProxy = enable;
+	g_settings.systemProxy = enable;
 }

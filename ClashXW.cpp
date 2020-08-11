@@ -49,8 +49,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	InitDarkMode();
 	InitDPIAPI();
 
-	// FIXME: move to LoadSettings()
-	g_settings.emplace();
+	LoadSettings();
 
 	WNDCLASSEXW wcex = {
 		.cbSize = sizeof(wcex),
@@ -235,7 +234,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 		case IDM_SYSTEMPROXY:
-			EnableSystemProxy(!g_settings->systemProxy);
+			EnableSystemProxy(!g_settings.systemProxy);
 			break;
 		case IDM_STARTATLOGIN:
 			StartAtLogin::SetEnable(!StartAtLogin::IsEnabled());
@@ -253,10 +252,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 		case IDM_EXPERIMENTAL_SETBENCHURL:
 		{
-			auto benchmarkUrl = g_settings->benchmarkUrl;
+			auto benchmarkUrl = g_settings.benchmarkUrl;
 			TaskDialogInput(hWnd, g_hInst, _(L"Set benchmark url"), nullptr, _(L"Set benchmark url"), TDCBF_OK_BUTTON | TDCBF_CANCEL_BUTTON, MAKEINTRESOURCEW(IDI_CLASHXW), nullptr, benchmarkUrl);
 			if (IsUrlVaild(benchmarkUrl.c_str()))
-				g_settings->benchmarkUrl = benchmarkUrl;
+				g_settings.benchmarkUrl = benchmarkUrl;
 			else
 				TaskDialog(hWnd, nullptr, _(L"Warning"), nullptr, _(L"URL is not valid"), TDCBF_OK_BUTTON, TD_WARNING_ICON, nullptr);
 		}
@@ -271,6 +270,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	break;
 	case WM_DESTROY:
 		g_processManager->ForceStop();
+		SaveSettings();
 		Shell_NotifyIconW(NIM_DELETE, &nid);
 		PostQuitMessage(0);
 		break;

@@ -42,6 +42,7 @@ constexpr auto CLASHXW_APP_ID = L"com.ysc3839.clashxw";
 constexpr auto CLASHXW_MUTEX_NAME = L"Local\\com.ysc3839.clashxw";
 constexpr auto CLASHXW_DIR_NAME = L"ClashXW";
 constexpr auto CLASHXW_LINK_NAME = L"ClashXW.lnk";
+constexpr auto CLASHXW_CONFIG_NAME = L"ClashXW.json";
 constexpr auto CLASH_CONFIG_DIR_NAME = L"Config";
 constexpr auto CLASH_ASSETS_DIR_NAME = L"ClashAssets";
 constexpr auto CLASH_DASHBOARD_DIR_NAME = L"Dashboard";

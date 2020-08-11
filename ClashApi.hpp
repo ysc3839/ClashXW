@@ -127,7 +127,7 @@ public:
 		path.append(L"/delay"); // "/proxies/\(proxyName.encoded)/delay"
 
 		path.append(L"?timeout=5000&url=");
-		path.append(g_settings->benchmarkUrl);
+		path.append(g_settings.benchmarkUrl);
 
 		auto res = Request(path.c_str());
 
