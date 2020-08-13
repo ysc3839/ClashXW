@@ -245,6 +245,7 @@ void UpdateListViewColor(HWND hWnd)
 		}
 	}
 
+	SendMessageW(hWnd, WM_THEMECHANGED, 0, 0);
 	RedrawWindow(hWnd, nullptr, nullptr, RDW_FRAME | RDW_INVALIDATE);
 }
 
@@ -271,5 +272,6 @@ void UpdateRichEditColor(HWND hWnd)
 		}
 	}
 
+	SendMessageW(hWnd, WM_THEMECHANGED, 0, 0);
 	RedrawWindow(hWnd, nullptr, nullptr, RDW_FRAME | RDW_INVALIDATE);
 }
