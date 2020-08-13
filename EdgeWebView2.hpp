@@ -230,6 +230,7 @@ private:
 				return -1;
 			}
 		}
+		break;
 		case WM_DESTROY:
 			if (m_webViewController)
 				m_webViewController->Close();
