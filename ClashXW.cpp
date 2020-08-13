@@ -157,6 +157,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		SetupDataDirectory();
 		StartClash();
+
+		EnableSystemProxy(g_settings.systemProxy);
+		CheckMenuItem(g_hContextMenu, IDM_EXPERIMENTAL_OPENDASHBOARDINBROWSER, MF_BYCOMMAND | (g_settings.openDashboardInBrowser ? MF_CHECKED : MF_UNCHECKED));
 	}
 	break;
 	case WM_COMMAND:
