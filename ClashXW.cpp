@@ -240,9 +240,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			StartAtLogin::SetEnable(!StartAtLogin::IsEnabled());
 			break;
 		case IDM_HELP_ABOUT:
-			ShowOpenSourceLicensesDialog(hWnd);
-			//DialogBox(g_hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
-			break;
+		{
+			static bool opened = false;
+			if (!opened)
+			{
+				opened = true;
+				DialogBoxW(g_hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+				opened = false;
+			}
+		}
+		break;
 		case IDM_DASHBOARD:
 			if (g_settings.openDashboardInBrowser)
 				ShellExecuteW(hWnd, nullptr, L"http://127.0.0.1:9090/ui/", nullptr, nullptr, SW_SHOWNORMAL);
@@ -384,11 +391,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	UNREFERENCED_PARAMETER(lParam);
+	static wil::unique_hbrush hDarkBrush;
 	switch (message)
 	{
 	case WM_INITDIALOG:
+		if (g_darkModeSupported)
+		{
+			UpdateDarkModeEnabled();
+			AllowDarkModeForWindow(hDlg, g_darkModeEnabled);
+			RefreshTitleBarThemeColor(hDlg);
+		}
 		return (INT_PTR)TRUE;
-
 	case WM_COMMAND:
 		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
 		{
@@ -396,6 +409,66 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 			return (INT_PTR)TRUE;
 		}
 		break;
+	case WM_DESTROY:
+		hDarkBrush.reset();
+		break;
+	case WM_NOTIFY:
+	{
+		auto nml = reinterpret_cast<PNMLINK>(lParam);
+		if (nml->hdr.code == NM_CLICK)
+		{
+			if (*nml->item.szUrl)
+			{
+				ShellExecuteW(hDlg, nullptr, nml->item.szUrl, nullptr, nullptr, SW_SHOWNORMAL);
+			}
+			else if (!wcscmp(nml->item.szID, L"license"))
+			{
+				ShowRichEditDialog(hDlg, _(L"ClashXW License"), 1);
+			}
+			else if (!wcscmp(nml->item.szID, L"os_license"))
+			{
+				ShowOpenSourceLicensesDialog(hDlg);
+			}
+		}
+	}
+	break;
+	case WM_CTLCOLORSTATIC:
+	{
+		HDC hdc = reinterpret_cast<HDC>(wParam);
+		COLORREF textColor = DarkWindowTextColor;
+		COLORREF bkColor = DarkWindowBkColor;
+
+		if (!g_darkModeEnabled)
+		{
+			textColor = GetSysColor(COLOR_WINDOWTEXT);
+			bkColor = GetSysColor(COLOR_WINDOW);
+		}
+
+		SetTextColor(hdc, textColor);
+		SetBkColor(hdc, bkColor);
+		SetBkMode(hdc, TRANSPARENT);
+	}
+	[[fallthrough]];
+	case WM_CTLCOLORDLG:
+		if (g_darkModeEnabled)
+		{
+			if (!hDarkBrush)
+				hDarkBrush.reset(CreateSolidBrush(DarkWindowBkColor));
+			return reinterpret_cast<INT_PTR>(hDarkBrush.get());
+		}
+		else
+			return reinterpret_cast<INT_PTR>(GetSysColorBrush(COLOR_WINDOW));
+	case WM_SETTINGCHANGE:
+	{
+		if (g_darkModeSupported && IsColorSchemeChangeMessage(lParam))
+		{
+			UpdateDarkModeEnabled();
+			AllowDarkModeForWindow(hDlg, g_darkModeEnabled);
+			RefreshTitleBarThemeColor(hDlg);
+			RedrawWindow(hDlg, nullptr, nullptr, RDW_FRAME | RDW_INVALIDATE);
+		}
+	}
+	break;
 	}
 	return (INT_PTR)FALSE;
 }

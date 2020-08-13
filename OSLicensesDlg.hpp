@@ -125,6 +125,21 @@ void ShowRichEditDialog(HWND hWndParent, const wchar_t* title, std::u8string_vie
 	}
 }
 
+void ShowRichEditDialog(HWND hWndParent, const wchar_t* title, WORD resId)
+{
+	auto hRes = FindResourceW(g_hInst, MAKEINTRESOURCEW(resId), L"TEXT");
+	if (hRes)
+	{
+		auto hResData = LoadResource(g_hInst, hRes);
+		if (hResData)
+		{
+			auto size = SizeofResource(g_hInst, hRes);
+			if (size)
+				ShowRichEditDialog(hWndParent, title, { reinterpret_cast<const char8_t*>(hResData), size });
+		}
+	}
+}
+
 INT_PTR CALLBACK OSLDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	UNREFERENCED_PARAMETER(lParam);
@@ -183,17 +198,7 @@ INT_PTR CALLBACK OSLDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 			auto i = static_cast<size_t>(nmia->iItem);
 			if (i < licenseList.size())
 			{
-				auto hRes = FindResourceW(g_hInst, MAKEINTRESOURCEW(i + 1), L"TEXT");
-				if (hRes)
-				{
-					auto hResData = LoadResource(g_hInst, hRes);
-					if (hResData)
-					{
-						auto size = SizeofResource(g_hInst, hRes);
-						if (size)
-							ShowRichEditDialog(hDlg, licenseList[i], { reinterpret_cast<const char8_t*>(hResData), size });
-					}
-				}
+				ShowRichEditDialog(hDlg, licenseList[i], static_cast<WORD>(i + 2));
 			}
 		}
 	}

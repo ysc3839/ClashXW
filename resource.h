@@ -4,7 +4,6 @@
 //
 #define IDI_CLASHXW                     1
 #define IDC_MENU                        1
-#define IDD_ABOUTBOX                    1000
 #define IDM_MODE_GLOBAL                 1
 #define IDM_MODE_RULE                   2
 #define IDM_MODE_DIRECT                 3
@@ -37,6 +36,7 @@
 #define IDM_PORTS_APIPORT               30
 #define IDM_PORTS_IP                    31
 #define IDM_QUIT                        32
+#define IDD_ABOUTBOX                    1000
 #define IDC_STATIC                      -1
 
 // Next default values for new objects

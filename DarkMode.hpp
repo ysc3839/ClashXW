@@ -21,6 +21,9 @@
 #include "IatHook.hpp"
 #include "delayimp.h"
 
+constexpr COLORREF DarkWindowBkColor = 0x383838;
+constexpr COLORREF DarkWindowTextColor = 0xFFFFFF;
+
 enum IMMERSIVE_HC_CACHE_MODE
 {
 	IHCM_USE_CACHED_VALUE,

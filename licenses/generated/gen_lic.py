@@ -3,12 +3,15 @@ import os
 rc = open('LicensesText.rc', 'w', newline='\n')
 hpp = open('LicensesList.hpp', 'w', newline='\n')
 
+rc.write(r'1 TEXT "..\\..\\LICENSE"')
+rc.write('\n')
+
 hpp.write('''#pragma once
 
 constexpr std::array licenseList = {
 ''');
 
-i = 1
+i = 2
 for f in os.scandir('..'):
     if not f.is_file():
         continue
