@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-28 21:55+0800\n"
+"POT-Creation-Date: 2020-08-13 16:09+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -14,20 +14,34 @@ msgstr ""
 "X-Generator: Translate Toolkit 2.5.0\n"
 "X-Merge-On: location\n"
 
-#: DIALOGEX.IDD_ABOUTBOX.CAPTION
-msgid "About ClashXW"
+#: DIALOG.IDD_ABOUTBOX.CAPTION
+msgid "About "
 msgstr ""
 
-#: DIALOGEX.IDD_ABOUTBOX.LTEXT.IDC_STATIC
-msgid "ClashXW, Version 1.0"
+#: DIALOG.IDD_ABOUTBOX.CTEXT.IDC_STATIC
+msgid "ClashXW"
 msgstr ""
 
-#: DIALOGEX.IDD_ABOUTBOX.LTEXT.IDC_STATIC_
-msgid "Copyright (c) 2020"
+#: DIALOG.IDD_ABOUTBOX.CTEXT.IDC_STATIC_
+msgid "Version: v0.1.0"
 msgstr ""
 
-#: DIALOGEX.IDD_ABOUTBOX.DEFPUSHBUTTON.IDOK
-msgid "OK"
+#: DIALOG.IDD_ABOUTBOX.CTEXT.IDC_STATIC__
+msgid "0000000-main 2020-00-00 00:00"
+msgstr ""
+
+#: DIALOG.IDD_ABOUTBOX.CONTROL.IDC_STATIC
+msgid ""
+"GitHub for Clash: <a href=\"\"https://github.com/Dreamacro/clash\"\""
+">https://github.com/Dreamacro/clash</a>"
+msgstr ""
+
+#: DIALOG.IDD_ABOUTBOX.CONTROL.IDC_STATIC_
+msgid "<a id=\"\"license\"\">ClashXW License</a>"
+msgstr ""
+
+#: DIALOG.IDD_ABOUTBOX.CONTROL.IDC_STATIC__
+msgid "<a id=\"\"os_license\"\">Open source licenses</a>"
 msgstr ""
 
 #: MENU.IDC_MENU.POPUP
@@ -35,15 +49,15 @@ msgctxt "MENU.IDC_MENU.POPUP"
 msgid " "
 msgstr ""
 
-#: MENU.IDC_MENU.MENUITEM.IDM_MODE_GLOBAL,
+#: MENU.IDC_MENU.MENUITEM.IDM_MODE_GLOBAL
 msgid "Global\tShift+G"
 msgstr ""
 
-#: MENU.IDC_MENU.MENUITEM.IDM_MODE_RULE,
+#: MENU.IDC_MENU.MENUITEM.IDM_MODE_RULE
 msgid "Rule\tShift+R"
 msgstr ""
 
-#: MENU.IDC_MENU.MENUITEM.IDM_MODE_DIRECT,
+#: MENU.IDC_MENU.MENUITEM.IDM_MODE_DIRECT
 msgid "Direct\tShift+D"
 msgstr ""
 
@@ -64,7 +78,7 @@ msgstr ""
 msgid "Show network indicator"
 msgstr ""
 
-#: MENU.IDC_MENU.MENUITEM.IDM_ALLOWFROMLAN,
+#: MENU.IDC_MENU.MENUITEM.IDM_ALLOWFROMLAN
 msgid "Allow connect from Lan"
 msgstr ""
 
@@ -80,7 +94,7 @@ msgstr ""
 msgid "Config"
 msgstr ""
 
-#: MENU.IDC_MENU.MENUITEM.IDM_CONFIG_CONFIG
+#: MENU.IDC_MENU.MENUITEM.IDM_CONFIG_CONFIG,
 msgid "config"
 msgstr ""
 
@@ -88,7 +102,7 @@ msgstr ""
 msgid "Open config Folder\tCtrl+O"
 msgstr ""
 
-#: MENU.IDC_MENU.MENUITEM.IDM_CONFIG_RELOAD
+#: MENU.IDC_MENU.MENUITEM.IDM_CONFIG_RELOAD,
 msgid "Reload config\tCtrl+R"
 msgstr ""
 
@@ -112,8 +126,12 @@ msgstr ""
 msgid "Experimental"
 msgstr ""
 
-#: MENU.IDC_MENU.MENUITEM.IDM_EXPERIMENTAL_TODO
-msgid "TODO"
+#: MENU.IDC_MENU.MENUITEM.IDM_EXPERIMENTAL_SETBENCHURL
+msgid "Set benchmark url"
+msgstr ""
+
+#: MENU.IDC_MENU.MENUITEM.IDM_EXPERIMENTAL_OPENDASHBOARDINBROWSER
+msgid "Open dashboard in browser"
 msgstr ""
 
 #: MENU.IDC_MENU.POPUP____
@@ -132,28 +150,24 @@ msgstr ""
 msgid "Log level"
 msgstr ""
 
-#: MENU.IDC_MENU.MENUITEM.IDM_LOGLEVEL_ERROR,
+#: MENU.IDC_MENU.MENUITEM.IDM_LOGLEVEL_ERROR
 msgid "ERROR"
 msgstr ""
 
-#: MENU.IDC_MENU.MENUITEM.IDM_LOGLEVEL_WARNING,
+#: MENU.IDC_MENU.MENUITEM.IDM_LOGLEVEL_WARNING
 msgid "WARNING"
 msgstr ""
 
-#: MENU.IDC_MENU.MENUITEM.IDM_LOGLEVEL_INFO,
+#: MENU.IDC_MENU.MENUITEM.IDM_LOGLEVEL_INFO
 msgid "INFO"
 msgstr ""
 
-#: MENU.IDC_MENU.MENUITEM.IDM_LOGLEVEL_DEBUG,
+#: MENU.IDC_MENU.MENUITEM.IDM_LOGLEVEL_DEBUG
 msgid "DEBUG"
 msgstr ""
 
-#: MENU.IDC_MENU.MENUITEM.IDM_LOGLEVEL_SILENT,
+#: MENU.IDC_MENU.MENUITEM.IDM_LOGLEVEL_SILENT
 msgid "SILENT"
-msgstr ""
-
-#: MENU.IDC_MENU.MENUITEM.IDM_HELP_SHOWLOG,
-msgid "Show Log"
 msgstr ""
 
 #: MENU.IDC_MENU.POPUP______
@@ -161,11 +175,18 @@ msgid "Ports"
 msgstr ""
 
 #: MENU.IDC_MENU.MENUITEM.IDM_PORTS_HTTPPORT,
-msgid "Http Port: 7890"
+msgctxt "MENU.IDC_MENU.MENUITEM.IDM_PORTS_HTTPPORT,"
+msgid " "
 msgstr ""
 
 #: MENU.IDC_MENU.MENUITEM.IDM_PORTS_SOCKSPORT,
-msgid "Socks Port: 7891"
+msgctxt "MENU.IDC_MENU.MENUITEM.IDM_PORTS_SOCKSPORT,"
+msgid " "
+msgstr ""
+
+#: MENU.IDC_MENU.MENUITEM.IDM_PORTS_MIXEDPORT,
+msgctxt "MENU.IDC_MENU.MENUITEM.IDM_PORTS_MIXEDPORT,"
+msgid " "
 msgstr ""
 
 #: MENU.IDC_MENU.MENUITEM.IDM_PORTS_APIPORT,

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ClashXW\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-28 21:55+0800\n"
+"POT-Creation-Date: 2020-08-13 16:09+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,57 +17,92 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ClashXW.cpp:111
+#: ClashXW.cpp:112
 msgid ""
 "Clash started, but failed to communiacte.\n"
 "Ensure `external-controller` is set to `127.0.0.1:9090` in config.yaml."
 msgstr ""
 
-#: ClashXW.cpp:111 ClashXW.cpp:115
+#: ClashXW.cpp:112 ClashXW.cpp:116 EdgeWebView2.hpp:176
 msgid "Error"
 msgstr ""
 
-#: ClashXW.cpp:115
+#: ClashXW.cpp:116
 msgid "Failed to start clash."
 msgstr ""
 
-#: ClashXW.cpp:139
+#: ClashXW.cpp:140
 msgid "ClashXW"
 msgstr ""
 
-#: ClashXW.cpp:246
+#: ClashXW.cpp:271
+msgid "Set benchmark url"
+msgstr ""
+
+#: ClashXW.cpp:275
+msgid "Warning"
+msgstr ""
+
+#: ClashXW.cpp:275
+msgid "URL is not valid"
+msgstr ""
+
+#: ClashXW.cpp:347
 msgid "Copy shell command (External IP)\tCtrl+Shift+C"
 msgstr ""
 
-#: ClashXW.cpp:247 MenuUtil.hpp:54
+#: ClashXW.cpp:348 MenuUtil.hpp:59
 msgid "Copy shell command\tCtrl+C"
 msgstr ""
 
-#: EdgeWebView2.hpp:207
+#: ClashXW.cpp:429
+msgid "ClashXW License"
+msgstr ""
+
+#: EdgeWebView2.hpp:176
+msgid "Failed to load Edge WebView2."
+msgstr ""
+
+#: EdgeWebView2.hpp:276
 msgid "Dashboard"
 msgstr ""
 
-#: MenuUtil.hpp:88
+#: MenuUtil.hpp:93
 msgid "Global"
 msgstr ""
 
-#: MenuUtil.hpp:91
+#: MenuUtil.hpp:96
 msgid "Rule"
 msgstr ""
 
-#: MenuUtil.hpp:94
+#: MenuUtil.hpp:99
 msgid "Direct"
 msgstr ""
 
-#: MenuUtil.hpp:97
+#: MenuUtil.hpp:102
 msgid "Unknown"
 msgstr ""
 
-#: MenuUtil.hpp:101
+#: MenuUtil.hpp:106
 #, c-format
 msgid "Proxy Mode (%s)"
 msgstr ""
 
-#: OSLicensesDlg.hpp:136
+#: MenuUtil.hpp:119
+#, c-format
+msgid "Http Port: %hu"
+msgstr ""
+
+#: MenuUtil.hpp:122
+#, c-format
+msgid "Socks Port: %hu"
+msgstr ""
+
+#: MenuUtil.hpp:125
+#, c-format
+msgid "Mixed Port: %hu"
+msgstr ""
+
+#: OSLicensesDlg.hpp:151
 msgid "Open source licenses"
 msgstr ""

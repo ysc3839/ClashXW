@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-28 21:55+0800\n"
-"PO-Revision-Date: 2020-06-28 22:30+0800\n"
+"POT-Creation-Date: 2020-08-13 16:09+0800\n"
+"PO-Revision-Date: 2020-08-13 16:22+0800\n"
 "Last-Translator: Richard Yu <yurichard3839@gmail.com>\n"
 "Language-Team: \n"
 "Language: zh_CN\n"
@@ -18,7 +18,7 @@ msgstr ""
 "X-Generator: Poedit 2.3.1\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ClashXW.cpp:111
+#: ClashXW.cpp:112
 msgid ""
 "Clash started, but failed to communiacte.\n"
 "Ensure `external-controller` is set to `127.0.0.1:9090` in config.yaml."
@@ -26,51 +26,86 @@ msgstr ""
 "Clash 已启动，但是无法通信。\n"
 "请确认 config.yaml 中 `external-controller` 已设置为 `127.0.0.1:9090` 。"
 
-#: ClashXW.cpp:111 ClashXW.cpp:115
+#: ClashXW.cpp:112 ClashXW.cpp:116 EdgeWebView2.hpp:176
 msgid "Error"
 msgstr "错误"
 
-#: ClashXW.cpp:115
+#: ClashXW.cpp:116
 msgid "Failed to start clash."
 msgstr "Clash 启动失败。"
 
-#: ClashXW.cpp:139
+#: ClashXW.cpp:140
 msgid "ClashXW"
 msgstr ""
 
-#: ClashXW.cpp:246
+#: ClashXW.cpp:271
+msgid "Set benchmark url"
+msgstr "设置延迟测速链接"
+
+#: ClashXW.cpp:275
+msgid "Warning"
+msgstr "警告"
+
+#: ClashXW.cpp:275
+msgid "URL is not valid"
+msgstr "链接不合法"
+
+#: ClashXW.cpp:347
 msgid "Copy shell command (External IP)\tCtrl+Shift+C"
 msgstr "复制终端代理命令 (外部IP)\tCtrl+Shift+C"
 
-#: ClashXW.cpp:247 MenuUtil.hpp:54
+#: ClashXW.cpp:348 MenuUtil.hpp:59
 msgid "Copy shell command\tCtrl+C"
 msgstr "复制终端代理命令\tCtrl+C"
 
-#: EdgeWebView2.hpp:207
+#: ClashXW.cpp:429
+msgid "ClashXW License"
+msgstr "ClashXW 许可证"
+
+#: EdgeWebView2.hpp:176
+msgid "Failed to load Edge WebView2."
+msgstr "Edge WebView2 加载失败。"
+
+#: EdgeWebView2.hpp:276
 msgid "Dashboard"
 msgstr "控制台"
 
-#: MenuUtil.hpp:88
+#: MenuUtil.hpp:93
 msgid "Global"
 msgstr "全局"
 
-#: MenuUtil.hpp:91
+#: MenuUtil.hpp:96
 msgid "Rule"
 msgstr "规则"
 
-#: MenuUtil.hpp:94
+#: MenuUtil.hpp:99
 msgid "Direct"
 msgstr "直连"
 
-#: MenuUtil.hpp:97
+#: MenuUtil.hpp:102
 msgid "Unknown"
 msgstr "未知"
 
-#: MenuUtil.hpp:101
+#: MenuUtil.hpp:106
 #, c-format
 msgid "Proxy Mode (%s)"
 msgstr "出站模式 (%s)"
 
-#: OSLicensesDlg.hpp:136
+#: MenuUtil.hpp:119
+#, c-format
+msgid "Http Port: %hu"
+msgstr ""
+
+#: MenuUtil.hpp:122
+#, c-format
+msgid "Socks Port: %hu"
+msgstr ""
+
+#: MenuUtil.hpp:125
+#, c-format
+msgid "Mixed Port: %hu"
+msgstr ""
+
+#: OSLicensesDlg.hpp:151
 msgid "Open source licenses"
 msgstr "开放源代码许可"

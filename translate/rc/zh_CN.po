@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-28 21:55+0800\n"
-"PO-Revision-Date: 2020-06-28 22:29+0800\n"
+"POT-Creation-Date: 2020-08-13 16:09+0800\n"
+"PO-Revision-Date: 2020-08-13 16:22+0800\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: zh_CN\n"
@@ -15,36 +15,50 @@ msgstr ""
 "X-Merge-On: location\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: DIALOGEX.IDD_ABOUTBOX.CAPTION
-msgid "About ClashXW"
-msgstr "关于 ClashXW"
+#: DIALOG.IDD_ABOUTBOX.CAPTION
+msgid "About "
+msgstr "关于"
 
-#: DIALOGEX.IDD_ABOUTBOX.LTEXT.IDC_STATIC
-msgid "ClashXW, Version 1.0"
+#: DIALOG.IDD_ABOUTBOX.CTEXT.IDC_STATIC
+msgid "ClashXW"
 msgstr ""
 
-#: DIALOGEX.IDD_ABOUTBOX.LTEXT.IDC_STATIC_
-msgid "Copyright (c) 2020"
+#: DIALOG.IDD_ABOUTBOX.CTEXT.IDC_STATIC_
+msgid "Version: v0.1.0"
 msgstr ""
 
-#: DIALOGEX.IDD_ABOUTBOX.DEFPUSHBUTTON.IDOK
-msgid "OK"
+#: DIALOG.IDD_ABOUTBOX.CTEXT.IDC_STATIC__
+msgid "0000000-main 2020-00-00 00:00"
 msgstr ""
+
+#: DIALOG.IDD_ABOUTBOX.CONTROL.IDC_STATIC
+msgid ""
+"GitHub for Clash: <a href=\"\"https://github.com/Dreamacro/clash\"\">https://"
+"github.com/Dreamacro/clash</a>"
+msgstr ""
+
+#: DIALOG.IDD_ABOUTBOX.CONTROL.IDC_STATIC_
+msgid "<a id=\"\"license\"\">ClashXW License</a>"
+msgstr "<a id=\"\"license\"\">ClashXW 许可证</a>"
+
+#: DIALOG.IDD_ABOUTBOX.CONTROL.IDC_STATIC__
+msgid "<a id=\"\"os_license\"\">Open source licenses</a>"
+msgstr "<a id=\"\"os_license\"\">开放源代码许可</a>"
 
 #: MENU.IDC_MENU.POPUP
 msgctxt "MENU.IDC_MENU.POPUP"
 msgid " "
 msgstr ""
 
-#: MENU.IDC_MENU.MENUITEM.IDM_MODE_GLOBAL,
+#: MENU.IDC_MENU.MENUITEM.IDM_MODE_GLOBAL
 msgid "Global\tShift+G"
 msgstr "全局\tShift+G"
 
-#: MENU.IDC_MENU.MENUITEM.IDM_MODE_RULE,
+#: MENU.IDC_MENU.MENUITEM.IDM_MODE_RULE
 msgid "Rule\tShift+R"
 msgstr "规则\tShift+R"
 
-#: MENU.IDC_MENU.MENUITEM.IDM_MODE_DIRECT,
+#: MENU.IDC_MENU.MENUITEM.IDM_MODE_DIRECT
 msgid "Direct\tShift+D"
 msgstr "直连\tShift+D"
 
@@ -65,7 +79,7 @@ msgstr "开机启动"
 msgid "Show network indicator"
 msgstr "显示实时速率"
 
-#: MENU.IDC_MENU.MENUITEM.IDM_ALLOWFROMLAN,
+#: MENU.IDC_MENU.MENUITEM.IDM_ALLOWFROMLAN
 msgid "Allow connect from Lan"
 msgstr "允许局域网连接"
 
@@ -81,7 +95,7 @@ msgstr "控制台\tCtrl+D"
 msgid "Config"
 msgstr "配置"
 
-#: MENU.IDC_MENU.MENUITEM.IDM_CONFIG_CONFIG
+#: MENU.IDC_MENU.MENUITEM.IDM_CONFIG_CONFIG,
 msgid "config"
 msgstr ""
 
@@ -89,7 +103,7 @@ msgstr ""
 msgid "Open config Folder\tCtrl+O"
 msgstr "打开配置文件夹\tCtrl+O"
 
-#: MENU.IDC_MENU.MENUITEM.IDM_CONFIG_RELOAD
+#: MENU.IDC_MENU.MENUITEM.IDM_CONFIG_RELOAD,
 msgid "Reload config\tCtrl+R"
 msgstr "重载配置文件\tCtrl+R"
 
@@ -113,9 +127,13 @@ msgstr "自动更新"
 msgid "Experimental"
 msgstr "试验性功能"
 
-#: MENU.IDC_MENU.MENUITEM.IDM_EXPERIMENTAL_TODO
-msgid "TODO"
-msgstr ""
+#: MENU.IDC_MENU.MENUITEM.IDM_EXPERIMENTAL_SETBENCHURL
+msgid "Set benchmark url"
+msgstr "设置延迟测速链接"
+
+#: MENU.IDC_MENU.MENUITEM.IDM_EXPERIMENTAL_OPENDASHBOARDINBROWSER
+msgid "Open dashboard in browser"
+msgstr "在浏览器在打开控制台"
 
 #: MENU.IDC_MENU.POPUP____
 msgid "Help"
@@ -133,41 +151,44 @@ msgstr "检查更新"
 msgid "Log level"
 msgstr "日志等级"
 
-#: MENU.IDC_MENU.MENUITEM.IDM_LOGLEVEL_ERROR,
+#: MENU.IDC_MENU.MENUITEM.IDM_LOGLEVEL_ERROR
 msgid "ERROR"
 msgstr ""
 
-#: MENU.IDC_MENU.MENUITEM.IDM_LOGLEVEL_WARNING,
+#: MENU.IDC_MENU.MENUITEM.IDM_LOGLEVEL_WARNING
 msgid "WARNING"
 msgstr ""
 
-#: MENU.IDC_MENU.MENUITEM.IDM_LOGLEVEL_INFO,
+#: MENU.IDC_MENU.MENUITEM.IDM_LOGLEVEL_INFO
 msgid "INFO"
 msgstr ""
 
-#: MENU.IDC_MENU.MENUITEM.IDM_LOGLEVEL_DEBUG,
+#: MENU.IDC_MENU.MENUITEM.IDM_LOGLEVEL_DEBUG
 msgid "DEBUG"
 msgstr ""
 
-#: MENU.IDC_MENU.MENUITEM.IDM_LOGLEVEL_SILENT,
+#: MENU.IDC_MENU.MENUITEM.IDM_LOGLEVEL_SILENT
 msgid "SILENT"
 msgstr ""
-
-#: MENU.IDC_MENU.MENUITEM.IDM_HELP_SHOWLOG,
-msgid "Show Log"
-msgstr "显示日志"
 
 #: MENU.IDC_MENU.POPUP______
 msgid "Ports"
 msgstr "端口"
 
 #: MENU.IDC_MENU.MENUITEM.IDM_PORTS_HTTPPORT,
-msgid "Http Port: 7890"
-msgstr "Http 端口: 7890"
+msgctxt "MENU.IDC_MENU.MENUITEM.IDM_PORTS_HTTPPORT,"
+msgid " "
+msgstr ""
 
 #: MENU.IDC_MENU.MENUITEM.IDM_PORTS_SOCKSPORT,
-msgid "Socks Port: 7891"
-msgstr "Socks 端口: 7891"
+msgctxt "MENU.IDC_MENU.MENUITEM.IDM_PORTS_SOCKSPORT,"
+msgid " "
+msgstr ""
+
+#: MENU.IDC_MENU.MENUITEM.IDM_PORTS_MIXEDPORT,
+msgctxt "MENU.IDC_MENU.MENUITEM.IDM_PORTS_MIXEDPORT,"
+msgid " "
+msgstr ""
 
 #: MENU.IDC_MENU.MENUITEM.IDM_PORTS_APIPORT,
 msgid "Api Port: 9090"
@@ -180,3 +201,12 @@ msgstr ""
 #: MENU.IDC_MENU.MENUITEM.IDM_QUIT
 msgid "Quit\tCtrl+Q"
 msgstr "退出\tCtrl+Q"
+
+#~ msgid "Show Log"
+#~ msgstr "显示日志"
+
+#~ msgid "Http Port: 7890"
+#~ msgstr "Http 端口: 7890"
+
+#~ msgid "Socks Port: 7891"
+#~ msgstr "Socks 端口: 7891"
