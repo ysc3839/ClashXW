@@ -1,6 +1,7 @@
 // Microsoft Visual C++ generated resource script.
 //
 #include "../../resource.h"
+#include "boost/preprocessor/stringize.hpp"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -28,6 +29,12 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // Dialog
 //
 
+#if GIT_COMMITS > 0
+#define IS_BETA Beta
+#else
+#define IS_BETA
+#endif
+
 IDD_ABOUTBOX DIALOG 0, 0, 258, 152
 STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_TOPMOST | WS_EX_COMPOSITED
@@ -36,8 +43,8 @@ FONT 0x7FFF, ""
 BEGIN
     ICON            IDI_CLASHXW,IDC_STATIC,104,11,51,45,SS_REALSIZECONTROL
     CTEXT           "ClashXW",IDC_STATIC,0,60,258,8
-    CTEXT           "Version: v0.1.0",IDC_STATIC,0,78,258,8
-    CTEXT           "0000000-main 2020-00-00 00:00",IDC_STATIC,0,90,258,8 // FIXME GitInfo support
+    CTEXT           BOOST_PP_STRINGIZE(Version: GIT_TAG IS_BETA),IDC_STATIC,0,78,258,8
+    CTEXT           BOOST_PP_STRINGIZE(GIT_COMMIT-GIT_BRANCH DATE),IDC_STATIC,0,90,258,8
     CONTROL         "GitHub for Clash: <a href=""https://github.com/Dreamacro/clash"">https://github.com/Dreamacro/clash</a>",IDC_STATIC,
                     "SysLink",WS_TABSTOP,45,108,213,12
     CONTROL         "<a id=""license"">ClashXW License</a>",IDC_STATIC,

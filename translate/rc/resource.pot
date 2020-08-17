@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-13 16:09+0800\n"
+"POT-Creation-Date: 2020-08-17 23:30+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,14 +20,6 @@ msgstr ""
 
 #: DIALOG.IDD_ABOUTBOX.CTEXT.IDC_STATIC
 msgid "ClashXW"
-msgstr ""
-
-#: DIALOG.IDD_ABOUTBOX.CTEXT.IDC_STATIC_
-msgid "Version: v0.1.0"
-msgstr ""
-
-#: DIALOG.IDD_ABOUTBOX.CTEXT.IDC_STATIC__
-msgid "0000000-main 2020-00-00 00:00"
 msgstr ""
 
 #: DIALOG.IDD_ABOUTBOX.CONTROL.IDC_STATIC

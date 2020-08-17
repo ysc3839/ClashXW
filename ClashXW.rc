@@ -1,6 +1,7 @@
 // Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
+#include "boost/preprocessor/stringize.hpp"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -70,8 +71,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,0
- PRODUCTVERSION 1,0,0,0
+ FILEVERSION GIT_BASEVERSION_MAJOR,GIT_BASEVERSION_MINOR,GIT_BASEVERSION_PATCH,0
+ PRODUCTVERSION GIT_BASEVERSION_MAJOR,GIT_BASEVERSION_MINOR,GIT_BASEVERSION_PATCH,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -88,12 +89,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Richard Yu"
             VALUE "FileDescription", "ClashXW"
-            VALUE "FileVersion", "1.0.0.0"
+            VALUE "FileVersion", BOOST_PP_STRINGIZE(GIT_TAG)
             VALUE "InternalName", "ClashXW.exe"
             VALUE "LegalCopyright", "Copyright (C) 2020 Richard Yu"
             VALUE "OriginalFilename", "ClashXW.exe"
             VALUE "ProductName", "ClashXW"
-            VALUE "ProductVersion", "1.0.0.0"
+            VALUE "ProductVersion", BOOST_PP_STRINGIZE(GIT_TAG)
         END
     END
     BLOCK "VarFileInfo"

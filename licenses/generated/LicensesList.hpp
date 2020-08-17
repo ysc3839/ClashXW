@@ -1,6 +1,7 @@
 #pragma once
 
 constexpr std::array licenseList = {
+	L"Boost",
 	L"clash",
 	L"ClashX",
 	L"cppwinrt",

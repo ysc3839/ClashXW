@@ -1,0 +1,3 @@
+[submodule "boost-preprocessor"]
+	path = boost-preprocessor
+	url = https://github.com/boostorg/preprocessor.git
