@@ -39,6 +39,8 @@ jobs:
           msbuild ClashXW.sln "-p:Configuration=Release;Platform=x86" }
         Get-Job | Wait-Job | Receive-Job
       shell: powershell
+    - run: sh create_package.sh
+      shell: bash
     - uses: actions/upload-artifact@v2
       with:
         name: ClashXW64
@@ -71,8 +73,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: x64/Release/ClashXW64.exe
-        asset_name: ClashXW64.exe
+        asset_path: pkg/64.zip
+        asset_name: ClashXW64.zip
         asset_content_type: application/octet-stream
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
@@ -80,6 +82,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: Release/ClashXW32.exe
-        asset_name: ClashXW32.exe
+        asset_path: pkg/32.zip
+        asset_name: ClashXW32.zip
         asset_content_type: application/octet-stream
