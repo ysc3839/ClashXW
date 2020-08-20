@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-13 16:09+0800\n"
-"PO-Revision-Date: 2020-08-13 16:22+0800\n"
+"POT-Creation-Date: 2020-08-20 17:30+0800\n"
+"PO-Revision-Date: 2020-08-20 17:31+0800\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: zh_CN\n"
@@ -21,14 +21,6 @@ msgstr "关于"
 
 #: DIALOG.IDD_ABOUTBOX.CTEXT.IDC_STATIC
 msgid "ClashXW"
-msgstr ""
-
-#: DIALOG.IDD_ABOUTBOX.CTEXT.IDC_STATIC_
-msgid "Version: v0.1.0"
-msgstr ""
-
-#: DIALOG.IDD_ABOUTBOX.CTEXT.IDC_STATIC__
-msgid "0000000-main 2020-00-00 00:00"
 msgstr ""
 
 #: DIALOG.IDD_ABOUTBOX.CONTROL.IDC_STATIC
@@ -51,16 +43,16 @@ msgid " "
 msgstr ""
 
 #: MENU.IDC_MENU.MENUITEM.IDM_MODE_GLOBAL
-msgid "Global\tShift+G"
-msgstr "全局\tShift+G"
+msgid "Global\tAlt+G"
+msgstr "全局\tAlt+G"
 
 #: MENU.IDC_MENU.MENUITEM.IDM_MODE_RULE
-msgid "Rule\tShift+R"
-msgstr "规则\tShift+R"
+msgid "Rule\tAlt+R"
+msgstr "规则\tAlt+R"
 
 #: MENU.IDC_MENU.MENUITEM.IDM_MODE_DIRECT
-msgid "Direct\tShift+D"
-msgstr "直连\tShift+D"
+msgid "Direct\tAlt+D"
+msgstr "直连\tAlt+D"
 
 #: MENU.IDC_MENU.MENUITEM.IDM_SYSTEMPROXY
 msgid "Set as system proxy\tCtrl+S"

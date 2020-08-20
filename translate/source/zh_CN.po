@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-13 16:09+0800\n"
-"PO-Revision-Date: 2020-08-13 16:22+0800\n"
+"POT-Creation-Date: 2020-08-20 17:30+0800\n"
+"PO-Revision-Date: 2020-08-20 17:30+0800\n"
 "Last-Translator: Richard Yu <yurichard3839@gmail.com>\n"
 "Language-Team: \n"
 "Language: zh_CN\n"
@@ -50,15 +50,15 @@ msgstr "警告"
 msgid "URL is not valid"
 msgstr "链接不合法"
 
-#: ClashXW.cpp:347
-msgid "Copy shell command (External IP)\tCtrl+Shift+C"
-msgstr "复制终端代理命令 (外部IP)\tCtrl+Shift+C"
+#: ClashXW.cpp:306
+msgid "Copy shell command (External IP)\tCtrl+Alt+C"
+msgstr "复制终端代理命令 (外部IP)\tCtrl+Alt+C"
 
-#: ClashXW.cpp:348 MenuUtil.hpp:59
+#: ClashXW.cpp:307 MenuUtil.hpp:78
 msgid "Copy shell command\tCtrl+C"
 msgstr "复制终端代理命令\tCtrl+C"
 
-#: ClashXW.cpp:429
+#: ClashXW.cpp:388
 msgid "ClashXW License"
 msgstr "ClashXW 许可证"
 
@@ -70,38 +70,38 @@ msgstr "Edge WebView2 加载失败。"
 msgid "Dashboard"
 msgstr "控制台"
 
-#: MenuUtil.hpp:93
+#: MenuUtil.hpp:127
 msgid "Global"
 msgstr "全局"
 
-#: MenuUtil.hpp:96
+#: MenuUtil.hpp:130
 msgid "Rule"
 msgstr "规则"
 
-#: MenuUtil.hpp:99
+#: MenuUtil.hpp:133
 msgid "Direct"
 msgstr "直连"
 
-#: MenuUtil.hpp:102
+#: MenuUtil.hpp:136
 msgid "Unknown"
 msgstr "未知"
 
-#: MenuUtil.hpp:106
+#: MenuUtil.hpp:140
 #, c-format
 msgid "Proxy Mode (%s)"
 msgstr "出站模式 (%s)"
 
-#: MenuUtil.hpp:119
+#: MenuUtil.hpp:153
 #, c-format
 msgid "Http Port: %hu"
 msgstr ""
 
-#: MenuUtil.hpp:122
+#: MenuUtil.hpp:156
 #, c-format
 msgid "Socks Port: %hu"
 msgstr ""
 
-#: MenuUtil.hpp:125
+#: MenuUtil.hpp:159
 #, c-format
 msgid "Mixed Port: %hu"
 msgstr ""

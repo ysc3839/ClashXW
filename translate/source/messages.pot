@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ClashXW\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-13 16:09+0800\n"
+"POT-Creation-Date: 2020-08-20 17:30+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -47,15 +47,15 @@ msgstr ""
 msgid "URL is not valid"
 msgstr ""
 
-#: ClashXW.cpp:347
-msgid "Copy shell command (External IP)\tCtrl+Shift+C"
+#: ClashXW.cpp:306
+msgid "Copy shell command (External IP)\tCtrl+Alt+C"
 msgstr ""
 
-#: ClashXW.cpp:348 MenuUtil.hpp:59
+#: ClashXW.cpp:307 MenuUtil.hpp:78
 msgid "Copy shell command\tCtrl+C"
 msgstr ""
 
-#: ClashXW.cpp:429
+#: ClashXW.cpp:388
 msgid "ClashXW License"
 msgstr ""
 
@@ -67,38 +67,38 @@ msgstr ""
 msgid "Dashboard"
 msgstr ""
 
-#: MenuUtil.hpp:93
+#: MenuUtil.hpp:127
 msgid "Global"
 msgstr ""
 
-#: MenuUtil.hpp:96
+#: MenuUtil.hpp:130
 msgid "Rule"
 msgstr ""
 
-#: MenuUtil.hpp:99
+#: MenuUtil.hpp:133
 msgid "Direct"
 msgstr ""
 
-#: MenuUtil.hpp:102
+#: MenuUtil.hpp:136
 msgid "Unknown"
 msgstr ""
 
-#: MenuUtil.hpp:106
+#: MenuUtil.hpp:140
 #, c-format
 msgid "Proxy Mode (%s)"
 msgstr ""
 
-#: MenuUtil.hpp:119
+#: MenuUtil.hpp:153
 #, c-format
 msgid "Http Port: %hu"
 msgstr ""
 
-#: MenuUtil.hpp:122
+#: MenuUtil.hpp:156
 #, c-format
 msgid "Socks Port: %hu"
 msgstr ""
 
-#: MenuUtil.hpp:125
+#: MenuUtil.hpp:159
 #, c-format
 msgid "Mixed Port: %hu"
 msgstr ""

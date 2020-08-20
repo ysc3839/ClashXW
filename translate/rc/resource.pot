@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-17 23:30+0800\n"
+"POT-Creation-Date: 2020-08-20 17:30+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,15 +42,15 @@ msgid " "
 msgstr ""
 
 #: MENU.IDC_MENU.MENUITEM.IDM_MODE_GLOBAL
-msgid "Global\tShift+G"
+msgid "Global\tAlt+G"
 msgstr ""
 
 #: MENU.IDC_MENU.MENUITEM.IDM_MODE_RULE
-msgid "Rule\tShift+R"
+msgid "Rule\tAlt+R"
 msgstr ""
 
 #: MENU.IDC_MENU.MENUITEM.IDM_MODE_DIRECT
-msgid "Direct\tShift+D"
+msgid "Direct\tAlt+D"
 msgstr ""
 
 #: MENU.IDC_MENU.MENUITEM.IDM_SYSTEMPROXY
