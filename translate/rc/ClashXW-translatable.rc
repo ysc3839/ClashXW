@@ -96,9 +96,9 @@ IDC_MENU MENU
     BEGIN
         POPUP " "
         BEGIN
-            MENUITEM "Global\tShift+G",             IDM_MODE_GLOBAL
-            MENUITEM "Rule\tShift+R",               IDM_MODE_RULE
-            MENUITEM "Direct\tShift+D",             IDM_MODE_DIRECT
+            MENUITEM "Global\tAlt+G",               IDM_MODE_GLOBAL
+            MENUITEM "Rule\tAlt+R",                 IDM_MODE_RULE
+            MENUITEM "Direct\tAlt+D",               IDM_MODE_DIRECT
         END
         MENUITEM SEPARATOR
         MENUITEM "Set as system proxy\tCtrl+S", IDM_SYSTEMPROXY

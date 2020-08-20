@@ -126,7 +126,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		.uCallbackMessage = WM_NOTIFYICON,
 		.uVersion = NOTIFYICON_VERSION_4
 	};
-	static bool shiftState = false; // true=down, used by WM_MENUCHAR and WM_ENTERIDLE
+	static bool altState = false; // true=down, used by WM_ENTERIDLE
 	switch (message)
 	{
 	case WM_CREATE:
@@ -288,63 +288,22 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	}
 	break;
 	case WM_DESTROY:
+		g_hMenuHook.reset();
+		g_hMenuAccel.reset();
 		g_processManager->ForceStop();
 		SaveSettings();
 		Shell_NotifyIconW(NIM_DELETE, &nid);
 		PostQuitMessage(0);
 		break;
-	case WM_MENUCHAR:
-	{
-		auto charCode = toupper(LOWORD(wParam));
-		int id = 0;
-		switch (charCode)
-		{
-		case 'G':
-			if (shiftState) id = IDM_MODE_GLOBAL; break;
-		case 'R':
-			if (shiftState) id = IDM_MODE_RULE; break;
-		case 'D':
-			if (shiftState) id = IDM_MODE_DIRECT; break;
-		case 0x13: // ^S
-			if (!shiftState) id = IDM_SYSTEMPROXY; break;
-		case 0x03: // ^C
-			if (shiftState)
-				id = IDM_COPYCOMMAND_EXTERNAL;
-			else
-				id = IDM_COPYCOMMAND;
-			break;
-		case 0x14: // ^T
-			if (!shiftState) id = IDM_BENCHMARK; break;
-		case 0x04: // ^D
-			if (!shiftState) id = IDM_DASHBOARD; break;
-		case 0x0F: // ^O
-			if (!shiftState) id = IDM_CONFIG_OPENFOLDER; break;
-		case 0x12: // ^R
-			if (!shiftState) id = IDM_CONFIG_RELOAD; break;
-		case 0x0D: // ^M
-			if (!shiftState) id = IDM_REMOTECONFIG_MANAGE; break;
-		case 0x15: // ^U
-			if (!shiftState) id = IDM_REMOTECONFIG_UPDATE; break;
-		case 0x11: // ^Q
-			if (!shiftState) id = IDM_QUIT; break;
-		}
-		if (id)
-		{
-			PostMessageW(hWnd, WM_COMMAND, id, 0);
-			return MAKELRESULT(0, MNC_CLOSE);
-		}
-		return MAKELRESULT(0, MNC_IGNORE);
-	}
-	break;
 	case WM_ENTERIDLE:
 		if (wParam == MSGF_MENU)
 		{
-			bool currentShiftState = (GetKeyState(VK_SHIFT) & 0x8000);
-			if (shiftState != currentShiftState)
+			bool currentAltState = (GetKeyState(VK_MENU) & 0x8000);
+			if (altState != currentAltState)
 			{
-				shiftState = currentShiftState;
-				auto text = currentShiftState ?
-					_(L"Copy shell command (External IP)\tCtrl+Shift+C") :
+				altState = currentAltState;
+				auto text = currentAltState ?
+					_(L"Copy shell command (External IP)\tCtrl+Alt+C") :
 					_(L"Copy shell command\tCtrl+C");
 				SetMenuItemText(g_hContextMenu, 3, text);
 			}

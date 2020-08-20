@@ -25,6 +25,25 @@ HMENU g_hProxyModeMenu;
 HMENU g_hLogLevelMenu;
 HMENU g_hPortsMenu;
 
+ACCEL MenuAccel[] = {
+//	{ fVirt, key, cmd },
+	{ FVIRTKEY | FALT, 'G', IDM_MODE_GLOBAL },
+	{ FVIRTKEY | FALT, 'R', IDM_MODE_RULE },
+	{ FVIRTKEY | FALT, 'D', IDM_MODE_DIRECT },
+	{ FVIRTKEY | FCONTROL, 'S', IDM_SYSTEMPROXY },
+	{ FVIRTKEY | FCONTROL, 'C', IDM_COPYCOMMAND },
+	{ FVIRTKEY | FCONTROL | FALT, 'C', IDM_COPYCOMMAND_EXTERNAL },
+	{ FVIRTKEY | FCONTROL, 'T', IDM_BENCHMARK },
+	{ FVIRTKEY | FCONTROL, 'D', IDM_DASHBOARD },
+	{ FVIRTKEY | FCONTROL, 'O', IDM_CONFIG_OPENFOLDER },
+	{ FVIRTKEY | FCONTROL, 'R', IDM_CONFIG_RELOAD },
+	{ FVIRTKEY | FCONTROL, 'M', IDM_REMOTECONFIG_MANAGE },
+	{ FVIRTKEY | FCONTROL, 'U', IDM_REMOTECONFIG_UPDATE },
+	{ FVIRTKEY | FCONTROL, 'Q', IDM_QUIT },
+};
+wil::unique_haccel g_hMenuAccel;
+wil::unique_hhook g_hMenuHook;
+
 BOOL SetMenuItemText(HMENU hMenu, UINT pos, const wchar_t* text) noexcept
 {
 	MENUITEMINFOW mii = {
@@ -57,6 +76,21 @@ void SetupMenu() noexcept
 		THROW_LAST_ERROR_IF_NULL(g_hPortsMenu);
 
 		SetMenuItemText(g_hContextMenu, 3, _(L"Copy shell command\tCtrl+C"));
+
+		g_hMenuAccel.reset(CreateAcceleratorTableW(MenuAccel, static_cast<int>(std::size(MenuAccel))));
+		THROW_LAST_ERROR_IF_NULL(g_hMenuAccel);
+
+		g_hMenuHook.reset(SetWindowsHookExW(WH_MSGFILTER, [](int code, WPARAM wParam, LPARAM lParam) -> LRESULT {
+			if (code == MSGF_MENU)
+			{
+				auto msg = reinterpret_cast<LPMSG>(lParam);
+				if (msg->message == WM_SYSKEYDOWN && msg->wParam == VK_MENU)
+					return TRUE; // Prevent menu closing
+				if (TranslateAcceleratorW(g_hWnd, g_hMenuAccel.get(), msg))
+					msg->wParam = VK_ESCAPE; // Force menu to close
+			}
+			return CallNextHookEx(g_hMenuHook.get(), code, wParam, lParam);
+		}, nullptr, GetCurrentThreadId()));
 	}
 	CATCH_FAIL_FAST();
 }
