@@ -19,9 +19,9 @@ mkdir -p 64/ClashAssets
 	cd 64/ClashAssets
 		cp -r ../../clash-dashboard-gh-pages Dashboard
 		cp ../../Country.mmdb .
+		mv ../../clash-windows-amd64.exe clash.exe
 	cd ..
 
-	mv ../clash-windows-amd64.exe clash.exe
 	cp ../../x64/Release/ClashXW64.exe .
 	cp ../../x64/Release/WebView2Loader.dll .
 cd ..
@@ -30,9 +30,9 @@ mkdir -p 32/ClashAssets
 	cd 32/ClashAssets
 		cp -r ../../clash-dashboard-gh-pages Dashboard
 		cp ../../Country.mmdb .
+		mv ../../clash-windows-386.exe clash.exe
 	cd ..
 
-	mv ../clash-windows-386.exe clash.exe
 	cp ../../Release/ClashXW32.exe .
 	cp ../../Release/WebView2Loader.dll .
 cd ..
