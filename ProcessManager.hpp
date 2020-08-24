@@ -110,6 +110,11 @@ public:
 		return m_procInfo;
 	}
 
+	void SetConfigFile(fs::path configFile)
+	{
+		m_configFile = configFile;
+	}
+
 private:
 	void Monitor()
 	{

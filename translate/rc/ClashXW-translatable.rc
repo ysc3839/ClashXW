@@ -113,10 +113,9 @@ IDC_MENU MENU
         MENUITEM SEPARATOR
         POPUP "Config"
         BEGIN
-            MENUITEM "config",                      IDM_CONFIG_CONFIG, INACTIVE
             MENUITEM SEPARATOR
             MENUITEM "Open config Folder\tCtrl+O",  IDM_CONFIG_OPENFOLDER
-            MENUITEM "Reload config\tCtrl+R",       IDM_CONFIG_RELOAD, INACTIVE
+            MENUITEM "Reload config\tCtrl+R",       IDM_CONFIG_RELOAD
             POPUP "Remote Config", INACTIVE
             BEGIN
                 MENUITEM "Manage\tCtrl+M",              IDM_REMOTECONFIG_MANAGE

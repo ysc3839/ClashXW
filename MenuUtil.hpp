@@ -22,6 +22,7 @@
 HMENU g_hTopMenu;
 HMENU g_hContextMenu;
 HMENU g_hProxyModeMenu;
+HMENU g_hConfigMenu;
 HMENU g_hLogLevelMenu;
 HMENU g_hPortsMenu;
 
@@ -44,6 +45,12 @@ ACCEL MenuAccel[] = {
 wil::unique_haccel g_hMenuAccel;
 wil::unique_hhook g_hMenuHook;
 
+enum class MenuIdType
+{
+	Command,
+	Config,
+};
+
 BOOL SetMenuItemText(HMENU hMenu, UINT pos, const wchar_t* text) noexcept
 {
 	MENUITEMINFOW mii = {
@@ -65,6 +72,9 @@ void SetupMenu() noexcept
 
 		g_hProxyModeMenu = GetSubMenu(g_hContextMenu, 0);
 		THROW_LAST_ERROR_IF_NULL(g_hProxyModeMenu);
+
+		g_hConfigMenu = GetSubMenu(g_hContextMenu, 12);
+		THROW_LAST_ERROR_IF_NULL(g_hConfigMenu);
 
 		HMENU hHelpMenu = GetSubMenu(g_hContextMenu, 13);
 		THROW_LAST_ERROR_IF_NULL(hHelpMenu);
@@ -142,6 +152,31 @@ void UpdateProxyModeMenu()
 	CheckMenuRadioItem(g_hProxyModeMenu, 0, 2, static_cast<UINT>(g_clashConfig.mode) - 1, MF_BYPOSITION);
 }
 
+void UpdateConfigMenu()
+{
+	g_configFilesList = GetConfigFilesList();
+
+	// Remove items before separator
+	while (WI_IsFlagClear(GetMenuState(g_hConfigMenu, 0, MF_BYPOSITION), MF_SEPARATOR))
+		RemoveMenu(g_hConfigMenu, 0, MF_BYPOSITION);
+
+	UINT i = 0;
+	for (const auto& n : g_configFilesList)
+	{
+		auto stem = n.stem();
+		MENUITEMINFOW mii = {
+			.cbSize = sizeof(mii),
+			.fMask = MIIM_FTYPE | MIIM_STATE | MIIM_ID | MIIM_STRING,
+			.fType = MFT_RADIOCHECK,
+			.fState = static_cast<UINT>(n == g_settings.configFile ? MFS_CHECKED : MFS_UNCHECKED),
+			.wID = (static_cast<UINT>(MenuIdType::Config) << 14) | i,
+			.dwTypeData = const_cast<LPWSTR>(stem.c_str())
+		};
+		InsertMenuItemW(g_hConfigMenu, i, TRUE, &mii);
+		++i;
+	}
+}
+
 void UpdateLogLevelMenu() noexcept
 {
 	CheckMenuRadioItem(g_hLogLevelMenu, 0, 4, static_cast<UINT>(g_clashConfig.logLevel), MF_BYPOSITION);
@@ -164,6 +199,7 @@ void UpdateMenus()
 {
 	UpdateContextMenu();
 	UpdateProxyModeMenu();
+	UpdateConfigMenu();
 	UpdateLogLevelMenu();
 	UpdatePortsMenu();
 }

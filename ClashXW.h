@@ -30,6 +30,8 @@ using namespace std::chrono_literals;
 HINSTANCE g_hInst;
 fs::path g_exePath;
 fs::path g_dataPath;
+fs::path g_ConfigPath;
+std::vector<fs::path> g_configFilesList;
 bool g_clashOnline = false;
 std::string g_clashVersion;
 HWND g_hWnd;
@@ -57,9 +59,9 @@ constexpr auto CLASH_CTL_SECRET = L"";
 #include "SettingsUtil.hpp"
 #include "I18n.hpp"
 #include "ClashApi.hpp"
+#include "ConfigFileManager.hpp"
 #include "MenuUtil.hpp"
 #include "ProcessManager.hpp"
-#include "ConfigFileManager.hpp"
 #include "DarkMode.hpp"
 #include "DialogUtil.hpp"
 #include "OSLicensesDlg.hpp"

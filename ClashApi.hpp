@@ -102,6 +102,14 @@ public:
 		return json::parse(res.data).get<ClashConfig>();
 	}
 
+	bool RequestConfigUpdate(fs::path configPath) // FIXME return error message
+	{
+		auto u8path = configPath.u8string();
+		std::string_view path(reinterpret_cast<const char*>(u8path.c_str()), u8path.size());
+		auto res = Request(L"/configs", L"PUT", { {"path", path} });
+		return res.statusCode == 204; // HTTP 204 No Content
+	}
+
 	bool UpdateProxyMode(ClashProxyMode mode)
 	{
 		auto res = Request(L"/configs", L"PATCH", { {"mode", mode} });

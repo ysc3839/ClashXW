@@ -42,7 +42,7 @@ Rule:
 - MATCH,DIRECT
 )";
 
-	auto fileName = g_dataPath / CLASH_CONFIG_DIR_NAME / CLASH_DEF_CONFIG_NAME;
+	auto fileName = g_ConfigPath / CLASH_DEF_CONFIG_NAME;
 	if (!fs::exists(fileName))
 	{
 		wil::unique_file file;
@@ -57,8 +57,19 @@ void SetupDataDirectory()
 	try
 	{
 		CreateDirectoryIgnoreExist(g_dataPath.c_str());
-		CreateDirectoryIgnoreExist((g_dataPath / CLASH_CONFIG_DIR_NAME).c_str());
+		CreateDirectoryIgnoreExist(g_ConfigPath.c_str());
 		CopySampleConfigIfNeed();
 	}
 	CATCH_LOG();
+}
+
+std::vector<fs::path> GetConfigFilesList()
+{
+	std::vector<fs::path> list;
+	for (auto& f : fs::directory_iterator(g_ConfigPath))
+	{
+		if (f.is_regular_file() && f.path().extension().native() == L".yaml")
+			list.emplace_back(f.path().filename());
+	}
+	return list;
 }
