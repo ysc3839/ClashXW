@@ -42,7 +42,7 @@ Rule:
 - MATCH,DIRECT
 )";
 
-	auto fileName = g_ConfigPath / CLASH_DEF_CONFIG_NAME;
+	auto fileName = g_configPath / CLASH_DEF_CONFIG_NAME;
 	if (!fs::exists(fileName))
 	{
 		wil::unique_file file;
@@ -57,7 +57,7 @@ void SetupDataDirectory()
 	try
 	{
 		CreateDirectoryIgnoreExist(g_dataPath.c_str());
-		CreateDirectoryIgnoreExist(g_ConfigPath.c_str());
+		CreateDirectoryIgnoreExist(g_configPath.c_str());
 		CopySampleConfigIfNeed();
 	}
 	CATCH_LOG();
@@ -66,10 +66,45 @@ void SetupDataDirectory()
 std::vector<fs::path> GetConfigFilesList()
 {
 	std::vector<fs::path> list;
-	for (auto& f : fs::directory_iterator(g_ConfigPath))
+	for (auto& f : fs::directory_iterator(g_configPath))
 	{
 		if (f.is_regular_file() && f.path().extension().native() == L".yaml")
 			list.emplace_back(f.path().filename());
 	}
 	return list;
+}
+
+wil::unique_folder_change_reader reader = nullptr;
+wil::unique_threadpool_timer timer = nullptr;
+bool pause = false;
+
+void WatchConfigFile()
+{
+	timer.reset(CreateThreadpoolTimer([](PTP_CALLBACK_INSTANCE, PVOID, PTP_TIMER) {
+		PostMessageW(g_hWnd, WM_CONFIGCHANGEDETECT, 0, 0);
+		pause = false;
+	}, nullptr, nullptr));
+	THROW_LAST_ERROR_IF_NULL(timer);
+
+	reader = wil::make_folder_change_reader(g_configPath.c_str(), false,
+		wil::FolderChangeEvents::FileName | wil::FolderChangeEvents::LastWriteTime,
+		[](wil::FolderChangeEvent event, PCWSTR fileName) {
+			if (!pause && (event == wil::FolderChangeEvent::Added ||
+				event == wil::FolderChangeEvent::Modified ||
+				event == wil::FolderChangeEvent::RenameNewName) &&
+				g_settings.configFile == fileName)
+			{
+				pause = true;
+				constexpr winrt::Windows::Foundation::TimeSpan latency = 300ms;
+				int64_t relative_count = -latency.count();
+				SetThreadpoolTimer(timer.get(), reinterpret_cast<PFILETIME>(&relative_count), 0, 0);
+			}
+		});
+}
+
+void StopWatchConfigFile()
+{
+	reader.reset();
+	timer.reset();
+	pause = false;
 }

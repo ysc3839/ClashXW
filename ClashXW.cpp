@@ -44,7 +44,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	g_exePath = GetModuleFsPath(hInstance).remove_filename();
 	SetCurrentDirectoryW(g_exePath.c_str());
 	g_dataPath = GetKnownFolderFsPath(FOLDERID_RoamingAppData) / CLASHXW_DIR_NAME;
-	g_ConfigPath = g_dataPath / CLASH_CONFIG_DIR_NAME;
+	g_configPath = g_dataPath / CLASH_CONFIG_DIR_NAME;
 
 	LoadTranslateData();
 	InitDarkMode();
@@ -83,11 +83,13 @@ void ShowBalloon(const wchar_t* info, const wchar_t* title, DWORD flag = NIIF_IN
 	NOTIFYICONDATAW nid = {
 		.cbSize = sizeof(nid),
 		.hWnd = g_hWnd,
-		.uFlags = NIF_INFO,
+		.uFlags = NIF_INFO | NIF_SHOWTIP,
 		.dwInfoFlags = flag | NIIF_RESPECT_QUIET_TIME
 	};
-	wcscpy_s(nid.szInfoTitle, title);
-	wcscpy_s(nid.szInfo, info);
+	if (title)
+		wcscpy_s(nid.szInfoTitle, title);
+	if (info)
+		wcscpy_s(nid.szInfo, info);
 	LOG_IF_WIN32_BOOL_FALSE(Shell_NotifyIconW(NIM_MODIFY, &nid));
 }
 
@@ -118,19 +120,23 @@ winrt::fire_and_forget StartClash()
 	}
 }
 
-winrt::fire_and_forget UpdateConfigFile(fs::path name)
+winrt::fire_and_forget UpdateConfigFile(fs::path name, bool showSuccess = false)
 {
 	co_await winrt::resume_background();
+	std::optional<std::wstring> errorDesp;
 	try
 	{
 		if (name.empty())
-			g_clashApi->RequestConfigUpdate(g_ConfigPath / g_settings.configFile);
+			errorDesp = g_clashApi->RequestConfigUpdate(g_configPath / g_settings.configFile);
 		else
 		{
-			auto config = g_ConfigPath / name;
-			g_clashApi->RequestConfigUpdate(config);
-			g_settings.configFile = name.native();
-			g_processManager->SetConfigFile(config);
+			auto config = g_configPath / name;
+			errorDesp = g_clashApi->RequestConfigUpdate(config);
+			if (!errorDesp.has_value())
+			{
+				g_settings.configFile = name.native();
+				g_processManager->SetConfigFile(config);
+			}
 		}
 	}
 	catch (...)
@@ -139,6 +145,10 @@ winrt::fire_and_forget UpdateConfigFile(fs::path name)
 		co_return;
 	}
 	co_await ResumeForeground();
+	if (errorDesp.has_value())
+		ShowBalloon(errorDesp->c_str(), _(L"Reload Config Fail"), NIIF_ERROR);
+	else if (showSuccess)
+		ShowBalloon(_(L"Success"), _(L"Reload Config Succeed"));
 	UpdateMenus();
 }
 
@@ -152,6 +162,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		.uVersion = NOTIFYICON_VERSION_4
 	};
 	static bool altState = false; // true=down, used by WM_ENTERIDLE
+	static bool configChangeDetected = false;
 	switch (message)
 	{
 	case WM_CREATE:
@@ -177,7 +188,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		LOG_LAST_ERROR_IF(WM_TASKBAR_CREATED == 0);
 
 		auto assetsDir = g_exePath / CLASH_ASSETS_DIR_NAME;
-		g_processManager = std::make_unique<ProcessManager>(assetsDir / CLASH_EXE_NAME, assetsDir, g_ConfigPath / g_settings.configFile, assetsDir / CLASH_DASHBOARD_DIR_NAME, CLASH_CTL_ADDR, CLASH_CTL_SECRET);
+		g_processManager = std::make_unique<ProcessManager>(assetsDir / CLASH_EXE_NAME, assetsDir, g_configPath / g_settings.configFile, assetsDir / CLASH_DASHBOARD_DIR_NAME, CLASH_CTL_ADDR, CLASH_CTL_SECRET);
 		g_clashApi = std::make_unique<ClashApi>(L"127.0.0.1", static_cast<INTERNET_PORT>(9090));
 
 		SetupDataDirectory();
@@ -185,6 +196,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		EnableSystemProxy(g_settings.systemProxy);
 		CheckMenuItem(g_hContextMenu, IDM_EXPERIMENTAL_OPENDASHBOARDINBROWSER, MF_BYCOMMAND | (g_settings.openDashboardInBrowser ? MF_CHECKED : MF_UNCHECKED));
+
+		WatchConfigFile();
 	}
 	break;
 	case WM_COMMAND:
@@ -290,7 +303,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				}
 				break;
 			case IDM_CONFIG_OPENFOLDER:
-				ShellExecuteW(hWnd, nullptr, g_ConfigPath.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
+				ShellExecuteW(hWnd, nullptr, g_configPath.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
 				break;
 			case IDM_CONFIG_RELOAD:
 				UpdateConfigFile({});
@@ -327,6 +340,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	}
 	break;
 	case WM_DESTROY:
+		StopWatchConfigFile();
 		g_hMenuHook.reset();
 		g_hMenuAccel.reset();
 		g_processManager->ForceStop();
@@ -365,6 +379,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			UpdateMenus();
 			ShowContextMenu(hWnd, GET_X_LPARAM(wParam), GET_Y_LPARAM(wParam));
 			break;
+		case NIN_BALLOONUSERCLICK:
+			if (configChangeDetected)
+				UpdateConfigFile({}, true);
+			[[fallthrough]];
+		case NIN_BALLOONTIMEOUT:
+			configChangeDetected = false;
+			break;
 		}
 		break;
 	case WM_PROCESSNOTIFY:
@@ -373,6 +394,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_RESUMECORO:
 		std::experimental::coroutine_handle<>::from_address(reinterpret_cast<void*>(wParam)).resume();
+		break;
+	case WM_CONFIGCHANGEDETECT:
+		if (!configChangeDetected)
+		{
+			configChangeDetected = true;
+			ShowBalloon(_(L"Tap to reload config"), _(L"Config file have been changed"));
+		}
 		break;
 	default:
 		if (WM_TASKBAR_CREATED && message == WM_TASKBAR_CREATED)

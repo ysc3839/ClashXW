@@ -30,7 +30,7 @@ using namespace std::chrono_literals;
 HINSTANCE g_hInst;
 fs::path g_exePath;
 fs::path g_dataPath;
-fs::path g_ConfigPath;
+fs::path g_configPath;
 std::vector<fs::path> g_configFilesList;
 bool g_clashOnline = false;
 std::string g_clashVersion;
@@ -39,6 +39,7 @@ HWND g_hWnd;
 constexpr UINT WM_NOTIFYICON = WM_APP + 1;
 constexpr UINT WM_PROCESSNOTIFY = WM_APP + 2; // wParam=exitCode
 constexpr UINT WM_RESUMECORO = WM_APP + 3; // wParam=coroutine_handle.address
+constexpr UINT WM_CONFIGCHANGEDETECT = WM_APP + 4;
 
 constexpr auto CLASHXW_APP_ID = L"com.ysc3839.clashxw";
 constexpr auto CLASHXW_MUTEX_NAME = L"Local\\com.ysc3839.clashxw";

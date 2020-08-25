@@ -20,6 +20,7 @@
 #include <wil/win32_helpers.h>
 #include <wil/result.h>
 #include <wil/com.h>
+#include <wil/filesystem.h>
 
 // nlohmann-json
 #define JSON_USE_IMPLICIT_CONVERSIONS 0

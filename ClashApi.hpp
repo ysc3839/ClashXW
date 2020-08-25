@@ -102,12 +102,23 @@ public:
 		return json::parse(res.data).get<ClashConfig>();
 	}
 
-	bool RequestConfigUpdate(fs::path configPath) // FIXME return error message
+	std::optional<std::wstring> RequestConfigUpdate(fs::path configPath)
 	{
 		auto u8path = configPath.u8string();
 		std::string_view path(reinterpret_cast<const char*>(u8path.c_str()), u8path.size());
 		auto res = Request(L"/configs", L"PUT", { {"path", path} });
-		return res.statusCode == 204; // HTTP 204 No Content
+		if (res.statusCode != 204)
+		{
+			std::wstring errorDesp = _(L"Error occoured, Please try to fix it by restarting ClashXW.");
+			try
+			{
+				errorDesp = Utf8ToUtf16(json::parse(res.data).at("message").get<std::string_view>());
+			}
+			CATCH_LOG();
+			LOG_HR_MSG(HTTP_E_STATUS_UNEXPECTED, "message: %s", errorDesp.c_str());
+			return errorDesp;
+		}
+		return std::nullopt;
 	}
 
 	bool UpdateProxyMode(ClashProxyMode mode)
