@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-20 17:30+0800\n"
+"POT-Creation-Date: 2020-08-25 16:56+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -86,15 +86,11 @@ msgstr ""
 msgid "Config"
 msgstr ""
 
-#: MENU.IDC_MENU.MENUITEM.IDM_CONFIG_CONFIG,
-msgid "config"
-msgstr ""
-
 #: MENU.IDC_MENU.MENUITEM.IDM_CONFIG_OPENFOLDER
 msgid "Open config Folder\tCtrl+O"
 msgstr ""
 
-#: MENU.IDC_MENU.MENUITEM.IDM_CONFIG_RELOAD,
+#: MENU.IDC_MENU.MENUITEM.IDM_CONFIG_RELOAD
 msgid "Reload config\tCtrl+R"
 msgstr ""
 

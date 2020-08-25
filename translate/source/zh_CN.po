@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-20 17:30+0800\n"
-"PO-Revision-Date: 2020-08-20 17:30+0800\n"
+"POT-Creation-Date: 2020-08-25 16:56+0800\n"
+"PO-Revision-Date: 2020-08-25 16:58+0800\n"
 "Last-Translator: Richard Yu <yurichard3839@gmail.com>\n"
 "Language-Team: \n"
 "Language: zh_CN\n"
@@ -18,7 +18,7 @@ msgstr ""
 "X-Generator: Poedit 2.3.1\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ClashXW.cpp:112
+#: ClashXW.cpp:115
 msgid ""
 "Clash started, but failed to communiacte.\n"
 "Ensure `external-controller` is set to `127.0.0.1:9090` in config.yaml."
@@ -26,39 +26,59 @@ msgstr ""
 "Clash 已启动，但是无法通信。\n"
 "请确认 config.yaml 中 `external-controller` 已设置为 `127.0.0.1:9090` 。"
 
-#: ClashXW.cpp:112 ClashXW.cpp:116 EdgeWebView2.hpp:176
+#: ClashXW.cpp:115 ClashXW.cpp:119 EdgeWebView2.hpp:176
 msgid "Error"
 msgstr "错误"
 
-#: ClashXW.cpp:116
+#: ClashXW.cpp:119
 msgid "Failed to start clash."
 msgstr "Clash 启动失败。"
 
-#: ClashXW.cpp:140
+#: ClashXW.cpp:149
+msgid "Reload Config Fail"
+msgstr "重载配置文件失败"
+
+#: ClashXW.cpp:151
+msgid "Success"
+msgstr "成功"
+
+#: ClashXW.cpp:151
+msgid "Reload Config Succeed"
+msgstr "重载配置文件成功"
+
+#: ClashXW.cpp:176
 msgid "ClashXW"
 msgstr ""
 
-#: ClashXW.cpp:271
+#: ClashXW.cpp:314
 msgid "Set benchmark url"
 msgstr "设置延迟测速链接"
 
-#: ClashXW.cpp:275
+#: ClashXW.cpp:318
 msgid "Warning"
 msgstr "警告"
 
-#: ClashXW.cpp:275
+#: ClashXW.cpp:318
 msgid "URL is not valid"
 msgstr "链接不合法"
 
-#: ClashXW.cpp:306
+#: ClashXW.cpp:359
 msgid "Copy shell command (External IP)\tCtrl+Alt+C"
 msgstr "复制终端代理命令 (外部IP)\tCtrl+Alt+C"
 
-#: ClashXW.cpp:307 MenuUtil.hpp:78
+#: ClashXW.cpp:360 MenuUtil.hpp:88
 msgid "Copy shell command\tCtrl+C"
 msgstr "复制终端代理命令\tCtrl+C"
 
-#: ClashXW.cpp:388
+#: ClashXW.cpp:402
+msgid "Tap to reload config"
+msgstr "点击重载配置文件"
+
+#: ClashXW.cpp:402
+msgid "Config file have been changed"
+msgstr "配置文件已被修改"
+
+#: ClashXW.cpp:455
 msgid "ClashXW License"
 msgstr "ClashXW 许可证"
 
@@ -70,38 +90,38 @@ msgstr "Edge WebView2 加载失败。"
 msgid "Dashboard"
 msgstr "控制台"
 
-#: MenuUtil.hpp:127
+#: MenuUtil.hpp:137
 msgid "Global"
 msgstr "全局"
 
-#: MenuUtil.hpp:130
+#: MenuUtil.hpp:140
 msgid "Rule"
 msgstr "规则"
 
-#: MenuUtil.hpp:133
+#: MenuUtil.hpp:143
 msgid "Direct"
 msgstr "直连"
 
-#: MenuUtil.hpp:136
+#: MenuUtil.hpp:146
 msgid "Unknown"
 msgstr "未知"
 
-#: MenuUtil.hpp:140
+#: MenuUtil.hpp:150
 #, c-format
 msgid "Proxy Mode (%s)"
 msgstr "出站模式 (%s)"
 
-#: MenuUtil.hpp:153
+#: MenuUtil.hpp:188
 #, c-format
 msgid "Http Port: %hu"
 msgstr ""
 
-#: MenuUtil.hpp:156
+#: MenuUtil.hpp:191
 #, c-format
 msgid "Socks Port: %hu"
 msgstr ""
 
-#: MenuUtil.hpp:159
+#: MenuUtil.hpp:194
 #, c-format
 msgid "Mixed Port: %hu"
 msgstr ""
