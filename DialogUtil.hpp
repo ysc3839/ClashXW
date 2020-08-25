@@ -43,3 +43,15 @@ void CenterWindow(HWND hWnd, int& width, int& height, DWORD style = WS_POPUP | W
 	_AdjustWindowRectExForDpi(&rc, style, FALSE, exStyle, dpi);
 	SetWindowPos(hWnd, nullptr, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, SWP_NOZORDER | SWP_NOACTIVATE);
 }
+
+HRESULT SetPreventPinningForWindow(HWND hWnd)
+{
+	wil::com_ptr_nothrow<IPropertyStore> ps;
+	RETURN_IF_FAILED(SHGetPropertyStoreForWindow(hWnd, IID_PPV_ARGS(&ps)));
+
+	PROPVARIANT var;
+	InitPropVariantFromBoolean(TRUE, &var);
+	RETURN_IF_FAILED(ps->SetValue(PKEY_AppUserModel_PreventPinning, var));
+
+	return S_OK;
+}

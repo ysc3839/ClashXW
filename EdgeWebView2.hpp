@@ -276,6 +276,7 @@ private:
 		auto hWnd = CreateWindowW(L"ClashXW_WebView", _(L"Dashboard"), WS_OVERLAPPEDWINDOW, 0, 0, 0, 0, hWndParent, nullptr, g_hInst, nullptr);
 		if (hWnd)
 		{
+			SetPreventPinningForWindow(hWnd);
 			ShowWindow(hWnd, SW_SHOW);
 			UpdateWindow(hWnd);
 		}

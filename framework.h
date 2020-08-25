@@ -17,6 +17,8 @@
 #include <wrl.h>
 #include <urlmon.h>
 #include <shlwapi.h>
+#include <propvarutil.h>
+#include <propkey.h>
 
 // C RunTime Header Files
 #include <cstdlib>
