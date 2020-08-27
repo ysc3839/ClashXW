@@ -19,19 +19,24 @@
 
 #pragma once
 
-void SetEditPos(HWND hWndEdit, HWND hWndProgressBarSink, HWND hWndDirectUI, wil::unique_hfont& hFont)
+using LabelTextVector = std::vector<std::pair<LPCWSTR, std::wstring&>>;
+using ControlsVector = std::vector<std::pair<HWND, HWND>>;
+
+void SetControlPos(const ControlsVector& hWndControls, HWND hWndProgressBarSink, HWND hWndParent, wil::unique_hfont& hFont, const LabelTextVector& input)
 {
 	RECT rect;
 	GetClientRect(hWndProgressBarSink, &rect);
-	MapWindowPoints(hWndProgressBarSink, hWndDirectUI, reinterpret_cast<LPPOINT>(&rect), 2);
+	MapWindowPoints(hWndProgressBarSink, hWndParent, reinterpret_cast<LPPOINT>(&rect), 2);
 
 	const auto width = rect.right - rect.left, height = rect.bottom - rect.top,
 		center = rect.top + height / 2;
 
-	auto hdc = wil::GetDC(nullptr);
+	auto hdc = wil::GetDC(hWndParent);
+
+	const auto dpi = _GetDpiForWindow(hWndParent);
 
 	NONCLIENTMETRICSW ncm = { sizeof(ncm) };
-	_SystemParametersInfoForDpi(SPI_GETNONCLIENTMETRICS, sizeof(ncm), &ncm, 0, _GetDpiForWindow(hWndEdit));
+	_SystemParametersInfoForDpi(SPI_GETNONCLIENTMETRICS, sizeof(ncm), &ncm, 0, dpi);
 
 	hFont.reset(CreateFontIndirectW(&ncm.lfMessageFont));
 	auto select = wil::SelectObject(hdc.get(), hFont.get());
@@ -39,31 +44,72 @@ void SetEditPos(HWND hWndEdit, HWND hWndProgressBarSink, HWND hWndDirectUI, wil:
 	TEXTMETRICW tm;
 	GetTextMetricsW(hdc.get(), &tm);
 
-	const auto editHeight = tm.tmHeight + 4;
-	rect.top = center - editHeight / 2;
+	constexpr long editPadding = 2;
+	const auto controlHeight = editPadding + tm.tmHeight + editPadding;
+	rect.top = center - controlHeight / 2;
 
 	ShowWindow(hWndProgressBarSink, SW_HIDE);
 
-	SetWindowFont(hWndEdit, hFont.get(), FALSE);
-	SetWindowPos(hWndEdit, HWND_TOP, rect.left, rect.top, width, editHeight, 0);
+	long maxLabelWidth = 0;
+	for (auto [label, _] : input)
+	{
+		if (label && *label)
+		{
+			RECT rc = {};
+			DrawTextW(hdc.get(), label, -1, &rc, DT_CALCRECT | DT_SINGLELINE);
+
+			if (rc.right > maxLabelWidth)
+				maxLabelWidth = rc.right;
+		}
+	}
+
+	const long lineMargin = Scale(10, dpi);
+	auto i = hWndControls.size() - 1;
+	for (auto [hWndStatic, hWndEdit] : hWndControls)
+	{
+		const auto top = rect.top - static_cast<long>(i) * (controlHeight + lineMargin);
+		if (hWndStatic)
+		{
+			SetWindowFont(hWndStatic, hFont.get(), FALSE);
+			SetWindowPos(hWndStatic, HWND_TOP, rect.left, top + editPadding, maxLabelWidth, controlHeight, 0);
+		}
+
+		constexpr long margin = 4;
+		SetWindowFont(hWndEdit, hFont.get(), FALSE);
+		SetWindowPos(hWndEdit, HWND_TOP, rect.left + maxLabelWidth + margin, top, width - maxLabelWidth - margin, controlHeight, 0);
+
+		--i;
+	}
 }
 
-HRESULT TaskDialogInput(HWND hWndOwner, HINSTANCE hInstance, PCWSTR windowTitle, PCWSTR mainInstruction, PCWSTR content, TASKDIALOG_COMMON_BUTTON_FLAGS commonButtons, PCWSTR icon, int* button, std::wstring& input)
+HRESULT TaskDialogInput(HWND hWndOwner, HINSTANCE hInstance, PCWSTR windowTitle, PCWSTR mainInstruction, PCWSTR content, TASKDIALOG_COMMON_BUTTON_FLAGS commonButtons, PCWSTR icon, int* button, const LabelTextVector& input)
 {
-	HWND hWndDirectUI = nullptr, hWndProgressBarSink = nullptr, hWndEdit = nullptr;
+	HWND hWndDirectUI = nullptr, hWndProgressBarSink = nullptr;
+	ControlsVector hWndControls;
 	wil::unique_hfont hFont;
 
-	auto subclass = [&hWndDirectUI, &hWndProgressBarSink, &hWndEdit, &hFont](HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, [[maybe_unused]] UINT_PTR uIdSubclass) -> LRESULT {
+	auto subclass = [&hWndDirectUI, &hWndProgressBarSink, &hWndControls, &hFont, &input](HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, [[maybe_unused]] UINT_PTR uIdSubclass) -> LRESULT {
 		if (uMsg == WM_DPICHANGED)
 		{
 			const auto result = DefSubclassProc(hWnd, uMsg, wParam, lParam);
-			SetEditPos(hWndEdit, hWndProgressBarSink, hWndDirectUI, hFont);
+			SetControlPos(hWndControls, hWndProgressBarSink, hWndDirectUI, hFont, input);
 			return result;
+		}
+		else if (uMsg == WM_CTLCOLORSTATIC)
+		{
+			HDC hdc = reinterpret_cast<HDC>(wParam);
+			COLORREF textColor = GetSysColor(COLOR_WINDOWTEXT);
+			COLORREF bkColor = GetSysColor(COLOR_WINDOW);
+
+			SetTextColor(hdc, textColor);
+			SetBkColor(hdc, bkColor);
+			SetBkMode(hdc, TRANSPARENT);
+			return reinterpret_cast<INT_PTR>(GetSysColorBrush(COLOR_WINDOW));
 		}
 		return DefSubclassProc(hWnd, uMsg, wParam, lParam);
 	};
 
-	auto callback = [hInstance, &hWndDirectUI, &hWndProgressBarSink, &hWndEdit, &hFont, &subclass, &input](HWND hWnd, UINT msg, [[maybe_unused]] WPARAM wParam, [[maybe_unused]] LPARAM lParam) -> HRESULT {
+	auto callback = [hInstance, &hWndDirectUI, &hWndProgressBarSink, &hWndControls, &hFont, &subclass, &input](HWND hWnd, UINT msg, [[maybe_unused]] WPARAM wParam, [[maybe_unused]] LPARAM lParam) -> HRESULT {
 		switch (msg)
 		{
 		case TDN_DIALOG_CONSTRUCTED:
@@ -99,17 +145,23 @@ HRESULT TaskDialogInput(HWND hWndOwner, HINSTANCE hInstance, PCWSTR windowTitle,
 
 					if (hWndProgressBarSink)
 					{
-						hWndEdit = CreateWindowExW(0, WC_EDITW, nullptr, WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL, 0, 0, 0, 0, hWndDirectUI, nullptr, hInstance, nullptr);
-						if (hWndEdit)
+						hWndControls.reserve(input.size());
+						for (auto [label, text] : input)
 						{
-							SetWindowSubclass(hWnd, [](HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData) -> LRESULT {
-								return (*reinterpret_cast<decltype(subclass)*>(dwRefData))(hWnd, uMsg, wParam, lParam, uIdSubclass);
-							}, reinterpret_cast<UINT_PTR>(&subclass), reinterpret_cast<DWORD_PTR>(&subclass));
+							HWND hWndStatic = nullptr;
+							if (label && *label)
+								hWndStatic = CreateWindowW(WC_STATICW, label, WS_CHILD | WS_VISIBLE | SS_RIGHT, 0, 0, 0, 0, hWnd, nullptr, hInstance, nullptr);
 
-							SetWindowTextW(hWndEdit, input.c_str());
-							SetEditPos(hWndEdit, hWndProgressBarSink, hWndDirectUI, hFont);
-							SetFocus(hWndEdit);
+							HWND hWndEdit = CreateWindowExW(0, WC_EDITW, text.c_str(), WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL, 0, 0, 0, 0, hWnd, nullptr, hInstance, nullptr);
+
+							hWndControls.emplace_back(hWndStatic, hWndEdit);
 						}
+
+						SetWindowSubclass(hWnd, [](HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR uIdSubclass, DWORD_PTR dwRefData) -> LRESULT {
+							return (*reinterpret_cast<decltype(subclass)*>(dwRefData))(hWnd, uMsg, wParam, lParam, uIdSubclass);
+						}, reinterpret_cast<UINT_PTR>(&subclass), reinterpret_cast<DWORD_PTR>(&subclass));
+
+						SetControlPos(hWndControls, hWndProgressBarSink, hWnd, hFont, input);
 					}
 				}
 			}
@@ -118,10 +170,15 @@ HRESULT TaskDialogInput(HWND hWndOwner, HINSTANCE hInstance, PCWSTR windowTitle,
 		case TDN_BUTTON_CLICKED:
 			if (wParam == IDOK)
 			{
-				int len = GetWindowTextLengthW(hWndEdit);
-				input.resize(static_cast<size_t>(len) + 1);
-				len = GetWindowTextW(hWndEdit, input.data(), len + 1);
-				input.resize(static_cast<size_t>(len));
+				auto it = input.begin();
+				for (auto [_, hWndEdit] : hWndControls)
+				{
+					int len = GetWindowTextLengthW(hWndEdit);
+					it->second.resize(static_cast<size_t>(len) + 1);
+					len = GetWindowTextW(hWndEdit, it->second.data(), len + 1);
+					it->second.resize(static_cast<size_t>(len));
+					++it;
+				}
 			}
 			break;
 		}
@@ -144,4 +201,10 @@ HRESULT TaskDialogInput(HWND hWndOwner, HINSTANCE hInstance, PCWSTR windowTitle,
 		.lpCallbackData = reinterpret_cast<LONG_PTR>(&callback)
 	};
 	return TaskDialogIndirect(&config, button, nullptr, nullptr);
+}
+
+HRESULT TaskDialogInput(HWND hWndOwner, HINSTANCE hInstance, PCWSTR windowTitle, PCWSTR mainInstruction, PCWSTR content, TASKDIALOG_COMMON_BUTTON_FLAGS commonButtons, PCWSTR icon, int* button, std::wstring& input)
+{
+	LabelTextVector labelText = { {nullptr, input} };
+	return TaskDialogInput(hWndOwner, hInstance, windowTitle, mainInstruction, content, commonButtons, icon, button, labelText);
 }
