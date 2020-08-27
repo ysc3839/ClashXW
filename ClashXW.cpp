@@ -64,7 +64,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	RegisterClassExW(&wcex);
 
-	auto hWnd = CreateWindowW(L"ClashXW", nullptr, WS_POPUP, 0, 0, 0, 0, nullptr, nullptr, hInstance, nullptr);
+	auto hWnd = CreateWindowExW(WS_EX_TOPMOST, L"ClashXW", nullptr, WS_POPUP, 0, 0, 0, 0, nullptr, nullptr, hInstance, nullptr);
 	if (!hWnd)
 		return EXIT_FAILURE;
 
