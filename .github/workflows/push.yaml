@@ -36,6 +36,8 @@ jobs:
           msbuild ClashXW.sln "-p:Configuration=Release;Platform=x64" }
         Start-Job -Init ([ScriptBlock]::Create("Set-Location '$pwd'")) -Script {
           msbuild ClashXW.sln "-p:Configuration=Release;Platform=x86" }
+        Start-Job -Init ([ScriptBlock]::Create("Set-Location '$pwd'")) -Script {
+          msbuild ClashXW.sln "-p:Configuration=Release;Platform=ARM64" }
         Get-Job | Wait-Job | Receive-Job
       shell: powershell
     - uses: actions/upload-artifact@v2
@@ -54,3 +56,11 @@ jobs:
       with:
         name: ClashXW32.pdb
         path: Release/ClashXW32.pdb
+    - uses: actions/upload-artifact@v2
+      with:
+        name: ClashXWARM64.exe
+        path: ARM64/Release/ClashXWARM64.exe
+    - uses: actions/upload-artifact@v2
+      with:
+        name: ClashXWARM64.pdb
+        path: ARM64/Release/ClashXWARM64.pdb

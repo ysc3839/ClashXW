@@ -23,19 +23,28 @@ mkdir -p 64/ClashAssets
 	cd ..
 
 	cp ../../x64/Release/ClashXW64.exe .
-	cp ../../x64/Release/WebView2Loader.dll .
 cd ..
 
 mkdir -p 32/ClashAssets
 	cd 32/ClashAssets
 		cp -r ../../clash-dashboard-gh-pages Dashboard
 		cp ../../Country.mmdb .
-		mv ../../clash-windows-386.exe clash.exe
+		cp ../../clash-windows-386.exe clash.exe
 	cd ..
 
 	cp ../../Release/ClashXW32.exe .
-	cp ../../Release/WebView2Loader.dll .
+cd ..
+
+mkdir -p ARM64/ClashAssets
+	cd ARM64/ClashAssets
+		cp -r ../../clash-dashboard-gh-pages Dashboard
+		cp ../../Country.mmdb .
+		mv ../../clash-windows-386.exe clash.exe # FIXME: use clash ARM32 binary
+	cd ..
+
+	cp ../../ARM64/Release/ClashXWARM64.exe .
 cd ..
 
 powershell -NoProfile -ExecutionPolicy Unrestricted -Command '$ProgressPreference = "SilentlyContinue"; Compress-Archive 64\* 64.zip'
 powershell -NoProfile -ExecutionPolicy Unrestricted -Command '$ProgressPreference = "SilentlyContinue"; Compress-Archive 32\* 32.zip'
+powershell -NoProfile -ExecutionPolicy Unrestricted -Command '$ProgressPreference = "SilentlyContinue"; Compress-Archive ARM64\* ARM64.zip'

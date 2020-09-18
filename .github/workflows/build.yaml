@@ -37,6 +37,8 @@ jobs:
           msbuild ClashXW.sln "-p:Configuration=Release;Platform=x64" }
         Start-Job -Init ([ScriptBlock]::Create("Set-Location '$pwd'")) -Script {
           msbuild ClashXW.sln "-p:Configuration=Release;Platform=x86" }
+        Start-Job -Init ([ScriptBlock]::Create("Set-Location '$pwd'")) -Script {
+          msbuild ClashXW.sln "-p:Configuration=Release;Platform=ARM64" }
         Get-Job | Wait-Job | Receive-Job
       shell: powershell
     - run: sh create_package.sh
@@ -57,6 +59,14 @@ jobs:
       with:
         name: ClashXW32
         path: Release/ClashXW32.pdb
+    - uses: actions/upload-artifact@v2
+      with:
+        name: ClashXWARM64
+        path: ARM64/Release/ClashXWARM64.exe
+    - uses: actions/upload-artifact@v2
+      with:
+        name: ClashXWARM64
+        path: ARM64/Release/ClashXWARM64.pdb
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
@@ -84,4 +94,13 @@ jobs:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: pkg/32.zip
         asset_name: ClashXW32.zip
+        asset_content_type: application/octet-stream
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: pkg/ARM64.zip
+        asset_name: ClashXWARM64.zip
         asset_content_type: application/octet-stream
