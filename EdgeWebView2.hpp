@@ -125,21 +125,6 @@ bool IsBridgeLoadedURI(IUri* uri)
 	return IsSchemeMatch(uri) && (_wcsicmp(host.get(), BRIDGE_LOADED) == 0);
 }
 
-HRESULT LoadWebView2LoaderDLL()
-{
-	PEXCEPTION_POINTERS info = nullptr;
-	__try
-	{
-		__HrLoadAllImportsForDll("WebView2Loader.dll"); // Case sensitive
-	}
-	__except (info = GetExceptionInformation(), GetExceptionCode() == VcppException(ERROR_SEVERITY_ERROR, ERROR_MOD_NOT_FOUND) ? EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
-	{
-		auto dli = reinterpret_cast<PDelayLoadInfo>(info->ExceptionRecord->ExceptionInformation[0]);
-		return HRESULT_FROM_WIN32(dli->dwLastError);
-	}
-	return S_OK;
-}
-
 class EdgeWebView2
 {
 public:
@@ -151,24 +136,16 @@ public:
 		}
 		else
 		{
-			HRESULT hr = S_OK;
-			do
-			{
-				hr = LoadWebView2LoaderDLL();
-				if (FAILED(hr))
-					break;
-
-				auto options = wrl::Make<CoreWebView2EnvironmentOptions>();
-				options->put_AdditionalBrowserArguments(LR"(--user-agent="ClashX Runtime")");
-				hr = CreateCoreWebView2EnvironmentWithOptions(nullptr, g_dataPath.c_str(), options.Get(),
-					wrl::Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>(
-						[hWndParent](HRESULT result, ICoreWebView2Environment* env) {
-							RETURN_IF_FAILED(result);
-							s_webViewEnv = env;
-							CreateWindow(hWndParent);
-							return S_OK;
-						}).Get());
-			} while (0);
+			auto options = wrl::Make<CoreWebView2EnvironmentOptions>();
+			options->put_AdditionalBrowserArguments(LR"(--user-agent="ClashX Runtime")");
+			HRESULT hr = CreateCoreWebView2EnvironmentWithOptions(nullptr, g_dataPath.c_str(), options.Get(),
+				wrl::Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>(
+					[hWndParent](HRESULT result, ICoreWebView2Environment* env) {
+						RETURN_IF_FAILED(result);
+						s_webViewEnv = env;
+						CreateWindow(hWndParent);
+						return S_OK;
+					}).Get());
 
 			if (FAILED(hr))
 			{

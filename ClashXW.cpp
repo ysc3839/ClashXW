@@ -34,7 +34,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	g_hInst = hInstance;
 
-	winrt::init_apartment();
+	winrt::init_apartment(winrt::apartment_type::single_threaded);
 
 	SetCurrentProcessExplicitAppUserModelID(CLASHXW_APP_ID);
 
@@ -368,16 +368,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case NIN_SELECT:
 		case NIN_KEYSELECT:
 		case WM_CONTEXTMENU:
-			[]() -> IAsyncAction {
+			[](HWND hWnd, WPARAM wParam) -> winrt::fire_and_forget {
 				co_await winrt::resume_background();
-				try
-				{
-					g_clashConfig = g_clashApi->GetConfig();
-				}
-				CATCH_LOG();
-			}().wait_for(500ms);
-			UpdateMenus();
-			ShowContextMenu(hWnd, GET_X_LPARAM(wParam), GET_Y_LPARAM(wParam));
+				[]() -> IAsyncAction {
+					co_await winrt::resume_background();
+					try
+					{
+						g_clashConfig = g_clashApi->GetConfig();
+					}
+					CATCH_LOG();
+				}().wait_for(500ms);
+
+				co_await ResumeForeground();
+				UpdateMenus();
+				ShowContextMenu(hWnd, GET_X_LPARAM(wParam), GET_Y_LPARAM(wParam));
+			}(hWnd, wParam);
 			break;
 		case NIN_BALLOONUSERCLICK:
 			if (configChangeDetected)
