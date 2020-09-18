@@ -9,24 +9,34 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "uxtheme-stub", "uxtheme-stu
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ARM64 = Debug|ARM64
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
+		Release|ARM64 = Release|ARM64
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{848B91AF-E667-4999-AC38-6DFF6AE7FAAF}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{848B91AF-E667-4999-AC38-6DFF6AE7FAAF}.Debug|ARM64.Build.0 = Debug|ARM64
 		{848B91AF-E667-4999-AC38-6DFF6AE7FAAF}.Debug|x64.ActiveCfg = Debug|x64
 		{848B91AF-E667-4999-AC38-6DFF6AE7FAAF}.Debug|x64.Build.0 = Debug|x64
 		{848B91AF-E667-4999-AC38-6DFF6AE7FAAF}.Debug|x86.ActiveCfg = Debug|Win32
 		{848B91AF-E667-4999-AC38-6DFF6AE7FAAF}.Debug|x86.Build.0 = Debug|Win32
+		{848B91AF-E667-4999-AC38-6DFF6AE7FAAF}.Release|ARM64.ActiveCfg = Release|ARM64
+		{848B91AF-E667-4999-AC38-6DFF6AE7FAAF}.Release|ARM64.Build.0 = Release|ARM64
 		{848B91AF-E667-4999-AC38-6DFF6AE7FAAF}.Release|x64.ActiveCfg = Release|x64
 		{848B91AF-E667-4999-AC38-6DFF6AE7FAAF}.Release|x64.Build.0 = Release|x64
 		{848B91AF-E667-4999-AC38-6DFF6AE7FAAF}.Release|x86.ActiveCfg = Release|Win32
 		{848B91AF-E667-4999-AC38-6DFF6AE7FAAF}.Release|x86.Build.0 = Release|Win32
+		{0873B090-7FFD-4ABD-9B42-619A06C5041F}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{0873B090-7FFD-4ABD-9B42-619A06C5041F}.Debug|ARM64.Build.0 = Debug|ARM64
 		{0873B090-7FFD-4ABD-9B42-619A06C5041F}.Debug|x64.ActiveCfg = Debug|x64
 		{0873B090-7FFD-4ABD-9B42-619A06C5041F}.Debug|x64.Build.0 = Debug|x64
 		{0873B090-7FFD-4ABD-9B42-619A06C5041F}.Debug|x86.ActiveCfg = Debug|Win32
 		{0873B090-7FFD-4ABD-9B42-619A06C5041F}.Debug|x86.Build.0 = Debug|Win32
+		{0873B090-7FFD-4ABD-9B42-619A06C5041F}.Release|ARM64.ActiveCfg = Release|ARM64
+		{0873B090-7FFD-4ABD-9B42-619A06C5041F}.Release|ARM64.Build.0 = Release|ARM64
 		{0873B090-7FFD-4ABD-9B42-619A06C5041F}.Release|x64.ActiveCfg = Release|x64
 		{0873B090-7FFD-4ABD-9B42-619A06C5041F}.Release|x64.Build.0 = Release|x64
 		{0873B090-7FFD-4ABD-9B42-619A06C5041F}.Release|x86.ActiveCfg = Release|Win32
