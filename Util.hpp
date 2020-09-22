@@ -134,8 +134,6 @@ void CreateDirectoryIgnoreExist(const wchar_t* path)
 
 void CreateShellLink(const wchar_t* linkPath, const wchar_t* target)
 {
-	auto guard = wil::CoInitializeEx();
-
 	auto shellLink = wil::CoCreateInstance<IShellLinkW>(CLSID_ShellLink);
 	THROW_IF_FAILED(shellLink->SetPath(target));
 
