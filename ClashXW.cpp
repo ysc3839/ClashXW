@@ -431,8 +431,7 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_INITDIALOG:
 		if (g_darkModeSupported)
 		{
-			UpdateDarkModeEnabled();
-			AllowDarkModeForWindow(hDlg, g_darkModeEnabled);
+			AllowDarkModeForWindow(hDlg, true);
 			RefreshTitleBarThemeColor(hDlg);
 		}
 		return (INT_PTR)TRUE;
@@ -466,38 +465,38 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 	}
 	break;
+	case WM_CTLCOLORDLG:
 	case WM_CTLCOLORSTATIC:
 	{
-		HDC hdc = reinterpret_cast<HDC>(wParam);
-		COLORREF textColor = DarkWindowTextColor;
-		COLORREF bkColor = DarkWindowBkColor;
-
-		if (!g_darkModeEnabled)
+		bool darkModeEnabled = ShouldAppsUseDarkMode() && !IsHighContrast();
+		if (message == WM_CTLCOLORSTATIC)
 		{
-			textColor = GetSysColor(COLOR_WINDOWTEXT);
-			bkColor = GetSysColor(COLOR_WINDOW);
-		}
+			HDC hdc = reinterpret_cast<HDC>(wParam);
+			COLORREF textColor = DarkWindowTextColor;
+			COLORREF bkColor = DarkWindowBkColor;
 
-		SetTextColor(hdc, textColor);
-		SetBkColor(hdc, bkColor);
-		SetBkMode(hdc, TRANSPARENT);
-	}
-	[[fallthrough]];
-	case WM_CTLCOLORDLG:
-		if (g_darkModeEnabled)
+			if (!darkModeEnabled)
+			{
+				textColor = GetSysColor(COLOR_WINDOWTEXT);
+				bkColor = GetSysColor(COLOR_WINDOW);
+			}
+
+			SetTextColor(hdc, textColor);
+			SetBkColor(hdc, bkColor);
+			SetBkMode(hdc, TRANSPARENT);
+		}
+		if (darkModeEnabled)
 		{
 			if (!hDarkBrush)
 				hDarkBrush.reset(CreateSolidBrush(DarkWindowBkColor));
 			return reinterpret_cast<INT_PTR>(hDarkBrush.get());
 		}
-		else
-			return reinterpret_cast<INT_PTR>(GetSysColorBrush(COLOR_WINDOW));
+		return reinterpret_cast<INT_PTR>(GetSysColorBrush(COLOR_WINDOW));
+	}
 	case WM_SETTINGCHANGE:
 	{
 		if (g_darkModeSupported && IsColorSchemeChangeMessage(lParam))
 		{
-			UpdateDarkModeEnabled();
-			AllowDarkModeForWindow(hDlg, g_darkModeEnabled);
 			RefreshTitleBarThemeColor(hDlg);
 			RedrawWindow(hDlg, nullptr, nullptr, RDW_FRAME | RDW_INVALIDATE);
 		}

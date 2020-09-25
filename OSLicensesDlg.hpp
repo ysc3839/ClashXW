@@ -70,11 +70,11 @@ INT_PTR CALLBACK RichEditDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM 
 
 		if (g_darkModeSupported)
 		{
-			SetWindowTheme(hRichEdit, L"Explorer", nullptr); // DarkMode
-
-			UpdateDarkModeEnabled();
-			AllowDarkModeForWindow(hDlg, g_darkModeEnabled);
+			AllowDarkModeForWindow(hDlg, true);
 			RefreshTitleBarThemeColor(hDlg);
+
+			AllowDarkModeForWindow(hRichEdit, true);
+			SetWindowTheme(hRichEdit, L"Explorer", nullptr); // DarkMode
 			UpdateRichEditColor(hRichEdit);
 		}
 
@@ -90,7 +90,6 @@ INT_PTR CALLBACK RichEditDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM 
 	{
 		if (g_darkModeSupported && IsColorSchemeChangeMessage(lParam))
 		{
-			UpdateDarkModeEnabled();
 			RefreshTitleBarThemeColor(hDlg);
 			UpdateRichEditColor(hRichEdit);
 		}
@@ -153,19 +152,16 @@ INT_PTR CALLBACK OSLDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 		int width = 200, height = 200;
 		CenterWindow(hDlg, width, height);
 
-		hListView = CreateWindowW(WC_LISTVIEWW, nullptr, WS_CHILD | WS_VISIBLE | LVS_REPORT | LVS_NOCOLUMNHEADER | LVS_SHOWSELALWAYS | LVS_SINGLESEL, 0, 0, width, height, hDlg, nullptr, g_hInst, nullptr);
-
-		SetWindowTheme(hListView, L"ItemsView", nullptr); // DarkMode
-		ListView_SetExtendedListViewStyle(hListView, LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER | LVS_EX_AUTOSIZECOLUMNS | LVS_EX_ONECLICKACTIVATE | LVS_EX_ONECLICKACTIVATE | LVS_EX_UNDERLINEHOT);
-		SendMessageW(hListView, WM_CHANGEUISTATE, MAKEWPARAM(UIS_SET, UISF_HIDEFOCUS), 0);
-
 		if (g_darkModeSupported)
 		{
-			UpdateDarkModeEnabled();
-			AllowDarkModeForWindow(hDlg, g_darkModeEnabled);
+			AllowDarkModeForWindow(hDlg, true);
 			RefreshTitleBarThemeColor(hDlg);
-			UpdateListViewColor(hListView);
 		}
+
+		hListView = CreateWindowW(WC_LISTVIEWW, nullptr, WS_CHILD | WS_VISIBLE | LVS_REPORT | LVS_NOCOLUMNHEADER | LVS_SHOWSELALWAYS | LVS_SINGLESEL, 0, 0, width, height, hDlg, nullptr, g_hInst, nullptr);
+
+		InitListView(hListView);
+		ListView_SetExtendedListViewStyle(hListView, LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER | LVS_EX_AUTOSIZECOLUMNS | LVS_EX_ONECLICKACTIVATE | LVS_EX_UNDERLINEHOT);
 
 		LVCOLUMNW lvc;
 		lvc.mask = LVCF_WIDTH;
@@ -207,9 +203,8 @@ INT_PTR CALLBACK OSLDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lPara
 	{
 		if (g_darkModeSupported && IsColorSchemeChangeMessage(lParam))
 		{
-			UpdateDarkModeEnabled();
 			RefreshTitleBarThemeColor(hDlg);
-			UpdateListViewColor(hListView);
+			SendMessageW(hListView, WM_THEMECHANGED, 0, 0);
 		}
 	}
 	break;

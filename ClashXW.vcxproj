@@ -278,6 +278,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Coroutine.hpp" />
+    <ClInclude Include="DarkMode.hpp" />
     <ClInclude Include="DialogUtil.hpp" />
     <ClInclude Include="EdgeWebView2.hpp" />
     <ClInclude Include="HiDPI.hpp" />

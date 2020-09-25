@@ -31,7 +31,7 @@ enum IMMERSIVE_HC_CACHE_MODE
 };
 
 // 1903 18362
-enum PreferredAppMode
+enum class PreferredAppMode
 {
 	Default,
 	AllowDark,
@@ -99,11 +99,9 @@ extern "C" {
 	THEMEAPI_(bool) IsDarkModeAllowedForApp(); // ordinal 139
 }
 
-using fnOpenNcThemeData = HTHEME(WINAPI*)(HWND hWnd, LPCWSTR pszClassList); // ordinal 49
-using fnSetPreferredAppMode = PreferredAppMode(WINAPI*)(PreferredAppMode appMode); // ordinal 135, in 1903
+using fnSetPreferredAppMode = PreferredAppMode (WINAPI*)(PreferredAppMode appMode); // ordinal 135, in 1903
 
 bool g_darkModeSupported = false;
-bool g_darkModeEnabled = false;
 DWORD g_buildNumber = 0;
 
 bool IsHighContrast()
@@ -114,16 +112,12 @@ bool IsHighContrast()
 	return false;
 }
 
-void UpdateDarkModeEnabled()
-{
-	g_darkModeEnabled = ShouldAppsUseDarkMode() && !IsHighContrast();
-}
-
 void RefreshTitleBarThemeColor(HWND hWnd)
 {
 	BOOL dark = FALSE;
 	if (IsDarkModeAllowedForWindow(hWnd) &&
-		g_darkModeEnabled)
+		ShouldAppsUseDarkMode() &&
+		!IsHighContrast())
 	{
 		dark = TRUE;
 	}
@@ -155,12 +149,12 @@ bool IsColorSchemeChangeMessage(UINT message, LPARAM lParam)
 	return false;
 }
 
-void _AllowDarkModeForApp(bool allow)
+void SetAppDarkMode(bool allowDark)
 {
 	if (g_buildNumber < 18362)
-		AllowDarkModeForApp(allow);
+		AllowDarkModeForApp(allowDark);
 	else
-		reinterpret_cast<fnSetPreferredAppMode>(AllowDarkModeForApp)(allow ? AllowDark : Default);
+		reinterpret_cast<fnSetPreferredAppMode>(AllowDarkModeForApp)(allowDark ? PreferredAppMode::AllowDark : PreferredAppMode::Default);
 }
 
 void FixDarkScrollBar()
@@ -184,7 +178,7 @@ void FixDarkScrollBar()
 					return OpenNcThemeData(hWnd, classList);
 				};
 
-				addr->u1.Function = reinterpret_cast<ULONG_PTR>(static_cast<fnOpenNcThemeData>(MyOpenThemeData));
+				addr->u1.Function = reinterpret_cast<ULONG_PTR>(static_cast<decltype(OpenNcThemeData)*>(MyOpenThemeData));
 				VirtualProtect(addr, sizeof(IMAGE_THUNK_DATA), oldProtect, &oldProtect);
 			}
 		}
@@ -201,58 +195,114 @@ constexpr bool CheckBuildNumber(DWORD buildNumber)
 
 void InitDarkMode()
 {
-		DWORD major, minor;
-		RtlGetNtVersionNumbers(&major, &minor, &g_buildNumber);
-		g_buildNumber &= ~0xF0000000;
-		if (major == 10 && minor == 0 && CheckBuildNumber(g_buildNumber))
+	DWORD major, minor;
+	RtlGetNtVersionNumbers(&major, &minor, &g_buildNumber);
+	g_buildNumber = static_cast<DWORD>(LOWORD(g_buildNumber));
+	if (major == 10 && minor == 0 && CheckBuildNumber(g_buildNumber))
+	{
+		__try
 		{
-			__try
-			{
-				__HrLoadAllImportsForDll("UxTheme.dll"); // Case sensitive
-			}
-			__except (GetExceptionCode() == VcppException(ERROR_SEVERITY_ERROR, ERROR_PROC_NOT_FOUND) ? EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
-			{
-				return;
-			}
-
-			g_darkModeSupported = true;
-
-			_AllowDarkModeForApp(true);
-			RefreshImmersiveColorPolicyState();
-
-			UpdateDarkModeEnabled();
-
-			FixDarkScrollBar();
+			__HrLoadAllImportsForDll("UxTheme.dll"); // Case sensitive
 		}
+		__except (GetExceptionCode() == VcppException(ERROR_SEVERITY_ERROR, ERROR_PROC_NOT_FOUND) ? EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
+		{
+			return;
+		}
+
+		g_darkModeSupported = true;
+
+		SetAppDarkMode(true);
+		RefreshImmersiveColorPolicyState();
+
+		FixDarkScrollBar();
+	}
 }
 
-void UpdateListViewColor(HWND hWnd)
+void InitListView(HWND hListView)
 {
-	AllowDarkModeForWindow(hWnd, g_darkModeEnabled);
+	HWND hHeader = ListView_GetHeader(hListView);
 
-	wil::unique_htheme hTheme(OpenThemeData(nullptr, L"ItemsView"));
-	if (hTheme)
+	if (g_darkModeSupported)
 	{
-		COLORREF color;
-		if (SUCCEEDED(GetThemeColor(hTheme.get(), 0, 0, TMT_TEXTCOLOR, &color)))
-		{
-			ListView_SetTextColor(hWnd, color);
-		}
-		if (SUCCEEDED(GetThemeColor(hTheme.get(), 0, 0, TMT_FILLCOLOR, &color)))
-		{
-			ListView_SetTextBkColor(hWnd, color);
-			ListView_SetBkColor(hWnd, color);
-		}
+		AllowDarkModeForWindow(hListView, true);
+		AllowDarkModeForWindow(hHeader, true);
+
+		SetWindowSubclass(hListView, [](HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, UINT_PTR /*uIdSubclass*/, DWORD_PTR dwRefData) -> LRESULT {
+			switch (uMsg)
+			{
+			case WM_NOTIFY:
+			{
+				if (reinterpret_cast<LPNMHDR>(lParam)->code == NM_CUSTOMDRAW)
+				{
+					LPNMCUSTOMDRAW nmcd = reinterpret_cast<LPNMCUSTOMDRAW>(lParam);
+					switch (nmcd->dwDrawStage)
+					{
+					case CDDS_PREPAINT:
+						return CDRF_NOTIFYITEMDRAW;
+					case CDDS_ITEMPREPAINT:
+					{
+						auto headerTextColor = reinterpret_cast<COLORREF*>(dwRefData);
+						SetTextColor(nmcd->hdc, *headerTextColor);
+						return CDRF_DODEFAULT;
+					}
+					}
+				}
+			}
+			break;
+			case WM_THEMECHANGED:
+			{
+				HWND hHeader = ListView_GetHeader(hWnd);
+				HTHEME hTheme = OpenThemeData(nullptr, L"ItemsView");
+				if (hTheme)
+				{
+					COLORREF color;
+					if (SUCCEEDED(GetThemeColor(hTheme, 0, 0, TMT_TEXTCOLOR, &color)))
+					{
+						ListView_SetTextColor(hWnd, color);
+					}
+					if (SUCCEEDED(GetThemeColor(hTheme, 0, 0, TMT_FILLCOLOR, &color)))
+					{
+						ListView_SetTextBkColor(hWnd, color);
+						ListView_SetBkColor(hWnd, color);
+					}
+					CloseThemeData(hTheme);
+				}
+
+				hTheme = OpenThemeData(hHeader, L"Header");
+				if (hTheme)
+				{
+					auto headerTextColor = reinterpret_cast<COLORREF*>(dwRefData);
+					GetThemeColor(hTheme, HP_HEADERITEM, 0, TMT_TEXTCOLOR, headerTextColor);
+					CloseThemeData(hTheme);
+				}
+
+				SendMessageW(hHeader, WM_THEMECHANGED, wParam, lParam);
+
+				RedrawWindow(hWnd, nullptr, nullptr, RDW_FRAME | RDW_INVALIDATE);
+			}
+			break;
+			case WM_NCDESTROY:
+			{
+				auto headerTextColor = reinterpret_cast<COLORREF*>(dwRefData);
+				delete headerTextColor;
+			}
+			break;
+			}
+			return DefSubclassProc(hWnd, uMsg, wParam, lParam);
+			}, 0, reinterpret_cast<DWORD_PTR>(new COLORREF{}));
 	}
 
-	SendMessageW(hWnd, WM_THEMECHANGED, 0, 0);
-	RedrawWindow(hWnd, nullptr, nullptr, RDW_FRAME | RDW_INVALIDATE);
+	ListView_SetExtendedListViewStyle(hListView, LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER | LVS_EX_HEADERDRAGDROP);
+
+	// Hide focus dots
+	SendMessageW(hListView, WM_CHANGEUISTATE, MAKELONG(UIS_SET, UISF_HIDEFOCUS), 0);
+
+	SetWindowTheme(hHeader, L"ItemsView", nullptr); // DarkMode
+	SetWindowTheme(hListView, L"ItemsView", nullptr); // DarkMode
 }
 
 void UpdateRichEditColor(HWND hWnd)
 {
-	AllowDarkModeForWindow(hWnd, g_darkModeEnabled);
-
 	wil::unique_htheme hTheme(OpenThemeData(hWnd, L"Edit"));
 	if (hTheme)
 	{
