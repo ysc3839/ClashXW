@@ -311,11 +311,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			case IDM_EXPERIMENTAL_SETBENCHURL:
 			{
 				auto benchmarkUrl = g_settings.benchmarkUrl;
-				TaskDialogInput(hWnd, g_hInst, _(L"Set benchmark url"), nullptr, _(L"Set benchmark url"), TDCBF_OK_BUTTON | TDCBF_CANCEL_BUTTON, MAKEINTRESOURCEW(IDI_CLASHXW), nullptr, benchmarkUrl);
-				if (IsUrlVaild(benchmarkUrl.c_str()))
-					g_settings.benchmarkUrl = benchmarkUrl;
-				else
-					TaskDialog(hWnd, nullptr, _(L"Warning"), nullptr, _(L"URL is not valid"), TDCBF_OK_BUTTON, TD_WARNING_ICON, nullptr);
+				int button = 0;
+				auto hr = TaskDialogInput(hWnd, g_hInst, _(L"Set benchmark url"), nullptr, _(L"Set benchmark url"), TDCBF_OK_BUTTON | TDCBF_CANCEL_BUTTON, MAKEINTRESOURCEW(IDI_CLASHXW), &button, benchmarkUrl);
+				if (SUCCEEDED(hr) && button == IDOK)
+				{
+					if (IsUrlVaild(benchmarkUrl.c_str()))
+						g_settings.benchmarkUrl = benchmarkUrl;
+					else
+						TaskDialog(hWnd, nullptr, _(L"Warning"), nullptr, _(L"URL is not valid"), TDCBF_OK_BUTTON, TD_WARNING_ICON, nullptr);
+				}
 			}
 			break;
 			case IDM_EXPERIMENTAL_OPENDASHBOARDINBROWSER:
