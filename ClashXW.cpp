@@ -349,7 +349,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_DESTROY:
 		StopWatchConfigFile();
 		g_hMenuHook.reset();
-		g_hMenuAccel.reset();
 		g_processManager->ForceStop();
 		SaveSettings();
 		Shell_NotifyIconW(NIM_DELETE, &nid);

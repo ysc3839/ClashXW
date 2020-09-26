@@ -26,23 +26,41 @@ HMENU g_hConfigMenu;
 HMENU g_hLogLevelMenu;
 HMENU g_hPortsMenu;
 
-ACCEL MenuAccel[] = {
-//	{ fVirt, key, cmd },
-	{ FVIRTKEY | FALT, 'G', IDM_MODE_GLOBAL },
-	{ FVIRTKEY | FALT, 'R', IDM_MODE_RULE },
-	{ FVIRTKEY | FALT, 'D', IDM_MODE_DIRECT },
-	{ FVIRTKEY | FCONTROL, 'S', IDM_SYSTEMPROXY },
-	{ FVIRTKEY | FCONTROL, 'C', IDM_COPYCOMMAND },
-	{ FVIRTKEY | FCONTROL | FALT, 'C', IDM_COPYCOMMAND_EXTERNAL },
-	{ FVIRTKEY | FCONTROL, 'T', IDM_BENCHMARK },
-	{ FVIRTKEY | FCONTROL, 'D', IDM_DASHBOARD },
-	{ FVIRTKEY | FCONTROL, 'O', IDM_CONFIG_OPENFOLDER },
-	{ FVIRTKEY | FCONTROL, 'R', IDM_CONFIG_RELOAD },
-	{ FVIRTKEY | FCONTROL, 'M', IDM_REMOTECONFIG_MANAGE },
-	{ FVIRTKEY | FCONTROL, 'U', IDM_REMOTECONFIG_UPDATE },
-	{ FVIRTKEY | FCONTROL, 'Q', IDM_QUIT },
+struct AccelKey
+{
+	uint8_t flags;
+	uint16_t key;
+
+	bool operator==(const AccelKey&) const = default;
 };
-wil::unique_haccel g_hMenuAccel;
+
+namespace std
+{
+	template<> struct hash<AccelKey>
+	{
+		size_t operator()(const AccelKey& k) const noexcept
+		{
+			return std::hash<uint32_t>{}(k.key << 16 | k.flags);
+		}
+	};
+}
+
+const std::unordered_map<AccelKey, WORD> MenuAccel = {
+//	{ {flags, key}, cmd },
+	{ {FALT, 'G'}, IDM_MODE_GLOBAL },
+	{ {FALT, 'R'}, IDM_MODE_RULE },
+	{ {FALT, 'D'}, IDM_MODE_DIRECT },
+	{ {FCONTROL, 'S'}, IDM_SYSTEMPROXY },
+	{ {FCONTROL, 'C'}, IDM_COPYCOMMAND },
+	{ {FCONTROL | FALT, 'C'}, IDM_COPYCOMMAND_EXTERNAL },
+	{ {FCONTROL, 'T'}, IDM_BENCHMARK },
+	{ {FCONTROL, 'D'}, IDM_DASHBOARD },
+	{ {FCONTROL, 'O'}, IDM_CONFIG_OPENFOLDER },
+	{ {FCONTROL, 'R'}, IDM_CONFIG_RELOAD },
+	{ {FCONTROL, 'M'}, IDM_REMOTECONFIG_MANAGE },
+	{ {FCONTROL, 'U'}, IDM_REMOTECONFIG_UPDATE },
+	{ {FCONTROL, 'Q'}, IDM_QUIT },
+};
 wil::unique_hhook g_hMenuHook;
 
 enum class MenuIdType
@@ -59,6 +77,28 @@ BOOL SetMenuItemText(HMENU hMenu, UINT pos, const wchar_t* text) noexcept
 		.dwTypeData = const_cast<LPWSTR>(text)
 	};
 	return SetMenuItemInfoW(hMenu, pos, TRUE, &mii);
+}
+
+bool ProcessAccelerator(LPMSG msg)
+{
+	if (msg->message == WM_KEYDOWN || msg->message == WM_SYSKEYDOWN)
+	{
+		uint8_t flags = 0;
+		if (GetKeyState(VK_CONTROL) & 0x8000) flags |= FCONTROL;
+		if (GetKeyState(VK_MENU) & 0x8000) flags |= FALT;
+
+		if (flags != 0) // Currently all accelerators have modifier key
+		{
+			AccelKey key = { flags, static_cast<uint16_t>(msg->wParam) };
+			auto it = MenuAccel.find(key);
+			if (it != MenuAccel.end())
+			{
+				PostMessageW(g_hWnd, WM_COMMAND, MAKEWPARAM(it->second, 1), 0);
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 void SetupMenu() noexcept
@@ -87,16 +127,13 @@ void SetupMenu() noexcept
 
 		SetMenuItemText(g_hContextMenu, 3, _(L"Copy shell command\tCtrl+C"));
 
-		g_hMenuAccel.reset(CreateAcceleratorTableW(MenuAccel, static_cast<int>(std::size(MenuAccel))));
-		THROW_LAST_ERROR_IF_NULL(g_hMenuAccel);
-
 		g_hMenuHook.reset(SetWindowsHookExW(WH_MSGFILTER, [](int code, WPARAM wParam, LPARAM lParam) -> LRESULT {
 			if (code == MSGF_MENU)
 			{
 				auto msg = reinterpret_cast<LPMSG>(lParam);
 				if (msg->message == WM_SYSKEYDOWN && msg->wParam == VK_MENU)
 					return TRUE; // Prevent menu closing
-				if (TranslateAcceleratorW(g_hWnd, g_hMenuAccel.get(), msg))
+				if (ProcessAccelerator(msg))
 					msg->wParam = VK_ESCAPE; // Force menu to close
 			}
 			return CallNextHookEx(g_hMenuHook.get(), code, wParam, lParam);
