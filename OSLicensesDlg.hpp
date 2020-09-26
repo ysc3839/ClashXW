@@ -28,8 +28,6 @@ struct TitleAndContent
 
 INT_PTR CALLBACK RichEditDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	UNREFERENCED_PARAMETER(wParam);
-	UNREFERENCED_PARAMETER(lParam);
 	static HWND hRichEdit = nullptr;
 	switch (message)
 	{
@@ -141,7 +139,6 @@ void ShowRichEditDialog(HWND hWndParent, const wchar_t* title, WORD resId)
 
 INT_PTR CALLBACK OSLDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	UNREFERENCED_PARAMETER(lParam);
 	static HWND hListView = nullptr;
 	switch (message)
 	{

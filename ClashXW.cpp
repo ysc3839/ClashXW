@@ -24,14 +24,10 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
-	_In_opt_ HINSTANCE hPrevInstance,
-	_In_ LPWSTR    lpCmdLine,
-	_In_ int       nCmdShow)
+	_In_opt_ [[maybe_unused]] HINSTANCE hPrevInstance,
+	_In_ [[maybe_unused]] LPWSTR    lpCmdLine,
+	_In_ [[maybe_unused]] int       nCmdShow)
 {
-	UNREFERENCED_PARAMETER(hPrevInstance);
-	UNREFERENCED_PARAMETER(lpCmdLine);
-	UNREFERENCED_PARAMETER(nCmdShow);
-
 	g_hInst = hInstance;
 
 	winrt::init_apartment(winrt::apartment_type::single_threaded);
@@ -430,7 +426,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 // Message handler for about box.
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	UNREFERENCED_PARAMETER(lParam);
 	static wil::unique_hbrush hDarkBrush;
 	switch (message)
 	{
