@@ -54,11 +54,11 @@ constexpr auto CLASH_EXE_NAME = L"clash.exe";
 constexpr auto CLASH_CTL_ADDR = L"127.0.0.1:9090";
 constexpr auto CLASH_CTL_SECRET = L"";
 
+#include "I18n.hpp"
 #include "Coroutine.hpp"
 #include "Util.hpp"
 #include "SysProxy.hpp"
 #include "SettingsUtil.hpp"
-#include "I18n.hpp"
 #include "ClashApi.hpp"
 #include "ConfigFileManager.hpp"
 #include "MenuUtil.hpp"
@@ -67,6 +67,7 @@ constexpr auto CLASH_CTL_SECRET = L"";
 #include "DialogUtil.hpp"
 #include "OSLicensesDlg.hpp"
 #include "TaskDialogInput.hpp"
+#include "RemoteConfigDlg.hpp"
 
 std::unique_ptr<ProcessManager> g_processManager;
 std::unique_ptr<ClashApi> g_clashApi;

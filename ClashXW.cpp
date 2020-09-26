@@ -308,6 +308,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			case IDM_CONFIG_RELOAD:
 				UpdateConfigFile({});
 				break;
+			case IDM_REMOTECONFIG_MANAGE:
+				ShowRemoteConfigDialog(hWnd);
+				break;
 			case IDM_EXPERIMENTAL_SETBENCHURL:
 			{
 				auto benchmarkUrl = g_settings.benchmarkUrl;

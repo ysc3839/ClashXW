@@ -36,6 +36,11 @@
 #define IDM_PORTS_IP                    30
 #define IDM_QUIT                        31
 #define IDD_ABOUTBOX                    1000
+#define IDD_REMOTECONFIG                1100
+#define IDC_REMOTECONFIG_LISTVIEW       1101
+#define IDC_REMOTECONFIG_ADD            1102
+#define IDC_REMOTECONFIG_DELETE         1103
+#define IDC_REMOTECONFIG_UPDATE         1104
 #define IDC_STATIC                      -1
 
 // Next default values for new objects

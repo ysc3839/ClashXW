@@ -189,10 +189,7 @@ HRESULT TaskDialogInput(HWND hWndOwner, HINSTANCE hInstance, PCWSTR windowTitle,
 				auto it = input.begin();
 				for (auto [_, hWndEdit] : hWndControls)
 				{
-					int len = GetWindowTextLengthW(hWndEdit);
-					it->second.resize(static_cast<size_t>(len) + 1);
-					len = GetWindowTextW(hWndEdit, it->second.data(), len + 1);
-					it->second.resize(static_cast<size_t>(len));
+					it->second = GetWindowString(hWndEdit);
 					++it;
 				}
 			}

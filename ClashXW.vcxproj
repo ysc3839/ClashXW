@@ -290,6 +290,7 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="MenuUtil.hpp" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="RemoteConfigDlg.hpp" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SettingsUtil.hpp" />
     <ClInclude Include="SysProxy.hpp" />

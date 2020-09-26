@@ -213,3 +213,16 @@ bool IsUrlVaild(const wchar_t* url)
 	CATCH_LOG();
 	return false;
 }
+
+std::wstring GetWindowString(HWND hWnd)
+{
+	std::wstring str;
+	int len = GetWindowTextLengthW(hWnd);
+	if (len != 0)
+	{
+		str.resize(static_cast<size_t>(len) + 1);
+		len = GetWindowTextW(hWnd, str.data(), len + 1);
+		str.resize(static_cast<size_t>(len));
+	}
+	return str;
+}

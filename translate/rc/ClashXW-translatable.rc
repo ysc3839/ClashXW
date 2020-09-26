@@ -53,6 +53,17 @@ BEGIN
                     "SysLink",WS_TABSTOP,96,132,162,12
 END
 
+IDD_REMOTECONFIG DIALOG 0, 0, 272, 158
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Remote Configs"
+FONT 0x7FFF, ""
+BEGIN
+    CONTROL         "",IDC_REMOTECONFIG_LISTVIEW,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,12,12,0,0
+    PUSHBUTTON      "Add",IDC_REMOTECONFIG_ADD,12,0,50,14
+    PUSHBUTTON      "Delete",IDC_REMOTECONFIG_DELETE,72,0,50,14,WS_DISABLED
+    PUSHBUTTON      "Update",IDC_REMOTECONFIG_UPDATE,132,0,50,14,WS_DISABLED
+END
+
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -116,11 +127,11 @@ IDC_MENU MENU
             MENUITEM SEPARATOR
             MENUITEM "Open config Folder\tCtrl+O",  IDM_CONFIG_OPENFOLDER
             MENUITEM "Reload config\tCtrl+R",       IDM_CONFIG_RELOAD
-            POPUP "Remote Config", INACTIVE
+            POPUP "Remote Config"
             BEGIN
                 MENUITEM "Manage\tCtrl+M",              IDM_REMOTECONFIG_MANAGE
-                MENUITEM "Update\tCtrl+U",              IDM_REMOTECONFIG_UPDATE
-                MENUITEM "Auto Update",                 IDM_REMOTECONFIG_AUTOUPDATE, CHECKED
+                MENUITEM "Update\tCtrl+U",              IDM_REMOTECONFIG_UPDATE, INACTIVE
+                MENUITEM "Auto Update",                 IDM_REMOTECONFIG_AUTOUPDATE, CHECKED, INACTIVE
             END
             POPUP "Experimental"
             BEGIN
@@ -163,6 +174,10 @@ IDC_MENU MENU
 GUIDELINES DESIGNINFO
 BEGIN
     IDD_ABOUTBOX, DIALOG
+    BEGIN
+    END
+
+    IDD_REMOTECONFIG, DIALOG
     BEGIN
     END
 END

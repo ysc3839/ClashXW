@@ -3,18 +3,71 @@
 #define JSON_TO(k) j[#k] = value.k;
 #define JSON_TRY_FROM(k) try { j.at(#k).get_to(value.k); } CATCH_LOG()
 
+struct RemoteConfig
+{
+	std::wstring url;
+	std::wstring name;
+	std::optional<std::chrono::system_clock::time_point> updateTime;
+	bool updating = false;
+
+	std::wstring GetTimeString() const
+	{
+		if (updating)
+			return _(L"Updating");
+		if (!updateTime)
+			return _(L"Never");
+
+		try
+		{
+			FILETIME fileTime = winrt::clock::to_FILETIME(winrt::clock::from_sys(*updateTime));
+			SYSTEMTIME utcTime, localTime;
+			THROW_IF_WIN32_BOOL_FALSE(FileTimeToSystemTime(&fileTime, &utcTime));
+			THROW_IF_WIN32_BOOL_FALSE(SystemTimeToTzSpecificLocalTime(nullptr, &utcTime, &localTime));
+
+			std::wstring str(12, L'\0');
+			// return value including the terminating null character
+			auto i = GetDateFormatEx(LOCALE_NAME_USER_DEFAULT, 0, &localTime, L"MM-dd", str.data(), static_cast<int>(str.size()), nullptr);
+			THROW_LAST_ERROR_IF(i == 0);
+
+			str[i - 1] = L' ';
+
+			i = GetTimeFormatEx(LOCALE_NAME_USER_DEFAULT, 0, &localTime, L"HH:mm", str.data() + i, static_cast<int>(str.size()) - i);
+			THROW_LAST_ERROR_IF(i == 0);
+
+			return str;
+		}
+		CATCH_LOG();
+		return {};
+	}
+
+	friend void to_json(json& j, const RemoteConfig& value) {
+		try { j["url"] = Utf16ToUtf8(value.url); } CATCH_LOG();
+		try { j["name"] = Utf16ToUtf8(value.name); } CATCH_LOG();
+		if (value.updateTime)
+			j["updateTime"] = std::chrono::system_clock::to_time_t(*value.updateTime);
+	}
+
+	friend void from_json(const json& j, RemoteConfig& value) {
+		try { value.url = Utf8ToUtf16(j.at("url").get<std::string_view>()); } CATCH_LOG();
+		try { value.name = Utf8ToUtf16(j.at("name").get<std::string_view>()); } CATCH_LOG();
+		try { value.updateTime.emplace(std::chrono::system_clock::from_time_t(j.at("updateTime").get<time_t>())); } CATCH_LOG();
+	}
+};
+
 struct Settings
 {
 	bool systemProxy;
 	std::wstring benchmarkUrl;
 	bool openDashboardInBrowser;
 	std::wstring configFile;
+	std::vector<RemoteConfig> remoteConfig;
 
 	friend void to_json(json& j, const Settings& value) {
 		JSON_TO(systemProxy);
 		try { j["benchmarkUrl"] = Utf16ToUtf8(value.benchmarkUrl); } CATCH_LOG();
 		JSON_TO(openDashboardInBrowser);
 		try { j["configFile"] = Utf16ToUtf8(value.configFile); } CATCH_LOG();
+		JSON_TO(remoteConfig);
 	}
 
 	friend void from_json(const json& j, Settings& value) {
@@ -22,6 +75,7 @@ struct Settings
 		try { value.benchmarkUrl = Utf8ToUtf16(j.at("benchmarkUrl").get<std::string_view>()); } CATCH_LOG();
 		JSON_TRY_FROM(openDashboardInBrowser);
 		try { value.configFile = Utf8ToUtf16(j.at("configFile").get<std::string_view>()); } CATCH_LOG();
+		JSON_TRY_FROM(remoteConfig);
 	}
 };
 
