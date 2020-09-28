@@ -19,136 +19,273 @@
 
 #pragma once
 
-class ProcessManager
-{
-public:
-	ProcessManager(fs::path exePath, fs::path homeDir, fs::path configFile, fs::path uiDir, std::wstring ctlAddr, std::wstring ctlSecret) :
-		m_running(false), m_exePath(exePath), m_homeDir(homeDir), m_configFile(configFile), m_uiDir(uiDir), m_ctlAddr(ctlAddr), m_ctlSecret(ctlSecret) {}
+#define OBJPREFIX LR"(Local\)"
+constexpr size_t guidSize = std::size(L"{00000000-0000-0000-0000-000000000000}"); // including the null terminator
+constexpr size_t prefixSize = std::size(OBJPREFIX) - 1;
+constexpr size_t objNameSize = prefixSize + guidSize;
 
-	~ProcessManager()
+struct ProcessInfo
+{
+	DWORD processId;
+	DWORD threadId;
+	HWND hWndConsole;
+};
+
+namespace ProcessManager
+{
+	namespace // private
 	{
-		ForceStop();
+		bool _running = false;
+		fs::path _exePath, _homeDir, _configFile, _uiDir;
+		std::wstring _ctlAddr, _ctlSecret, _clashCmd;
+		wil::unique_handle _hJob;
+		wil::unique_process_information _subProcInfo, _clashProcInfo;
+		HWND _hWndConsole = nullptr;
+
+		void _UpdateClashCmd()
+		{
+			_clashCmd.assign(LR"(")");
+			_clashCmd.append(_exePath.filename());
+			_clashCmd.append(LR"(")");
+			if (!_homeDir.empty())
+			{
+				_clashCmd.append(LR"( -d ")");
+				_clashCmd.append(_homeDir);
+				_clashCmd.append(LR"(")");
+			}
+			if (!_configFile.empty())
+			{
+				_clashCmd.append(LR"( -f ")");
+				_clashCmd.append(_configFile);
+				_clashCmd.append(LR"(")");
+			}
+			if (!_uiDir.empty())
+			{
+				_clashCmd.append(LR"( -ext-ui ")");
+				_clashCmd.append(_uiDir);
+				_clashCmd.append(LR"(")");
+			}
+			if (!_ctlAddr.empty())
+			{
+				_clashCmd.append(LR"( -ext-ctl ")");
+				_clashCmd.append(_ctlAddr);
+				_clashCmd.append(LR"(")");
+			}
+
+			// Override secret even if empty
+			_clashCmd.append(LR"( -secret ")");
+			_clashCmd.append(_ctlSecret);
+			_clashCmd.append(LR"(")");
+		}
 	}
+
+	void SetArgs(fs::path exePath, fs::path homeDir, fs::path configFile, fs::path uiDir, std::wstring ctlAddr, std::wstring ctlSecret)
+	{
+		_exePath = exePath;
+		_homeDir = homeDir;
+		_configFile = configFile;
+		_uiDir = uiDir;
+		_ctlAddr = ctlAddr;
+		_ctlSecret = ctlSecret;
+
+		_UpdateClashCmd();
+	}
+
+	void SetConfigFile(fs::path configFile)
+	{
+		_configFile = configFile;
+
+		_UpdateClashCmd();
+	}
+
+	bool IsRunning() { return _running; }
+	const PROCESS_INFORMATION& GetSubProcessInfo() { return _subProcInfo; }
+	const PROCESS_INFORMATION& GetClashProcessInfo() { return _clashProcInfo; }
+	HWND GetConsoleWindow() { return _hWndConsole; }
 
 	bool Start()
 	{
-		if (m_running)
+		if (_running)
 			return false;
 
 		try
 		{
-			m_hJob.reset(CreateJobObjectW(nullptr, nullptr));
-			THROW_LAST_ERROR_IF_NULL(m_hJob);
+			_hJob.reset(CreateJobObjectW(nullptr, nullptr));
+			THROW_LAST_ERROR_IF_NULL(_hJob);
 
 			JOBOBJECT_EXTENDED_LIMIT_INFORMATION eli = {
 				.BasicLimitInformation = {
 					.LimitFlags = JOB_OBJECT_LIMIT_DIE_ON_UNHANDLED_EXCEPTION | JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE
 				}
 			};
-			THROW_IF_WIN32_BOOL_FALSE(SetInformationJobObject(m_hJob.get(), JobObjectExtendedLimitInformation, &eli, sizeof(eli)));
+			THROW_IF_WIN32_BOOL_FALSE(SetInformationJobObject(_hJob.get(), JobObjectExtendedLimitInformation, &eli, sizeof(eli)));
 
-			std::wstring cmd(m_exePath.filename());
-			if (!m_homeDir.empty())
+			// Local\{00000000-0000-0000-0000-000000000000}F
+			wchar_t objName[objNameSize + 1] = OBJPREFIX;
+
+			GUID guid = {};
+			THROW_IF_FAILED(CoCreateGuid(&guid));
+			THROW_HR_IF(E_OUTOFMEMORY, StringFromGUID2(guid, objName + prefixSize, guidSize) != guidSize);
+
+			size_t size = std::max((_exePath.native().size() + 1 + _clashCmd.size() + 1) * sizeof(wchar_t), sizeof(ProcessInfo));
+			objName[objNameSize - 1] = L'F';
+			wil::unique_handle hFileMapping(CreateFileMappingW(INVALID_HANDLE_VALUE, nullptr, PAGE_READWRITE, 0, static_cast<DWORD>(size), objName));
+			THROW_LAST_ERROR_IF_NULL(hFileMapping);
+			auto error = GetLastError();
+			if (error == ERROR_ALREADY_EXISTS) THROW_WIN32(error);
+
+			wil::unique_mapview_ptr<wchar_t> buffer(reinterpret_cast<wchar_t*>(MapViewOfFile(hFileMapping.get(), FILE_MAP_WRITE | FILE_MAP_READ, 0, 0, 0)));
+			THROW_LAST_ERROR_IF_NULL(buffer);
+
+			objName[objNameSize - 1] = L'E';
+			wil::unique_handle hEvent(CreateEventW(nullptr, FALSE, FALSE, objName));
+			THROW_LAST_ERROR_IF_NULL(hEvent);
+			error = GetLastError();
+			if (error == ERROR_ALREADY_EXISTS) THROW_WIN32(error);
+
+			auto exePathPtr = buffer.get();
+			size_t i = _exePath.native().copy(exePathPtr, fs::path::string_type::npos);
+			exePathPtr[i] = 0;
+
+			auto cmdPtr = buffer.get() + i + 1;
+			i = _clashCmd.copy(cmdPtr, std::wstring::npos);
+			cmdPtr[i] = 0;
+
+			auto selfPath = GetModuleFsPath(g_hInst);
+			auto guidStr = objName + prefixSize;
+			std::wstring cmd(LR"(")");
+			cmd.append(selfPath);
+			cmd.append(LR"(" --pm=)");
+			cmd.append(guidStr, guidSize - 1);
+
 			{
-				cmd.append(LR"( -d ")");
-				cmd.append(m_homeDir);
-				cmd.append(LR"(")");
+				// Disable Windows Error Reporting for subprocess
+				auto lastErrorMode = SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX);
+				auto restoreErrorMode = wil::scope_exit([=]() { // Restore error mode after CreateProcessW
+					SetErrorMode(lastErrorMode);
+				});
+				STARTUPINFOW si = {
+					.cb = sizeof(si),
+					.lpTitle = const_cast<LPWSTR>(CLASHXW_APP_ID),
+					.dwFlags = STARTF_FORCEOFFFEEDBACK | STARTF_PREVENTPINNING | STARTF_TITLEISAPPID | STARTF_USESHOWWINDOW,
+					.wShowWindow = SW_HIDE
+				};
+				THROW_IF_WIN32_BOOL_FALSE(CreateProcessW(selfPath.c_str(), cmd.data(), nullptr, nullptr, FALSE, CREATE_SUSPENDED, nullptr, nullptr, &si, &_subProcInfo));
 			}
-			if (!m_configFile.empty())
+
+			// Ensure process in job before start
+			THROW_IF_WIN32_BOOL_FALSE(AssignProcessToJobObject(_hJob.get(), _subProcInfo.hProcess));
+			THROW_LAST_ERROR_IF(ResumeThread(_subProcInfo.hThread) == static_cast<DWORD>(-1));
+
+			HANDLE handles[] = { hEvent.get(), _subProcInfo.hProcess };
+			auto ret = WaitForMultipleObjects(static_cast<DWORD>(std::size(handles)), handles, FALSE, INFINITE);
+			error = ERROR_TIMEOUT;
+			switch (ret)
 			{
-				cmd.append(LR"( -f ")");
-				cmd.append(m_configFile);
-				cmd.append(LR"(")");
-			}
-			if (!m_uiDir.empty())
+			case WAIT_OBJECT_0: // Event signaled, clash process started suspended
 			{
-				cmd.append(LR"( -ext-ui ")");
-				cmd.append(m_uiDir);
-				cmd.append(LR"(")");
+				auto info = reinterpret_cast<ProcessInfo*>(buffer.get());
+				_clashProcInfo.dwProcessId = info->processId;
+				_clashProcInfo.hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, _clashProcInfo.dwProcessId);
+				THROW_LAST_ERROR_IF_NULL(_clashProcInfo.hProcess);
+
+				_clashProcInfo.dwThreadId = info->threadId;
+				_clashProcInfo.hThread = OpenThread(THREAD_ALL_ACCESS, FALSE, _clashProcInfo.dwThreadId);
+				THROW_LAST_ERROR_IF_NULL(_clashProcInfo.hThread);
+
+				_hWndConsole = info->hWndConsole;
 			}
-			if (!m_ctlAddr.empty())
+			break;
+			case WAIT_OBJECT_0 + 1: // Sub process exited before event signaled
 			{
-				cmd.append(LR"( -ext-ctl ")");
-				cmd.append(m_ctlAddr);
-				cmd.append(LR"(")");
+				DWORD exitCode;
+				THROW_IF_WIN32_BOOL_FALSE(GetExitCodeProcess(_subProcInfo.hProcess, &exitCode));
+				HRESULT hr = static_cast<HRESULT>(exitCode); // Treat exit code as hresult
+				if (SUCCEEDED(hr)) hr = E_UNEXPECTED;
+				THROW_HR(hr);
+			}
+			return false;
+			case WAIT_FAILED:
+				error = GetLastError();
+				[[fallthrough]];
+			case WAIT_TIMEOUT:
+				THROW_WIN32(error);
+				return false;
 			}
 
-			// Override secret even if empty
-			cmd.append(LR"( -secret ")");
-			cmd.append(m_ctlSecret);
-			cmd.append(LR"(")");
-
-			STARTUPINFO si = { .cb = sizeof(si) };
-			THROW_IF_WIN32_BOOL_FALSE(CreateProcessW(m_exePath.c_str(), cmd.data(), nullptr, nullptr, FALSE, CREATE_NO_WINDOW, nullptr, nullptr, &si, &m_procInfo));
-
-			THROW_IF_WIN32_BOOL_FALSE(AssignProcessToJobObject(m_hJob.get(), m_procInfo.hProcess));
-
-			m_monitorThread = std::thread(&ProcessManager::Monitor, this);
+			ResumeThread(_clashProcInfo.hThread);
 		}
 		catch (...)
 		{
-			m_hJob.reset();
+			_hJob.reset();
 			LOG_CAUGHT_EXCEPTION();
 			return false;
 		}
-		m_running = true;
+		_running = true;
 		return true;
 	}
 
-	void ForceStop()
+	void Stop()
 	{
-		if (m_running)
+		if (_running)
 		{
-			m_running = false;
-			m_hJob.reset();
-			m_monitorThread.join();
+			_running = false;
+			_hJob.reset();
+			_subProcInfo.reset();
+			_clashProcInfo.reset();
+			_hWndConsole = nullptr;
 		}
 	}
 
-	const PROCESS_INFORMATION& GetProcessInfo() const
+	int SubProcess(std::wstring_view guid)
 	{
-		return m_procInfo;
-	}
-
-	void SetConfigFile(fs::path configFile)
-	{
-		m_configFile = configFile;
-	}
-
-private:
-	void Monitor()
-	{
-		while (m_running)
+		try
 		{
-			auto ret = WaitForSingleObject(m_procInfo.hProcess, INFINITE);
-			switch (ret)
-			{
-			case WAIT_OBJECT_0:
-				if (m_running)
-				{
-					m_running = false;
-					m_monitorThread.detach();
-					DWORD exitCode;
-					LOG_IF_WIN32_BOOL_FALSE(GetExitCodeProcess(m_procInfo.hProcess, &exitCode));
-					PostMessageW(g_hWnd, WM_PROCESSNOTIFY, exitCode, 0);
-				}
-				m_hJob.reset();
-				m_procInfo.reset();
-				break;
-			case WAIT_FAILED:
-				LOG_LAST_ERROR();
-				[[fallthrough]];
-			case WAIT_TIMEOUT:
-				// continue waiting
-				break;
-			}
-		}
-	}
+			wchar_t objName[objNameSize + 1] = OBJPREFIX;
+			size_t i = guid.copy(objName + prefixSize, guidSize - 1);
+			objName[prefixSize + i] = L'F';
 
-	bool m_running;
-	fs::path m_exePath, m_homeDir, m_configFile, m_uiDir;
-	std::wstring m_ctlAddr, m_ctlSecret;
-	wil::unique_handle m_hJob;
-	wil::unique_process_information m_procInfo;
-	std::thread m_monitorThread;
-};
+			wil::unique_handle hFileMapping(OpenFileMappingW(FILE_MAP_WRITE | FILE_MAP_READ, FALSE, objName));
+			THROW_LAST_ERROR_IF_NULL(hFileMapping);
+
+			wil::unique_mapview_ptr<wchar_t> buffer(reinterpret_cast<wchar_t*>(MapViewOfFile(hFileMapping.get(), FILE_MAP_WRITE | FILE_MAP_READ, 0, 0, 0)));
+			THROW_LAST_ERROR_IF_NULL(buffer);
+
+			objName[prefixSize + i] = L'E';
+			wil::unique_handle hEvent(OpenEventW(EVENT_MODIFY_STATE, FALSE, objName));
+			THROW_LAST_ERROR_IF_NULL(hEvent);
+
+			THROW_IF_WIN32_BOOL_FALSE(AllocConsole());
+			HWND hWndConsole = ::GetConsoleWindow();
+			THROW_LAST_ERROR_IF_NULL(hWndConsole);
+			ShowWindow(hWndConsole, SW_HIDE);
+
+			auto exePath = buffer.get();
+			auto clashCmd = buffer.get() + wcslen(exePath) + 1;
+
+			STARTUPINFOW si = { .cb = sizeof(si) };
+			wil::unique_process_information procInfo;
+			THROW_IF_WIN32_BOOL_FALSE(CreateProcessW(exePath, clashCmd, nullptr, nullptr, FALSE, CREATE_SUSPENDED, nullptr, nullptr, &si, &procInfo));
+
+			auto info = reinterpret_cast<ProcessInfo*>(buffer.get());
+			*info = {
+				.processId = procInfo.dwProcessId,
+				.threadId = procInfo.dwThreadId,
+				.hWndConsole = hWndConsole
+			};
+
+			THROW_IF_WIN32_BOOL_FALSE(SetEvent(hEvent.get()));
+			THROW_LAST_ERROR_IF(WaitForSingleObject(procInfo.hProcess, INFINITE) == WAIT_FAILED);
+
+			const std::wstring_view msg = _(
+				L"\n"
+				L"[Process completed]\n");
+			THROW_IF_WIN32_BOOL_FALSE(WriteConsoleW(GetStdHandle(STD_OUTPUT_HANDLE), msg.data(), static_cast<DWORD>(msg.size()), nullptr, nullptr));
+			static_cast<void>(_getch());
+		}
+		CATCH_RETURN();
+		return S_OK;
+	}
+}
+
+#undef OBJPREFIX

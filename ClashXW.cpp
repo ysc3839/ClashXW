@@ -25,7 +25,7 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ [[maybe_unused]] HINSTANCE hPrevInstance,
-	_In_ [[maybe_unused]] LPWSTR    lpCmdLine,
+	_In_ LPWSTR    lpCmdLine,
 	_In_ [[maybe_unused]] int       nCmdShow)
 {
 	g_hInst = hInstance;
@@ -35,7 +35,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	SetCurrentProcessExplicitAppUserModelID(CLASHXW_APP_ID);
 
 	if (!CheckOnlyOneInstance(CLASHXW_MUTEX_NAME))
+	{
+		constexpr std::wstring_view prefix = L"--pm=";
+		std::wstring_view cmdLine(lpCmdLine);
+		if (cmdLine.size() > prefix.size() && cmdLine.starts_with(prefix))
+			return ProcessManager::SubProcess(cmdLine.substr(prefix.size()));
 		return EXIT_FAILURE;
+	}
 
 	g_exePath = GetModuleFsPath(hInstance).remove_filename();
 	SetCurrentDirectoryW(g_exePath.c_str());
@@ -89,12 +95,65 @@ void ShowBalloon(const wchar_t* info, const wchar_t* title, DWORD flag = NIIF_IN
 	LOG_IF_WIN32_BOOL_FALSE(Shell_NotifyIconW(NIM_MODIFY, &nid));
 }
 
+void ShowConsoleWindow(bool show)
+{
+	CheckMenuItem(g_hContextMenu, IDM_EXPERIMENTAL_SHOWCLASHCONSOLE, MF_BYCOMMAND | (show ? MF_CHECKED : MF_UNCHECKED));
+	const HWND hWnd = ProcessManager::GetConsoleWindow();
+	if (hWnd)
+	{
+		ShowWindow(hWnd, show ? SW_SHOW : SW_HIDE);
+		if (show)
+			SetForegroundWindow(hWnd);
+	}
+}
+
+winrt::fire_and_forget StartClash();
+
+IAsyncAction ProcessMonitor()
+{
+	HANDLE hSubProcess = ProcessManager::GetSubProcessInfo().hProcess,
+		hClashProcess = ProcessManager::GetClashProcessInfo().hProcess;
+
+	co_await winrt::resume_on_signal(hClashProcess);
+
+	g_clashRunning = false;
+
+	if (!ProcessManager::IsRunning()) // Manually stop
+		co_return;
+
+	DWORD exitCode = 0;
+	THROW_IF_WIN32_BOOL_FALSE(GetExitCodeProcess(hClashProcess, &exitCode));
+
+	LOG_HR_MSG(E_FAIL, "Clash exited with code: %ul", exitCode);
+
+	FILETIME creationTime = {}, exitTime = {}, kernelTime, userTime;
+	THROW_IF_WIN32_BOOL_FALSE(GetProcessTimes(hClashProcess, &creationTime, &exitTime, &kernelTime, &userTime));
+
+	auto creation = winrt::clock::from_FILETIME(creationTime);
+	auto exit = winrt::clock::from_FILETIME(exitTime);
+	if (exit - creation < 5s)
+	{
+		g_balloonClickAction = BalloonClickAction::ShowConsoleWindow;
+		ShowBalloon(_(L"Clash process was alive less than 5 seconds\nTap to view console log"), _(L"Error"), NIIF_ERROR);
+		co_await winrt::resume_on_signal(hSubProcess);
+	}
+
+	ProcessManager::Stop();
+	ShowConsoleWindow(false);
+	StartClash();
+}
+
 winrt::fire_and_forget StartClash()
 {
-	if (g_processManager->Start())
+	if (ProcessManager::Start())
 	{
+		g_clashRunning = true;
+		g_processMonitor = ProcessMonitor();
 		for (size_t i = 0; i < 3; ++i)
 		{
+			if (!g_clashRunning)
+				co_return;
+
 			co_await winrt::resume_after(1s);
 			try
 			{
@@ -108,7 +167,8 @@ winrt::fire_and_forget StartClash()
 			g_clashOnline = true;
 			co_return;
 		}
-		ShowBalloon(_(L"Clash started, but failed to communiacte.\nEnsure `external-controller` is set to `127.0.0.1:9090` in config.yaml."), _(L"Error"), NIIF_ERROR);
+		g_balloonClickAction = BalloonClickAction::ShowConsoleWindow;
+		ShowBalloon(_(L"Clash started, but failed to communiacte\nTap to view console log"), _(L"Error"), NIIF_ERROR);
 	}
 	else
 	{
@@ -131,7 +191,7 @@ winrt::fire_and_forget UpdateConfigFile(fs::path name, bool showSuccess = false)
 			if (!errorDesp.has_value())
 			{
 				g_settings.configFile = name.native();
-				g_processManager->SetConfigFile(config);
+				ProcessManager::SetConfigFile(config);
 			}
 		}
 	}
@@ -158,7 +218,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		.uVersion = NOTIFYICON_VERSION_4
 	};
 	static bool altState = false; // true=down, used by WM_ENTERIDLE
-	static bool configChangeDetected = false;
 	switch (message)
 	{
 	case WM_CREATE:
@@ -184,7 +243,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		LOG_LAST_ERROR_IF(WM_TASKBAR_CREATED == 0);
 
 		auto assetsDir = g_exePath / CLASH_ASSETS_DIR_NAME;
-		g_processManager = std::make_unique<ProcessManager>(assetsDir / CLASH_EXE_NAME, assetsDir, g_configPath / g_settings.configFile, assetsDir / CLASH_DASHBOARD_DIR_NAME, CLASH_CTL_ADDR, CLASH_CTL_SECRET);
+		ProcessManager::SetArgs(assetsDir / CLASH_EXE_NAME, assetsDir, g_configPath / g_settings.configFile, assetsDir / CLASH_DASHBOARD_DIR_NAME, CLASH_CTL_ADDR, CLASH_CTL_SECRET);
 		g_clashApi = std::make_unique<ClashApi>(L"127.0.0.1", static_cast<INTERNET_PORT>(9090));
 
 		SetupDataDirectory();
@@ -325,6 +384,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				g_settings.openDashboardInBrowser = !g_settings.openDashboardInBrowser;
 				CheckMenuItem(g_hContextMenu, IDM_EXPERIMENTAL_OPENDASHBOARDINBROWSER, MF_BYCOMMAND | (g_settings.openDashboardInBrowser ? MF_CHECKED : MF_UNCHECKED));
 				break;
+			case IDM_EXPERIMENTAL_SHOWCLASHCONSOLE:
+			{
+				const HWND hWndConsole = ProcessManager::GetConsoleWindow();
+				if (hWndConsole)
+				{
+					ShowConsoleWindow(!IsWindowVisible(hWndConsole));
+				}
+				else
+					ShowConsoleWindow(false);
+			}
+			break;
 			case IDM_QUIT:
 				DestroyWindow(hWnd);
 				break;
@@ -345,7 +415,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_DESTROY:
 		StopWatchConfigFile();
 		g_hMenuHook.reset();
-		g_processManager->ForceStop();
+		g_processMonitor.Cancel();
+		ProcessManager::Stop();
 		SaveSettings();
 		Shell_NotifyIconW(NIM_DELETE, &nid);
 		PostQuitMessage(0);
@@ -387,25 +458,28 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			}(hWnd, wParam);
 			break;
 		case NIN_BALLOONUSERCLICK:
-			if (configChangeDetected)
+			switch (g_balloonClickAction)
+			{
+			case BalloonClickAction::ReloadConfig:
 				UpdateConfigFile({}, true);
+				break;
+			case BalloonClickAction::ShowConsoleWindow:
+				ShowConsoleWindow(true);
+				break;
+			}
 			[[fallthrough]];
 		case NIN_BALLOONTIMEOUT:
-			configChangeDetected = false;
+			g_balloonClickAction = BalloonClickAction::None;
 			break;
 		}
-		break;
-	case WM_PROCESSNOTIFY:
-		LOG_HR_MSG(E_FAIL, "Clash crashed with exit code: %d", wParam);
-		StartClash();
 		break;
 	case WM_RESUMECORO:
 		std::experimental::coroutine_handle<>::from_address(reinterpret_cast<void*>(wParam)).resume();
 		break;
 	case WM_CONFIGCHANGEDETECT:
-		if (!configChangeDetected)
+		if (g_balloonClickAction == BalloonClickAction::None)
 		{
-			configChangeDetected = true;
+			g_balloonClickAction = BalloonClickAction::ReloadConfig;
 			ShowBalloon(_(L"Tap to reload config"), _(L"Config file have been changed"));
 		}
 		break;

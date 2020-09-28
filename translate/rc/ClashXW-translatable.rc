@@ -137,6 +137,7 @@ IDC_MENU MENU
             BEGIN
                 MENUITEM "Set benchmark url",           IDM_EXPERIMENTAL_SETBENCHURL
                 MENUITEM "Open dashboard in browser",   IDM_EXPERIMENTAL_OPENDASHBOARDINBROWSER
+                MENUITEM "Show clash console",          IDM_EXPERIMENTAL_SHOWCLASHCONSOLE
             END
         END
         POPUP "Help"

@@ -32,14 +32,23 @@ fs::path g_exePath;
 fs::path g_dataPath;
 fs::path g_configPath;
 std::vector<fs::path> g_configFilesList;
+bool g_clashRunning = false;
 bool g_clashOnline = false;
 std::string g_clashVersion;
 HWND g_hWnd;
+IAsyncAction g_processMonitor = nullptr;
+
+enum class BalloonClickAction
+{
+	None,
+	ReloadConfig,
+	ShowConsoleWindow
+};
+BalloonClickAction g_balloonClickAction = BalloonClickAction::None;
 
 constexpr UINT WM_NOTIFYICON = WM_APP + 1;
-constexpr UINT WM_PROCESSNOTIFY = WM_APP + 2; // wParam=exitCode
-constexpr UINT WM_RESUMECORO = WM_APP + 3; // wParam=coroutine_handle.address
-constexpr UINT WM_CONFIGCHANGEDETECT = WM_APP + 4;
+constexpr UINT WM_RESUMECORO = WM_APP + 2; // wParam=coroutine_handle.address
+constexpr UINT WM_CONFIGCHANGEDETECT = WM_APP + 3;
 
 constexpr auto CLASHXW_APP_ID = L"com.ysc3839.clashxw";
 constexpr auto CLASHXW_MUTEX_NAME = L"Local\\com.ysc3839.clashxw";
@@ -69,7 +78,6 @@ constexpr auto CLASH_CTL_SECRET = L"";
 #include "TaskDialogInput.hpp"
 #include "RemoteConfigDlg.hpp"
 
-std::unique_ptr<ProcessManager> g_processManager;
 std::unique_ptr<ClashApi> g_clashApi;
 
 #include "EdgeWebView2.hpp"

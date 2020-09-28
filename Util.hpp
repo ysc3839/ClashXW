@@ -109,10 +109,19 @@ auto GetModuleFsPath(HMODULE hModule)
 	return fs::path(path);
 }
 
-bool CheckOnlyOneInstance(const wchar_t* mutexName)
+bool CheckOnlyOneInstance(const wchar_t* mutexName) noexcept
 {
-	CreateMutex(nullptr, FALSE, mutexName);
-	return (GetLastError() != ERROR_ALREADY_EXISTS);
+	auto hEvent = CreateMutexW(nullptr, FALSE, mutexName);
+	if (hEvent)
+	{
+		if (GetLastError() == ERROR_ALREADY_EXISTS)
+		{
+			CloseHandle(hEvent);
+			return false;
+		}
+		// Hold this mutex
+	}
+	return true;
 }
 
 auto GetKnownFolderFsPath(REFKNOWNFOLDERID rfid)
