@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ClashXW\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-25 16:56+0800\n"
+"POT-Creation-Date: 2020-10-03 22:30+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,112 +17,118 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ClashXW.cpp:115
+#: ClashXW.cpp:137
 msgid ""
-"Clash started, but failed to communiacte.\n"
-"Ensure `external-controller` is set to `127.0.0.1:9090` in config.yaml."
+"Clash process was alive less than 5 seconds\n"
+"Tap to view console log"
 msgstr ""
 
-#: ClashXW.cpp:115 ClashXW.cpp:119 EdgeWebView2.hpp:176
+#: ClashXW.cpp:137 ClashXW.cpp:171 ClashXW.cpp:175 EdgeWebView2.hpp:153
 msgid "Error"
 msgstr ""
 
-#: ClashXW.cpp:119
+#: ClashXW.cpp:171
+msgid ""
+"Clash started, but failed to communiacte\n"
+"Tap to view console log"
+msgstr ""
+
+#: ClashXW.cpp:175
 msgid "Failed to start clash."
 msgstr ""
 
-#: ClashXW.cpp:149
+#: ClashXW.cpp:205
 msgid "Reload Config Fail"
 msgstr ""
 
-#: ClashXW.cpp:151
+#: ClashXW.cpp:207
 msgid "Success"
 msgstr ""
 
-#: ClashXW.cpp:151
+#: ClashXW.cpp:207
 msgid "Reload Config Succeed"
 msgstr ""
 
-#: ClashXW.cpp:176
+#: ClashXW.cpp:231
 msgid "ClashXW"
 msgstr ""
 
-#: ClashXW.cpp:314
+#: ClashXW.cpp:373
 msgid "Set benchmark url"
 msgstr ""
 
-#: ClashXW.cpp:318
+#: ClashXW.cpp:379
 msgid "Warning"
 msgstr ""
 
-#: ClashXW.cpp:318
+#: ClashXW.cpp:379
 msgid "URL is not valid"
 msgstr ""
 
-#: ClashXW.cpp:359
+#: ClashXW.cpp:433
 msgid "Copy shell command (External IP)\tCtrl+Alt+C"
 msgstr ""
 
-#: ClashXW.cpp:360 MenuUtil.hpp:88
+#: ClashXW.cpp:434 MenuUtil.hpp:128
 msgid "Copy shell command\tCtrl+C"
 msgstr ""
 
-#: ClashXW.cpp:402
+#: ClashXW.cpp:484
 msgid "Tap to reload config"
 msgstr ""
 
-#: ClashXW.cpp:402
+#: ClashXW.cpp:484
 msgid "Config file have been changed"
 msgstr ""
 
-#: ClashXW.cpp:455
+#: ClashXW.cpp:535
 msgid "ClashXW License"
 msgstr ""
 
-#: EdgeWebView2.hpp:176
+#: EdgeWebView2.hpp:153
 msgid "Failed to load Edge WebView2."
 msgstr ""
 
-#: EdgeWebView2.hpp:276
+#: EdgeWebView2.hpp:253
 msgid "Dashboard"
 msgstr ""
 
-#: MenuUtil.hpp:137
+#: MenuUtil.hpp:174
 msgid "Global"
 msgstr ""
 
-#: MenuUtil.hpp:140
+#: MenuUtil.hpp:177
 msgid "Rule"
 msgstr ""
 
-#: MenuUtil.hpp:143
+#: MenuUtil.hpp:180
 msgid "Direct"
 msgstr ""
 
-#: MenuUtil.hpp:146
+#: MenuUtil.hpp:183
 msgid "Unknown"
 msgstr ""
 
-#: MenuUtil.hpp:150
+#: MenuUtil.hpp:187
 #, c-format
 msgid "Proxy Mode (%s)"
 msgstr ""
 
-#: MenuUtil.hpp:188
+#: MenuUtil.hpp:225
 #, c-format
 msgid "Http Port: %hu"
 msgstr ""
 
-#: MenuUtil.hpp:191
+#: MenuUtil.hpp:228
 #, c-format
 msgid "Socks Port: %hu"
 msgstr ""
 
-#: MenuUtil.hpp:194
+#: MenuUtil.hpp:231
 #, c-format
 msgid "Mixed Port: %hu"
 msgstr ""
 
-#: OSLicensesDlg.hpp:151
+#: OSLicensesDlg.hpp:147
 msgid "Open source licenses"
 msgstr ""

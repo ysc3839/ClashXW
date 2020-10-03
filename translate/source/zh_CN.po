@@ -7,125 +7,133 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-25 16:56+0800\n"
-"PO-Revision-Date: 2020-08-25 16:58+0800\n"
+"POT-Creation-Date: 2020-10-03 22:30+0800\n"
+"PO-Revision-Date: 2020-10-03 22:35+0800\n"
 "Last-Translator: Richard Yu <yurichard3839@gmail.com>\n"
 "Language-Team: \n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.3.1\n"
+"X-Generator: Poedit 2.4.1\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ClashXW.cpp:115
+#: ClashXW.cpp:137
 msgid ""
-"Clash started, but failed to communiacte.\n"
-"Ensure `external-controller` is set to `127.0.0.1:9090` in config.yaml."
+"Clash process was alive less than 5 seconds\n"
+"Tap to view console log"
 msgstr ""
-"Clash 已启动，但是无法通信。\n"
-"请确认 config.yaml 中 `external-controller` 已设置为 `127.0.0.1:9090` 。"
+"Clash 进程在启动后 5 秒内退出\n"
+"点击以查看控制台日志"
 
-#: ClashXW.cpp:115 ClashXW.cpp:119 EdgeWebView2.hpp:176
+#: ClashXW.cpp:137 ClashXW.cpp:171 ClashXW.cpp:175 EdgeWebView2.hpp:153
 msgid "Error"
 msgstr "错误"
 
-#: ClashXW.cpp:119
+#: ClashXW.cpp:171
+msgid ""
+"Clash started, but failed to communiacte\n"
+"Tap to view console log"
+msgstr ""
+"Clash 已启动，但无法通信\n"
+"点击以查看控制台日志"
+
+#: ClashXW.cpp:175
 msgid "Failed to start clash."
 msgstr "Clash 启动失败。"
 
-#: ClashXW.cpp:149
+#: ClashXW.cpp:205
 msgid "Reload Config Fail"
 msgstr "重载配置文件失败"
 
-#: ClashXW.cpp:151
+#: ClashXW.cpp:207
 msgid "Success"
 msgstr "成功"
 
-#: ClashXW.cpp:151
+#: ClashXW.cpp:207
 msgid "Reload Config Succeed"
 msgstr "重载配置文件成功"
 
-#: ClashXW.cpp:176
+#: ClashXW.cpp:231
 msgid "ClashXW"
 msgstr ""
 
-#: ClashXW.cpp:314
+#: ClashXW.cpp:373
 msgid "Set benchmark url"
 msgstr "设置延迟测速链接"
 
-#: ClashXW.cpp:318
+#: ClashXW.cpp:379
 msgid "Warning"
 msgstr "警告"
 
-#: ClashXW.cpp:318
+#: ClashXW.cpp:379
 msgid "URL is not valid"
 msgstr "链接不合法"
 
-#: ClashXW.cpp:359
+#: ClashXW.cpp:433
 msgid "Copy shell command (External IP)\tCtrl+Alt+C"
 msgstr "复制终端代理命令 (外部IP)\tCtrl+Alt+C"
 
-#: ClashXW.cpp:360 MenuUtil.hpp:88
+#: ClashXW.cpp:434 MenuUtil.hpp:128
 msgid "Copy shell command\tCtrl+C"
 msgstr "复制终端代理命令\tCtrl+C"
 
-#: ClashXW.cpp:402
+#: ClashXW.cpp:484
 msgid "Tap to reload config"
 msgstr "点击重载配置文件"
 
-#: ClashXW.cpp:402
+#: ClashXW.cpp:484
 msgid "Config file have been changed"
 msgstr "配置文件已被修改"
 
-#: ClashXW.cpp:455
+#: ClashXW.cpp:535
 msgid "ClashXW License"
 msgstr "ClashXW 许可证"
 
-#: EdgeWebView2.hpp:176
+#: EdgeWebView2.hpp:153
 msgid "Failed to load Edge WebView2."
 msgstr "Edge WebView2 加载失败。"
 
-#: EdgeWebView2.hpp:276
+#: EdgeWebView2.hpp:253
 msgid "Dashboard"
 msgstr "控制台"
 
-#: MenuUtil.hpp:137
+#: MenuUtil.hpp:174
 msgid "Global"
 msgstr "全局"
 
-#: MenuUtil.hpp:140
+#: MenuUtil.hpp:177
 msgid "Rule"
 msgstr "规则"
 
-#: MenuUtil.hpp:143
+#: MenuUtil.hpp:180
 msgid "Direct"
 msgstr "直连"
 
-#: MenuUtil.hpp:146
+#: MenuUtil.hpp:183
 msgid "Unknown"
 msgstr "未知"
 
-#: MenuUtil.hpp:150
+#: MenuUtil.hpp:187
 #, c-format
 msgid "Proxy Mode (%s)"
 msgstr "出站模式 (%s)"
 
-#: MenuUtil.hpp:188
+#: MenuUtil.hpp:225
 #, c-format
 msgid "Http Port: %hu"
 msgstr ""
 
-#: MenuUtil.hpp:191
+#: MenuUtil.hpp:228
 #, c-format
 msgid "Socks Port: %hu"
 msgstr ""
 
-#: MenuUtil.hpp:194
+#: MenuUtil.hpp:231
 #, c-format
 msgid "Mixed Port: %hu"
 msgstr ""
 
-#: OSLicensesDlg.hpp:151
+#: OSLicensesDlg.hpp:147
 msgid "Open source licenses"
 msgstr "开放源代码许可"

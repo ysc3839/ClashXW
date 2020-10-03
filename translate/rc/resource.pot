@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-25 16:56+0800\n"
+"POT-Creation-Date: 2020-10-03 22:30+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,6 +34,22 @@ msgstr ""
 
 #: DIALOG.IDD_ABOUTBOX.CONTROL.IDC_STATIC__
 msgid "<a id=\"\"os_license\"\">Open source licenses</a>"
+msgstr ""
+
+#: DIALOG.IDD_REMOTECONFIG.CAPTION
+msgid "Remote Configs"
+msgstr ""
+
+#: DIALOG.IDD_REMOTECONFIG.PUSHBUTTON.IDC_REMOTECONFIG_ADD
+msgid "Add"
+msgstr ""
+
+#: DIALOG.IDD_REMOTECONFIG.PUSHBUTTON.IDC_REMOTECONFIG_DELETE
+msgid "Delete"
+msgstr ""
+
+#: DIALOG.IDD_REMOTECONFIG.PUSHBUTTON.IDC_REMOTECONFIG_UPDATE
+msgid "Update"
 msgstr ""
 
 #: MENU.IDC_MENU.POPUP
@@ -102,7 +118,7 @@ msgstr ""
 msgid "Manage\tCtrl+M"
 msgstr ""
 
-#: MENU.IDC_MENU.MENUITEM.IDM_REMOTECONFIG_UPDATE
+#: MENU.IDC_MENU.MENUITEM.IDM_REMOTECONFIG_UPDATE,
 msgid "Update\tCtrl+U"
 msgstr ""
 
@@ -120,6 +136,10 @@ msgstr ""
 
 #: MENU.IDC_MENU.MENUITEM.IDM_EXPERIMENTAL_OPENDASHBOARDINBROWSER
 msgid "Open dashboard in browser"
+msgstr ""
+
+#: MENU.IDC_MENU.MENUITEM.IDM_EXPERIMENTAL_SHOWCLASHCONSOLE
+msgid "Show clash console"
 msgstr ""
 
 #: MENU.IDC_MENU.POPUP____

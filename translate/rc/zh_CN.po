@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-25 16:56+0800\n"
-"PO-Revision-Date: 2020-08-25 16:56+0800\n"
+"POT-Creation-Date: 2020-10-03 22:30+0800\n"
+"PO-Revision-Date: 2020-10-03 22:38+0800\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: zh_CN\n"
@@ -11,7 +11,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Accelerator-Marker: &\n"
-"X-Generator: Poedit 2.3.1\n"
+"X-Generator: Poedit 2.4.1\n"
 "X-Merge-On: location\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
@@ -36,6 +36,22 @@ msgstr "<a id=\"\"license\"\">ClashXW 许可证</a>"
 #: DIALOG.IDD_ABOUTBOX.CONTROL.IDC_STATIC__
 msgid "<a id=\"\"os_license\"\">Open source licenses</a>"
 msgstr "<a id=\"\"os_license\"\">开放源代码许可</a>"
+
+#: DIALOG.IDD_REMOTECONFIG.CAPTION
+msgid "Remote Configs"
+msgstr "托管配置"
+
+#: DIALOG.IDD_REMOTECONFIG.PUSHBUTTON.IDC_REMOTECONFIG_ADD
+msgid "Add"
+msgstr "添加"
+
+#: DIALOG.IDD_REMOTECONFIG.PUSHBUTTON.IDC_REMOTECONFIG_DELETE
+msgid "Delete"
+msgstr "删除"
+
+#: DIALOG.IDD_REMOTECONFIG.PUSHBUTTON.IDC_REMOTECONFIG_UPDATE
+msgid "Update"
+msgstr "更新"
 
 #: MENU.IDC_MENU.POPUP
 msgctxt "MENU.IDC_MENU.POPUP"
@@ -103,7 +119,7 @@ msgstr "托管配置"
 msgid "Manage\tCtrl+M"
 msgstr "管理\tCtrl+M"
 
-#: MENU.IDC_MENU.MENUITEM.IDM_REMOTECONFIG_UPDATE
+#: MENU.IDC_MENU.MENUITEM.IDM_REMOTECONFIG_UPDATE,
 msgid "Update\tCtrl+U"
 msgstr "升级\tCtrl+U"
 
@@ -122,6 +138,10 @@ msgstr "设置延迟测速链接"
 #: MENU.IDC_MENU.MENUITEM.IDM_EXPERIMENTAL_OPENDASHBOARDINBROWSER
 msgid "Open dashboard in browser"
 msgstr "在浏览器在打开控制台"
+
+#: MENU.IDC_MENU.MENUITEM.IDM_EXPERIMENTAL_SHOWCLASHCONSOLE
+msgid "Show clash console"
+msgstr "显示 clash 控制台"
 
 #: MENU.IDC_MENU.POPUP____
 msgid "Help"
@@ -189,12 +209,3 @@ msgstr ""
 #: MENU.IDC_MENU.MENUITEM.IDM_QUIT
 msgid "Quit\tCtrl+Q"
 msgstr "退出\tCtrl+Q"
-
-#~ msgid "Show Log"
-#~ msgstr "显示日志"
-
-#~ msgid "Http Port: 7890"
-#~ msgstr "Http 端口: 7890"
-
-#~ msgid "Socks Port: 7891"
-#~ msgstr "Socks 端口: 7891"
