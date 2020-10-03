@@ -18,74 +18,65 @@
  */
 
 #pragma once
+#include <unordered_map>
 #include "FnvHash.hpp"
 
-std::unordered_map<uint32_t, const wchar_t*> hashToStrMap;
-
-#pragma pack(push, 1)
-struct YMOData
+namespace yi18n
 {
-	uint16_t len;
-	struct
+	namespace
 	{
-		uint32_t hash;
-		uint16_t offset;
-	} table[1];
-};
-#pragma pack(pop)
+		std::unordered_map<uint32_t, const wchar_t*> hashToStrMap;
 
-void LoadTranslateData()
-{
-	auto hRes = FindResourceExW(g_hInst, L"YMO", MAKEINTRESOURCEW(1), GetThreadUILanguage());
-	if (hRes)
-	{
-		auto hResData = LoadResource(g_hInst, hRes);
-		if (hResData)
+		#pragma pack(push, 1)
+		struct YMOData
 		{
-			auto ymo = reinterpret_cast<const YMOData*>(hResData);
-
-			hashToStrMap.reserve(ymo->len);
-
-			for (int i = 0; i < ymo->len; ++i)
+			uint16_t len;
+			struct
 			{
-				auto hash = ymo->table[i].hash;
-				auto offset = ymo->table[i].offset;
-				auto str = reinterpret_cast<const wchar_t*>(reinterpret_cast<const uint8_t*>(hResData) + offset);
-				hashToStrMap.emplace(hash, str);
+				uint32_t hash;
+				uint16_t offset;
+			} table[1];
+		};
+		#pragma pack(pop)
+	}
+
+	void LoadTranslateData(const YMOData* ymo)
+	{
+		hashToStrMap.reserve(ymo->len);
+		for (uint16_t i = 0; i < ymo->len; ++i)
+		{
+			const auto hash = ymo->table[i].hash;
+			const auto offset = ymo->table[i].offset;
+			const auto str = reinterpret_cast<const wchar_t*>(reinterpret_cast<const uint8_t*>(ymo) + offset);
+			hashToStrMap.emplace(hash, str);
+		}
+	}
+
+#ifdef _INC_WINDOWS
+	void LoadTranslateDataFromResource(const HINSTANCE hInst)
+	{
+		const HRSRC hRes = FindResourceW(hInst, MAKEINTRESOURCEW(1), L"YMO");
+		if (hRes)
+		{
+			const HGLOBAL hResData = LoadResource(hInst, hRes);
+			if (hResData)
+			{
+				const auto ymo = reinterpret_cast<const YMOData*>(LockResource(hResData));
+				if (ymo)
+					LoadTranslateData(ymo);
 			}
 		}
 	}
-}
+#endif
 
-const wchar_t* Translate(const wchar_t* str)
-{
-	static std::unordered_map<const wchar_t*, const wchar_t*> ptrToStrMap;
-
-	auto translation = str;
-
-	auto i = ptrToStrMap.find(str);
-	if (i == ptrToStrMap.end())
+	__declspec(noinline) const wchar_t* TranslateWithHash(const wchar_t* const str, const uint32_t hash)
 	{
-		auto hash = fnv1a_32(str, wcslen(str) * sizeof(wchar_t));
-		auto j = hashToStrMap.find(hash);
-		if (j != hashToStrMap.end())
-			translation = j->second;
-
-		ptrToStrMap.emplace(str, translation);
-	}
-	else
-		translation = i->second;
-
-	return translation;
-}
-
-const wchar_t* TranslateContext(const wchar_t* str, const wchar_t* ctxtStr)
-{
-	auto translation = Translate(ctxtStr);
-	if (translation == ctxtStr)
+		auto it = hashToStrMap.find(hash);
+		if (it != hashToStrMap.end())
+			return it->second;
 		return str;
-	return translation;
+	}
 }
 
-#define _(str) Translate(str)
-#define C_(ctxt, str) TranslateContext(str, ctxt L"\004" str)
+#define _(str) yi18n::TranslateWithHash(str, std::integral_constant<uint32_t, fnv1a_32(str)>::value)
+#define C_(ctxt, str) yi18n::TranslateWithHash(str, std::integral_constant<uint32_t, fnv1a_32(ctxt L"\004" str)>::value)

@@ -48,7 +48,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	g_dataPath = GetKnownFolderFsPath(FOLDERID_RoamingAppData) / CLASHXW_DIR_NAME;
 	g_configPath = g_dataPath / CLASH_CONFIG_DIR_NAME;
 
-	LoadTranslateData();
+	yi18n::LoadTranslateDataFromResource(hInstance);
 	InitDarkMode();
 	InitDPIAPI();
 
