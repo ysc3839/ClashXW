@@ -415,7 +415,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_DESTROY:
 		StopWatchConfigFile();
 		g_hMenuHook.reset();
-		g_processMonitor.Cancel();
+		if (g_processMonitor)
+			g_processMonitor.Cancel();
 		ProcessManager::Stop();
 		SaveSettings();
 		Shell_NotifyIconW(NIM_DELETE, &nid);
