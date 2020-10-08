@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-CLASH_VER=v1.1.0
+CLASH_VER=v1.2.0
 
 mkdir pkg
 cd pkg
@@ -10,10 +10,12 @@ curl -LO https://github.com/Dreamacro/maxmind-geoip/releases/latest/download/Cou
 curl -LO https://github.com/Dreamacro/clash-dashboard/archive/gh-pages.tar.gz
 curl -LO https://github.com/Dreamacro/clash/releases/download/${CLASH_VER}/clash-windows-amd64-${CLASH_VER}.zip
 curl -LO https://github.com/Dreamacro/clash/releases/download/${CLASH_VER}/clash-windows-386-${CLASH_VER}.zip
+curl -LO https://github.com/Dreamacro/clash/releases/download/${CLASH_VER}/clash-windows-arm32v7-${CLASH_VER}.zip
 
 tar xvf gh-pages.tar.gz
 unzip clash-windows-amd64-${CLASH_VER}.zip
 unzip clash-windows-386-${CLASH_VER}.zip
+unzip clash-windows-arm32v7-${CLASH_VER}.zip
 
 mkdir -p 64/ClashAssets
 	cd 64/ClashAssets
@@ -39,7 +41,7 @@ mkdir -p ARM64/ClashAssets
 	cd ARM64/ClashAssets
 		cp -r ../../clash-dashboard-gh-pages Dashboard
 		cp ../../Country.mmdb .
-		mv ../../clash-windows-386.exe clash.exe # FIXME: use clash ARM32 binary
+		mv ../../clash-windows-arm32v7.exe clash.exe
 	cd ..
 
 	cp ../../ARM64/Release/ClashXWARM64.exe .
