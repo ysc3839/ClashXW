@@ -138,6 +138,9 @@ IAsyncAction ProcessMonitor()
 		co_await winrt::resume_on_signal(hSubProcess);
 	}
 
+	if (!ProcessManager::IsRunning()) // Manually stop
+		co_return;
+
 	ProcessManager::Stop();
 	ShowConsoleWindow(false);
 	StartClash();
