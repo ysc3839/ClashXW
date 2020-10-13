@@ -30,7 +30,18 @@ void AddRemoteConfigItems(HWND hListView)
 	SetWindowRedraw(hListView, FALSE);
 
 	for (const auto& config : g_settings.remoteConfig)
-		AddOrUpdateRemoteConfigItem(hListView, config);
+		AddOrUpdateRemoteConfigItem(hListView, *config);
+
+	SetWindowRedraw(hListView, TRUE);
+}
+
+void UpdateRemoteConfigItems(HWND hListView)
+{
+	SetWindowRedraw(hListView, FALSE);
+
+	int i = 0;
+	for (const auto& config : g_settings.remoteConfig)
+		AddOrUpdateRemoteConfigItem(hListView, *config, i++);
 
 	SetWindowRedraw(hListView, TRUE);
 }
@@ -107,6 +118,8 @@ INT_PTR CALLBACK RemoteConfigDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPA
 	{
 	case WM_INITDIALOG:
 	{
+		g_hWndRemoteConfigDlg = hDlg;
+
 		HWND hListView = GetDlgItem(hDlg, IDC_REMOTECONFIG_LISTVIEW);
 		InitListView(hListView);
 		ListView_SetExtendedListViewStyle(hListView, LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER | LVS_EX_AUTOSIZECOLUMNS);
@@ -159,9 +172,9 @@ INT_PTR CALLBACK RemoteConfigDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPA
 			return (INT_PTR)TRUE;
 		case IDC_REMOTECONFIG_ADD:
 		{
-			RemoteConfig config;
-			if (EditRemoteConfig(hDlg, config.url, config.name))
-				AddOrUpdateRemoteConfigItem(GetDlgItem(hDlg, IDC_REMOTECONFIG_LISTVIEW), g_settings.remoteConfig.emplace_back(std::move(config)));
+			auto config = std::make_unique<RemoteConfig>();
+			if (EditRemoteConfig(hDlg, config->url, config->name))
+				AddOrUpdateRemoteConfigItem(GetDlgItem(hDlg, IDC_REMOTECONFIG_LISTVIEW), *g_settings.remoteConfig.emplace_back(std::move(config)));
 			else
 				TaskDialog(hDlg, nullptr, _(L"Warning"), nullptr, _(L"Invalid input"), TDCBF_OK_BUTTON, TD_WARNING_ICON, nullptr);
 		}
@@ -177,8 +190,23 @@ INT_PTR CALLBACK RemoteConfigDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPA
 			}
 		}
 		break;
-		case IDC_REMOTECONFIG_UPDATE: // FIXME
-			break;
+		case IDC_REMOTECONFIG_UPDATE:
+		{
+			HWND hListView = GetDlgItem(hDlg, IDC_REMOTECONFIG_LISTVIEW);
+			int i = ListView_GetNextItem(hListView, -1, LVNI_SELECTED);
+			if (i != -1)
+			{
+				RemoteConfigManager::UpdateConfig(*g_settings.remoteConfig[i]).Completed([hListView, i](const IAsyncOperation<bool>& op, auto) {
+					if (!g_hWndRemoteConfigDlg) return;
+					if (!op.GetResults())
+					{
+						TaskDialog(g_hWndRemoteConfigDlg, nullptr, _(L"Error"), nullptr, _(L"Remote Config Update Fail"), TDCBF_OK_BUTTON, TD_ERROR_ICON, nullptr);
+					}
+					AddOrUpdateRemoteConfigItem(hListView, *g_settings.remoteConfig[i], i);
+				});
+			}
+		}
+		break;
 		}
 		break;
 	case WM_SIZE:
@@ -226,7 +254,19 @@ INT_PTR CALLBACK RemoteConfigDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPA
 			auto nmv = reinterpret_cast<LPNMLISTVIEW>(lParam);
 			if ((nmv->uChanged & LVIF_STATE) && ((nmv->uNewState ^ nmv->uOldState) & LVIS_SELECTED))
 			{
-				EnableWindow(GetDlgItem(hDlg, IDC_REMOTECONFIG_DELETE), (nmv->uNewState & LVIS_SELECTED) ? TRUE : FALSE);
+				BOOL enable = FALSE, selected = FALSE;
+				if (nmv->uNewState & LVIS_SELECTED)
+				{
+					if (nmv->iItem >= 0 && g_settings.remoteConfig.size() > static_cast<size_t>(nmv->iItem))
+					{
+						const auto& config = g_settings.remoteConfig[nmv->iItem];
+						if (!config->updating)
+							enable = TRUE;
+						selected = TRUE;
+					}
+				}
+				EnableWindow(GetDlgItem(hDlg, IDC_REMOTECONFIG_DELETE), enable);
+				EnableWindow(GetDlgItem(hDlg, IDC_REMOTECONFIG_UPDATE), selected);
 			}
 		}
 		break;
@@ -236,12 +276,12 @@ INT_PTR CALLBACK RemoteConfigDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPA
 			if (nmia->iItem >= 0 && g_settings.remoteConfig.size() > static_cast<size_t>(nmia->iItem))
 			{
 				auto& config = g_settings.remoteConfig[nmia->iItem];
-				std::wstring url = config.url, name = config.name;
+				std::wstring url = config->url, name = config->name;
 				if (EditRemoteConfig(hDlg, url, name))
 				{
-					config.url = std::move(url);
-					config.name = std::move(name);
-					AddOrUpdateRemoteConfigItem(nmia->hdr.hwndFrom, config, nmia->iItem);
+					config->url = std::move(url);
+					config->name = std::move(name);
+					AddOrUpdateRemoteConfigItem(nmia->hdr.hwndFrom, *config, nmia->iItem);
 				}
 				else
 					TaskDialog(hDlg, nullptr, _(L"Warning"), nullptr, _(L"Invalid input"), TDCBF_OK_BUTTON, TD_WARNING_ICON, nullptr);
@@ -269,17 +309,18 @@ INT_PTR CALLBACK RemoteConfigDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPA
 			RedrawWindow(hDlg, nullptr, nullptr, RDW_FRAME | RDW_INVALIDATE);
 		}
 		break;
+	case WM_REFRESHCONFIGS:
+		UpdateRemoteConfigItems(GetDlgItem(hDlg, IDC_REMOTECONFIG_LISTVIEW));
+		break;
 	}
 	return (INT_PTR)FALSE;
 }
 
 void ShowRemoteConfigDialog(HWND hWndParent)
 {
-	static bool opened = false;
-	if (!opened)
+	if (!g_hWndRemoteConfigDlg)
 	{
-		opened = true;
 		DialogBoxW(g_hInst, MAKEINTRESOURCEW(IDD_REMOTECONFIG), hWndParent, RemoteConfigDlgProc);
-		opened = false;
+		g_hWndRemoteConfigDlg = nullptr;
 	}
 }

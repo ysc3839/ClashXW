@@ -47,10 +47,21 @@ struct RemoteConfig
 			j["updateTime"] = std::chrono::system_clock::to_time_t(*value.updateTime);
 	}
 
+	friend void to_json(json& j, const std::unique_ptr<RemoteConfig>& ptr) {
+		if (ptr)
+			to_json(j, *ptr);
+	}
+
 	friend void from_json(const json& j, RemoteConfig& value) {
 		try { value.url = Utf8ToUtf16(j.at("url").get<std::string_view>()); } CATCH_LOG();
 		try { value.name = Utf8ToUtf16(j.at("name").get<std::string_view>()); } CATCH_LOG();
 		try { value.updateTime.emplace(std::chrono::system_clock::from_time_t(j.at("updateTime").get<time_t>())); } CATCH_LOG();
+	}
+
+	friend void from_json(const json& j, std::unique_ptr<RemoteConfig>& ptr) {
+		if (!ptr)
+			ptr = std::make_unique<RemoteConfig>();
+		from_json(j, *ptr);
 	}
 };
 
@@ -60,7 +71,7 @@ struct Settings
 	std::wstring benchmarkUrl;
 	bool openDashboardInBrowser;
 	std::wstring configFile;
-	std::vector<RemoteConfig> remoteConfig;
+	std::vector<std::unique_ptr<RemoteConfig>> remoteConfig;
 
 	friend void to_json(json& j, const Settings& value) {
 		JSON_TO(systemProxy);

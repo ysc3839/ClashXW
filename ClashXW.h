@@ -24,6 +24,7 @@
 namespace fs = std::filesystem;
 namespace wrl = Microsoft::WRL;
 using winrt::Windows::Foundation::IAsyncAction;
+using winrt::Windows::Foundation::IAsyncOperation;
 using nlohmann::json;
 using namespace std::chrono_literals;
 
@@ -36,6 +37,7 @@ bool g_clashRunning = false;
 bool g_clashOnline = false;
 std::string g_clashVersion;
 HWND g_hWnd;
+HWND g_hWndRemoteConfigDlg = nullptr;
 IAsyncAction g_processMonitor = nullptr;
 
 enum class BalloonClickAction
@@ -50,11 +52,15 @@ constexpr UINT WM_NOTIFYICON = WM_APP + 1;
 constexpr UINT WM_RESUMECORO = WM_APP + 2; // wParam=coroutine_handle.address
 constexpr UINT WM_CONFIGCHANGEDETECT = WM_APP + 3;
 
+// RemoteConfigDlg
+constexpr UINT WM_REFRESHCONFIGS = WM_APP + 1;
+
 constexpr auto CLASHXW_APP_ID = L"com.ysc3839.clashxw";
 constexpr auto CLASHXW_MUTEX_NAME = L"Local\\com.ysc3839.clashxw";
 constexpr auto CLASHXW_DIR_NAME = L"ClashXW";
 constexpr auto CLASHXW_LINK_NAME = L"ClashXW.lnk";
 constexpr auto CLASHXW_CONFIG_NAME = L"ClashXW.json";
+constexpr auto CLASHXW_USERAGENT = L"ClashXW/0.1.1";
 constexpr auto CLASH_CONFIG_DIR_NAME = L"Config";
 constexpr auto CLASH_ASSETS_DIR_NAME = L"ClashAssets";
 constexpr auto CLASH_DASHBOARD_DIR_NAME = L"Dashboard";
@@ -76,6 +82,7 @@ constexpr auto CLASH_CTL_SECRET = L"";
 #include "DialogUtil.hpp"
 #include "OSLicensesDlg.hpp"
 #include "TaskDialogInput.hpp"
+#include "RemoteConfigManager.hpp"
 #include "RemoteConfigDlg.hpp"
 
 std::unique_ptr<ClashApi> g_clashApi;

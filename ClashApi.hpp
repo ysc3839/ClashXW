@@ -160,7 +160,7 @@ private:
 	{
 		if (!m_hSession)
 		{
-			m_hSession.reset(WinHttpOpen(L"ClashXW/1.0", WINHTTP_ACCESS_TYPE_NO_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0));
+			m_hSession.reset(WinHttpOpen(CLASHXW_USERAGENT, WINHTTP_ACCESS_TYPE_NO_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0));
 			THROW_LAST_ERROR_IF_NULL(m_hSession);
 		}
 		if (!m_hConnect)
