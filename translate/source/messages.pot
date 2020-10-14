@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ClashXW\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-03 22:30+0800\n"
+"POT-Creation-Date: 2020-10-14 15:51+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,65 +23,65 @@ msgid ""
 "Tap to view console log"
 msgstr ""
 
-#: ClashXW.cpp:137 ClashXW.cpp:171 ClashXW.cpp:175 EdgeWebView2.hpp:153
+#: ClashXW.cpp:137 ClashXW.cpp:174 ClashXW.cpp:178 EdgeWebView2.hpp:153
 msgid "Error"
 msgstr ""
 
-#: ClashXW.cpp:171
+#: ClashXW.cpp:174
 msgid ""
 "Clash started, but failed to communiacte\n"
 "Tap to view console log"
 msgstr ""
 
-#: ClashXW.cpp:175
+#: ClashXW.cpp:178
 msgid "Failed to start clash."
 msgstr ""
 
-#: ClashXW.cpp:205
+#: ClashXW.cpp:208
 msgid "Reload Config Fail"
 msgstr ""
 
-#: ClashXW.cpp:207
+#: ClashXW.cpp:210
 msgid "Success"
 msgstr ""
 
-#: ClashXW.cpp:207
+#: ClashXW.cpp:210
 msgid "Reload Config Succeed"
 msgstr ""
 
-#: ClashXW.cpp:231
+#: ClashXW.cpp:234
 msgid "ClashXW"
 msgstr ""
 
-#: ClashXW.cpp:373
+#: ClashXW.cpp:387
 msgid "Set benchmark url"
 msgstr ""
 
-#: ClashXW.cpp:379
+#: ClashXW.cpp:393
 msgid "Warning"
 msgstr ""
 
-#: ClashXW.cpp:379
+#: ClashXW.cpp:393
 msgid "URL is not valid"
 msgstr ""
 
-#: ClashXW.cpp:433
+#: ClashXW.cpp:447
 msgid "Copy shell command (External IP)\tCtrl+Alt+C"
 msgstr ""
 
-#: ClashXW.cpp:434 MenuUtil.hpp:128
+#: ClashXW.cpp:448 MenuUtil.hpp:128
 msgid "Copy shell command\tCtrl+C"
 msgstr ""
 
-#: ClashXW.cpp:484
+#: ClashXW.cpp:498
 msgid "Tap to reload config"
 msgstr ""
 
-#: ClashXW.cpp:484
+#: ClashXW.cpp:498
 msgid "Config file have been changed"
 msgstr ""
 
-#: ClashXW.cpp:535
+#: ClashXW.cpp:549
 msgid "ClashXW License"
 msgstr ""
 

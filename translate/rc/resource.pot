@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-03 22:30+0800\n"
+"POT-Creation-Date: 2020-10-14 15:51+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -118,11 +118,11 @@ msgstr ""
 msgid "Manage\tCtrl+M"
 msgstr ""
 
-#: MENU.IDC_MENU.MENUITEM.IDM_REMOTECONFIG_UPDATE,
+#: MENU.IDC_MENU.MENUITEM.IDM_REMOTECONFIG_UPDATE
 msgid "Update\tCtrl+U"
 msgstr ""
 
-#: MENU.IDC_MENU.MENUITEM.IDM_REMOTECONFIG_AUTOUPDATE,
+#: MENU.IDC_MENU.MENUITEM.IDM_REMOTECONFIG_AUTOUPDATE
 msgid "Auto Update"
 msgstr ""
 

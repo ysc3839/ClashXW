@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-03 22:30+0800\n"
-"PO-Revision-Date: 2020-10-03 22:35+0800\n"
+"POT-Creation-Date: 2020-10-14 15:51+0800\n"
+"PO-Revision-Date: 2020-10-14 15:51+0800\n"
 "Last-Translator: Richard Yu <yurichard3839@gmail.com>\n"
 "Language-Team: \n"
 "Language: zh_CN\n"
@@ -26,11 +26,11 @@ msgstr ""
 "Clash 进程在启动后 5 秒内退出\n"
 "点击以查看控制台日志"
 
-#: ClashXW.cpp:137 ClashXW.cpp:171 ClashXW.cpp:175 EdgeWebView2.hpp:153
+#: ClashXW.cpp:137 ClashXW.cpp:174 ClashXW.cpp:178 EdgeWebView2.hpp:153
 msgid "Error"
 msgstr "错误"
 
-#: ClashXW.cpp:171
+#: ClashXW.cpp:174
 msgid ""
 "Clash started, but failed to communiacte\n"
 "Tap to view console log"
@@ -38,55 +38,55 @@ msgstr ""
 "Clash 已启动，但无法通信\n"
 "点击以查看控制台日志"
 
-#: ClashXW.cpp:175
+#: ClashXW.cpp:178
 msgid "Failed to start clash."
 msgstr "Clash 启动失败。"
 
-#: ClashXW.cpp:205
+#: ClashXW.cpp:208
 msgid "Reload Config Fail"
 msgstr "重载配置文件失败"
 
-#: ClashXW.cpp:207
+#: ClashXW.cpp:210
 msgid "Success"
 msgstr "成功"
 
-#: ClashXW.cpp:207
+#: ClashXW.cpp:210
 msgid "Reload Config Succeed"
 msgstr "重载配置文件成功"
 
-#: ClashXW.cpp:231
+#: ClashXW.cpp:234
 msgid "ClashXW"
 msgstr ""
 
-#: ClashXW.cpp:373
+#: ClashXW.cpp:387
 msgid "Set benchmark url"
 msgstr "设置延迟测速链接"
 
-#: ClashXW.cpp:379
+#: ClashXW.cpp:393
 msgid "Warning"
 msgstr "警告"
 
-#: ClashXW.cpp:379
+#: ClashXW.cpp:393
 msgid "URL is not valid"
 msgstr "链接不合法"
 
-#: ClashXW.cpp:433
+#: ClashXW.cpp:447
 msgid "Copy shell command (External IP)\tCtrl+Alt+C"
 msgstr "复制终端代理命令 (外部IP)\tCtrl+Alt+C"
 
-#: ClashXW.cpp:434 MenuUtil.hpp:128
+#: ClashXW.cpp:448 MenuUtil.hpp:128
 msgid "Copy shell command\tCtrl+C"
 msgstr "复制终端代理命令\tCtrl+C"
 
-#: ClashXW.cpp:484
+#: ClashXW.cpp:498
 msgid "Tap to reload config"
 msgstr "点击重载配置文件"
 
-#: ClashXW.cpp:484
+#: ClashXW.cpp:498
 msgid "Config file have been changed"
 msgstr "配置文件已被修改"
 
-#: ClashXW.cpp:535
+#: ClashXW.cpp:549
 msgid "ClashXW License"
 msgstr "ClashXW 许可证"
 
