@@ -253,6 +253,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		StartClash();
 
 		EnableSystemProxy(g_settings.systemProxy);
+		CheckMenuItem(g_hContextMenu, IDM_REMOTECONFIG_AUTOUPDATE, MF_BYCOMMAND | (g_settings.configAutoUpdate ? MF_CHECKED : MF_UNCHECKED));
 		CheckMenuItem(g_hContextMenu, IDM_EXPERIMENTAL_OPENDASHBOARDINBROWSER, MF_BYCOMMAND | (g_settings.openDashboardInBrowser ? MF_CHECKED : MF_UNCHECKED));
 
 		WatchConfigFile();
@@ -368,6 +369,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				break;
 			case IDM_REMOTECONFIG_MANAGE:
 				ShowRemoteConfigDialog(hWnd);
+				break;
+			case IDM_REMOTECONFIG_UPDATE:
+				[]() -> winrt::fire_and_forget {
+					co_await winrt::resume_background();
+					RemoteConfigManager::CheckUpdate(true);
+				}();
+				break;
+			case IDM_REMOTECONFIG_AUTOUPDATE:
+				g_settings.configAutoUpdate = !g_settings.configAutoUpdate;
+				CheckMenuItem(g_hContextMenu, IDM_REMOTECONFIG_AUTOUPDATE, MF_BYCOMMAND | (g_settings.configAutoUpdate ? MF_CHECKED : MF_UNCHECKED));
 				break;
 			case IDM_EXPERIMENTAL_SETBENCHURL:
 			{

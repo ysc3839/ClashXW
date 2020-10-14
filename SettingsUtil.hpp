@@ -72,6 +72,7 @@ struct Settings
 	bool openDashboardInBrowser;
 	std::wstring configFile;
 	std::vector<std::unique_ptr<RemoteConfig>> remoteConfig;
+	bool configAutoUpdate;
 
 	friend void to_json(json& j, const Settings& value) {
 		JSON_TO(systemProxy);
@@ -79,6 +80,7 @@ struct Settings
 		JSON_TO(openDashboardInBrowser);
 		try { j["configFile"] = Utf16ToUtf8(value.configFile); } CATCH_LOG();
 		JSON_TO(remoteConfig);
+		JSON_TO(configAutoUpdate);
 	}
 
 	friend void from_json(const json& j, Settings& value) {
@@ -87,6 +89,7 @@ struct Settings
 		JSON_TRY_FROM(openDashboardInBrowser);
 		try { value.configFile = Utf8ToUtf16(j.at("configFile").get<std::string_view>()); } CATCH_LOG();
 		JSON_TRY_FROM(remoteConfig);
+		JSON_TRY_FROM(configAutoUpdate);
 	}
 };
 
@@ -98,6 +101,7 @@ void DefaultSettings()
 	g_settings.benchmarkUrl = L"http://cp.cloudflare.com/generate_204";
 	g_settings.openDashboardInBrowser = false;
 	g_settings.configFile = CLASH_DEF_CONFIG_NAME;
+	g_settings.configAutoUpdate = false;
 }
 
 void LoadSettings()

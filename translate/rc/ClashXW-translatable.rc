@@ -130,8 +130,8 @@ IDC_MENU MENU
             POPUP "Remote Config"
             BEGIN
                 MENUITEM "Manage\tCtrl+M",              IDM_REMOTECONFIG_MANAGE
-                MENUITEM "Update\tCtrl+U",              IDM_REMOTECONFIG_UPDATE, INACTIVE
-                MENUITEM "Auto Update",                 IDM_REMOTECONFIG_AUTOUPDATE, CHECKED, INACTIVE
+                MENUITEM "Update\tCtrl+U",              IDM_REMOTECONFIG_UPDATE
+                MENUITEM "Auto Update",                 IDM_REMOTECONFIG_AUTOUPDATE
             END
             POPUP "Experimental"
             BEGIN

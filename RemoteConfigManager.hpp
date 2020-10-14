@@ -130,7 +130,8 @@ namespace RemoteConfigManager
 	void SetupAutoUpdateTimer()
 	{
 		timer.reset(CreateThreadpoolTimer([](auto, auto, auto) {
-			CheckUpdate();
+			if (g_settings.configAutoUpdate)
+				CheckUpdate();
 		}, nullptr, nullptr));
 		THROW_LAST_ERROR_IF_NULL(timer);
 
