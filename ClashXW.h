@@ -20,6 +20,7 @@
 #pragma once
 
 #include "resource.h"
+#include "boost/preprocessor/stringize.hpp"
 
 namespace fs = std::filesystem;
 namespace wrl = Microsoft::WRL;
@@ -60,7 +61,7 @@ constexpr auto CLASHXW_MUTEX_NAME = L"Local\\com.ysc3839.clashxw";
 constexpr auto CLASHXW_DIR_NAME = L"ClashXW";
 constexpr auto CLASHXW_LINK_NAME = L"ClashXW.lnk";
 constexpr auto CLASHXW_CONFIG_NAME = L"ClashXW.json";
-constexpr auto CLASHXW_USERAGENT = L"ClashXW/0.1.1";
+constexpr auto CLASHXW_USERAGENT = L"ClashXW/" BOOST_PP_STRINGIZE(GIT_BASEVERSION_MAJOR) "." BOOST_PP_STRINGIZE(GIT_BASEVERSION_MINOR) "." BOOST_PP_STRINGIZE(GIT_BASEVERSION_PATCH);
 constexpr auto CLASH_CONFIG_DIR_NAME = L"Config";
 constexpr auto CLASH_ASSETS_DIR_NAME = L"ClashAssets";
 constexpr auto CLASH_DASHBOARD_DIR_NAME = L"Dashboard";
