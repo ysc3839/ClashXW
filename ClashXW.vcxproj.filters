@@ -78,6 +78,9 @@
     <ClInclude Include="RemoteConfigManager.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="IconUtil.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClashXW.cpp">
@@ -106,6 +109,9 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="ClashXW.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="NotifyIcon.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

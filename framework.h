@@ -20,6 +20,7 @@
 #include <shlwapi.h>
 #include <propvarutil.h>
 #include <propkey.h>
+#include <wincodec.h>
 
 // C RunTime Header Files
 #include <cstdlib>

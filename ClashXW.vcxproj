@@ -288,6 +288,7 @@
     <ClInclude Include="DialogUtil.hpp" />
     <ClInclude Include="EdgeWebView2.hpp" />
     <ClInclude Include="HiDPI.hpp" />
+    <ClInclude Include="IconUtil.hpp" />
     <ClInclude Include="OSLicensesDlg.hpp" />
     <ClInclude Include="ProcessManager.hpp" />
     <ClInclude Include="ClashApi.hpp" />
@@ -332,6 +333,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="ClashXW.ico" />
+    <Image Include="NotifyIcon.png" />
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="ClashXW.manifest" />

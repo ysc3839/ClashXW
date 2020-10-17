@@ -325,3 +325,12 @@ void UpdateRichEditColor(HWND hWnd)
 	SendMessageW(hWnd, WM_THEMECHANGED, 0, 0);
 	RedrawWindow(hWnd, nullptr, nullptr, RDW_FRAME | RDW_INVALIDATE);
 }
+
+// Polyfill for ShouldSystemUseDarkMode, because it's unavailable in 1809.
+bool ShouldSystemUseLightTheme()
+{
+	DWORD value = 1, cbValue = sizeof(value);
+	if (RegGetValueW(HKEY_CURRENT_USER, LR"(Software\Microsoft\Windows\CurrentVersion\Themes\Personalize)", L"SystemUsesLightTheme", RRF_RT_REG_DWORD, nullptr, &value, &cbValue) != ERROR_SUCCESS)
+		value = 1;
+	return value != 0;
+}

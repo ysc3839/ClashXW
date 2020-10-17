@@ -85,6 +85,7 @@ constexpr auto CLASH_CTL_SECRET = L"";
 #include "TaskDialogInput.hpp"
 #include "RemoteConfigManager.hpp"
 #include "RemoteConfigDlg.hpp"
+#include "IconUtil.hpp"
 
 std::unique_ptr<ClashApi> g_clashApi;
 

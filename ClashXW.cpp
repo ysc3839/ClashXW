@@ -220,6 +220,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		.uCallbackMessage = WM_NOTIFYICON,
 		.uVersion = NOTIFYICON_VERSION_4
 	};
+	static struct {
+		HICON normal;
+		HICON disabled;
+	} NotifyIconLight, NotifyIconDark;
+	static bool systemUsesLightTheme = true;
+	static auto SelectNotifyIcon = []() {
+		auto NotifyIcon = &NotifyIconLight;
+		if (!systemUsesLightTheme)
+			NotifyIcon = &NotifyIconDark;
+		return g_settings.systemProxy ? NotifyIcon->normal : NotifyIcon->disabled;
+	};
+
 	static bool altState = false; // true=down, used by WM_ENTERIDLE
 	switch (message)
 	{
@@ -229,8 +241,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		SetupMenu();
 
+		auto hdc = wil::GetDC(hWnd);
+		auto bitmap = LoadPNGFromResource();
+		NotifyIconLight.normal = CreateIconFromWICBitmap(hdc.get(), bitmap.get(), 255, false);
+		NotifyIconLight.disabled = CreateIconFromWICBitmap(hdc.get(), bitmap.get(), 90, false);
+		if (g_darkModeSupported)
+		{
+			NotifyIconDark.normal = CreateIconFromWICBitmap(hdc.get(), bitmap.get(), 255, true);
+			NotifyIconDark.disabled = CreateIconFromWICBitmap(hdc.get(), bitmap.get(), 180, true);
+
+			systemUsesLightTheme = ShouldSystemUseLightTheme();
+		}
+
 		nid.hWnd = hWnd;
-		nid.hIcon = LoadIconW(g_hInst, MAKEINTRESOURCEW(IDI_CLASHXW));
+		nid.hIcon = SelectNotifyIcon();
 		wcscpy_s(nid.szTip, _(L"ClashXW"));
 
 		if (Shell_NotifyIconW(NIM_ADD, &nid))
@@ -337,6 +361,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 			case IDM_SYSTEMPROXY:
 				EnableSystemProxy(!g_settings.systemProxy);
+				nid.hIcon = SelectNotifyIcon();
+				Shell_NotifyIconW(NIM_MODIFY, &nid);
 				break;
 			case IDM_STARTATLOGIN:
 				StartAtLogin::SetEnable(!StartAtLogin::IsEnabled());
@@ -450,6 +476,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			}
 		}
 		break;
+	case WM_SETTINGCHANGE:
+	{
+		if (g_darkModeSupported && IsColorSchemeChangeMessage(lParam))
+		{
+			systemUsesLightTheme = ShouldSystemUseLightTheme();
+			nid.hIcon = SelectNotifyIcon();
+			Shell_NotifyIconW(NIM_MODIFY, &nid);
+		}
+	}
 	case WM_NOTIFYICON:
 		switch (LOWORD(lParam))
 		{
@@ -501,6 +536,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	default:
 		if (WM_TASKBAR_CREATED && message == WM_TASKBAR_CREATED)
 		{
+			if (g_darkModeSupported)
+				systemUsesLightTheme = ShouldSystemUseLightTheme();
+			nid.hIcon = SelectNotifyIcon();
 			if (!Shell_NotifyIconW(NIM_MODIFY, &nid))
 			{
 				FAIL_FAST_IF_WIN32_BOOL_FALSE(Shell_NotifyIconW(NIM_ADD, &nid));
