@@ -55,7 +55,7 @@ namespace yi18n
 #ifdef _INC_WINDOWS
 	void LoadTranslateDataFromResource(const HINSTANCE hInst)
 	{
-		const HRSRC hRes = FindResourceW(hInst, MAKEINTRESOURCEW(1), L"YMO");
+		const HRSRC hRes = FindResourceExW(g_hInst, L"YMO", MAKEINTRESOURCEW(1), GetThreadUILanguage());
 		if (hRes)
 		{
 			const HGLOBAL hResData = LoadResource(hInst, hRes);
