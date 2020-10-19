@@ -56,7 +56,6 @@ void SetupDataDirectory()
 {
 	try
 	{
-		CreateDirectoryIgnoreExist(g_dataPath.c_str());
 		CreateDirectoryIgnoreExist(g_configPath.c_str());
 		CopySampleConfigIfNeed();
 	}

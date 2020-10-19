@@ -32,9 +32,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	winrt::init_apartment(winrt::apartment_type::single_threaded);
 
-	SetCurrentProcessExplicitAppUserModelID(CLASHXW_APP_ID);
+	g_exePath = GetModuleFsPath(hInstance).remove_filename();
+	SetCurrentDirectoryW(g_exePath.c_str());
 
-	if (!CheckOnlyOneInstance(CLASHXW_MUTEX_NAME))
+	PortableModeUtil::CheckAndSetDataPath();
+
+	yi18n::LoadTranslateDataFromResource(hInstance);
+
+	if (!PortableModeUtil::CheckOnlyOneInstance())
 	{
 		constexpr std::wstring_view prefix = L"--pm=";
 		std::wstring_view cmdLine(lpCmdLine);
@@ -43,15 +48,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		return EXIT_FAILURE;
 	}
 
-	g_exePath = GetModuleFsPath(hInstance).remove_filename();
-	SetCurrentDirectoryW(g_exePath.c_str());
-	g_dataPath = GetKnownFolderFsPath(FOLDERID_RoamingAppData) / CLASHXW_DIR_NAME;
-	g_configPath = g_dataPath / CLASH_CONFIG_DIR_NAME;
+	PortableModeUtil::AskForPortableMode();
+	CreateDirectoryIgnoreExist(g_dataPath.c_str());
+	PortableModeUtil::CheckOnlyOneInstance();
+	PortableModeUtil::SetAppId();
 
-	yi18n::LoadTranslateDataFromResource(hInstance);
 	InitDarkMode();
 	InitDPIAPI();
-
 	LoadSettings();
 
 	WNDCLASSEXW wcex = {
@@ -279,6 +282,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		EnableSystemProxy(g_settings.systemProxy);
 		CheckMenuItem(g_hContextMenu, IDM_REMOTECONFIG_AUTOUPDATE, MF_BYCOMMAND | (g_settings.configAutoUpdate ? MF_CHECKED : MF_UNCHECKED));
 		CheckMenuItem(g_hContextMenu, IDM_EXPERIMENTAL_OPENDASHBOARDINBROWSER, MF_BYCOMMAND | (g_settings.openDashboardInBrowser ? MF_CHECKED : MF_UNCHECKED));
+		EnableMenuItem(g_hContextMenu, IDM_STARTATLOGIN, MF_BYCOMMAND | (g_portableMode ? MF_DISABLED : MF_ENABLED));
 
 		WatchConfigFile();
 	}

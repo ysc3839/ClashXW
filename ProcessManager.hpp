@@ -164,9 +164,11 @@ namespace ProcessManager
 				auto restoreErrorMode = wil::scope_exit([=]() { // Restore error mode after CreateProcessW
 					SetErrorMode(lastErrorMode);
 				});
+				wil::unique_cotaskmem_string appId;
+				THROW_IF_FAILED(GetCurrentProcessExplicitAppUserModelID(&appId));
 				STARTUPINFOW si = {
 					.cb = sizeof(si),
-					.lpTitle = const_cast<LPWSTR>(CLASHXW_APP_ID),
+					.lpTitle = appId.get(),
 					.dwFlags = STARTF_FORCEOFFFEEDBACK | STARTF_PREVENTPINNING | STARTF_TITLEISAPPID | STARTF_USESHOWWINDOW,
 					.wShowWindow = SW_HIDE
 				};

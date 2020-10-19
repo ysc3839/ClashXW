@@ -290,6 +290,7 @@
     <ClInclude Include="HiDPI.hpp" />
     <ClInclude Include="IconUtil.hpp" />
     <ClInclude Include="OSLicensesDlg.hpp" />
+    <ClInclude Include="PortableModeUtil.hpp" />
     <ClInclude Include="ProcessManager.hpp" />
     <ClInclude Include="ClashApi.hpp" />
     <ClInclude Include="ClashXW.h" />

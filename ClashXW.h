@@ -30,6 +30,7 @@ using nlohmann::json;
 using namespace std::chrono_literals;
 
 HINSTANCE g_hInst;
+bool g_portableMode = false;
 fs::path g_exePath;
 fs::path g_dataPath;
 fs::path g_configPath;
@@ -56,9 +57,9 @@ constexpr UINT WM_CONFIGCHANGEDETECT = WM_APP + 3;
 // RemoteConfigDlg
 constexpr UINT WM_REFRESHCONFIGS = WM_APP + 1;
 
-constexpr auto CLASHXW_APP_ID = L"com.ysc3839.clashxw";
-constexpr auto CLASHXW_MUTEX_NAME = L"Local\\com.ysc3839.clashxw";
-constexpr auto CLASHXW_DIR_NAME = L"ClashXW";
+#define CLASHXW_APP_ID L"com.ysc3839.clashxw"
+constexpr auto CLASHXW_DATA_DIR = L"ClashXW";
+constexpr auto CLASHXW_DATA_DIR_PORTABLE = L"Data";
 constexpr auto CLASHXW_LINK_NAME = L"ClashXW.lnk";
 constexpr auto CLASHXW_CONFIG_NAME = L"ClashXW.json";
 constexpr auto CLASHXW_USERAGENT = L"ClashXW/" BOOST_PP_STRINGIZE(GIT_BASEVERSION_MAJOR) "." BOOST_PP_STRINGIZE(GIT_BASEVERSION_MINOR) "." BOOST_PP_STRINGIZE(GIT_BASEVERSION_PATCH);
@@ -86,6 +87,7 @@ constexpr auto CLASH_CTL_SECRET = L"";
 #include "RemoteConfigManager.hpp"
 #include "RemoteConfigDlg.hpp"
 #include "IconUtil.hpp"
+#include "PortableModeUtil.hpp"
 
 std::unique_ptr<ClashApi> g_clashApi;
 

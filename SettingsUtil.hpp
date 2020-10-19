@@ -188,11 +188,13 @@ namespace StartAtLogin
 {
 	bool IsEnabled()
 	{
+		if (g_portableMode) return false;
 		return fs::is_regular_file(GetKnownFolderFsPath(FOLDERID_Startup) / CLASHXW_LINK_NAME);
 	}
 
 	void SetEnable(bool enable)
 	{
+		if (g_portableMode) return;
 		try
 		{
 			auto linkPath = GetKnownFolderFsPath(FOLDERID_Startup) / CLASHXW_LINK_NAME;
