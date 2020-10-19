@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-14 15:51+0800\n"
-"PO-Revision-Date: 2020-10-14 15:51+0800\n"
+"POT-Creation-Date: 2020-10-19 22:36+0800\n"
+"PO-Revision-Date: 2020-10-19 22:44+0800\n"
 "Last-Translator: Richard Yu <yurichard3839@gmail.com>\n"
 "Language-Team: \n"
 "Language: zh_CN\n"
@@ -18,7 +18,11 @@ msgstr ""
 "X-Generator: Poedit 2.4.1\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ClashXW.cpp:137
+#: ClashApi.hpp:112
+msgid "Error occoured, Please try to fix it by restarting ClashXW."
+msgstr "出现错误，请尝试重启 ClashXW。"
+
+#: ClashXW.cpp:140
 msgid ""
 "Clash process was alive less than 5 seconds\n"
 "Tap to view console log"
@@ -26,11 +30,12 @@ msgstr ""
 "Clash 进程在启动后 5 秒内退出\n"
 "点击以查看控制台日志"
 
-#: ClashXW.cpp:137 ClashXW.cpp:174 ClashXW.cpp:178 EdgeWebView2.hpp:153
+#: ClashXW.cpp:140 ClashXW.cpp:177 ClashXW.cpp:181 EdgeWebView2.hpp:153
+#: RemoteConfigDlg.hpp:203 RemoteConfigManager.hpp:124
 msgid "Error"
 msgstr "错误"
 
-#: ClashXW.cpp:174
+#: ClashXW.cpp:177
 msgid ""
 "Clash started, but failed to communiacte\n"
 "Tap to view console log"
@@ -38,55 +43,55 @@ msgstr ""
 "Clash 已启动，但无法通信\n"
 "点击以查看控制台日志"
 
-#: ClashXW.cpp:178
+#: ClashXW.cpp:181
 msgid "Failed to start clash."
 msgstr "Clash 启动失败。"
 
-#: ClashXW.cpp:208
+#: ClashXW.cpp:211
 msgid "Reload Config Fail"
 msgstr "重载配置文件失败"
 
-#: ClashXW.cpp:210
+#: ClashXW.cpp:213
 msgid "Success"
 msgstr "成功"
 
-#: ClashXW.cpp:210
+#: ClashXW.cpp:213
 msgid "Reload Config Succeed"
 msgstr "重载配置文件成功"
 
-#: ClashXW.cpp:234
+#: ClashXW.cpp:261
 msgid "ClashXW"
 msgstr ""
 
-#: ClashXW.cpp:387
+#: ClashXW.cpp:417
 msgid "Set benchmark url"
 msgstr "设置延迟测速链接"
 
-#: ClashXW.cpp:393
+#: ClashXW.cpp:423 RemoteConfigDlg.hpp:179 RemoteConfigDlg.hpp:287
 msgid "Warning"
 msgstr "警告"
 
-#: ClashXW.cpp:393
+#: ClashXW.cpp:423
 msgid "URL is not valid"
 msgstr "链接不合法"
 
-#: ClashXW.cpp:447
+#: ClashXW.cpp:477
 msgid "Copy shell command (External IP)\tCtrl+Alt+C"
 msgstr "复制终端代理命令 (外部IP)\tCtrl+Alt+C"
 
-#: ClashXW.cpp:448 MenuUtil.hpp:128
+#: ClashXW.cpp:478 MenuUtil.hpp:128
 msgid "Copy shell command\tCtrl+C"
 msgstr "复制终端代理命令\tCtrl+C"
 
-#: ClashXW.cpp:498
+#: ClashXW.cpp:537
 msgid "Tap to reload config"
 msgstr "点击重载配置文件"
 
-#: ClashXW.cpp:498
+#: ClashXW.cpp:537
 msgid "Config file have been changed"
 msgstr "配置文件已被修改"
 
-#: ClashXW.cpp:549
+#: ClashXW.cpp:591
 msgid "ClashXW License"
 msgstr "ClashXW 许可证"
 
@@ -137,3 +142,64 @@ msgstr ""
 #: OSLicensesDlg.hpp:147
 msgid "Open source licenses"
 msgstr "开放源代码许可"
+
+#: PortableModeUtil.hpp:47
+msgid "Portable Mode"
+msgstr "便捷模式"
+
+#: PortableModeUtil.hpp:47
+msgid ""
+"Do you want to enable portable mode?\n"
+"Enabling portable mode will disable non-portable features like start at "
+"login."
+msgstr ""
+"你想启用便捷模式吗？\n"
+"启用便捷模式将会禁用不兼容的功能如开机启动。"
+
+#: ProcessManager.hpp:283
+msgid ""
+"\n"
+"[Process completed]\n"
+msgstr ""
+"\n"
+"[进程已完成]\n"
+
+#: RemoteConfigDlg.hpp:73
+msgid "Url:"
+msgstr "链接:"
+
+#: RemoteConfigDlg.hpp:73
+msgid "Config Name:"
+msgstr "配置文件名称:"
+
+#: RemoteConfigDlg.hpp:74
+msgid "Remote Config"
+msgstr "托管配置"
+
+#: RemoteConfigDlg.hpp:130
+msgid "Url"
+msgstr "链接"
+
+#: RemoteConfigDlg.hpp:133
+msgid "Config Name"
+msgstr "配置文件名称"
+
+#: RemoteConfigDlg.hpp:136
+msgid "Update Time"
+msgstr "更新时间"
+
+#: RemoteConfigDlg.hpp:179 RemoteConfigDlg.hpp:287
+msgid "Invalid input"
+msgstr "输入不合法"
+
+#: RemoteConfigDlg.hpp:203 RemoteConfigManager.hpp:124
+msgid "Remote Config Update Fail"
+msgstr "托管配置文件更新失败"
+
+#: SettingsUtil.hpp:16
+msgid "Updating"
+msgstr "更新中"
+
+#: SettingsUtil.hpp:18
+msgid "Never"
+msgstr "从未"
