@@ -34,4 +34,11 @@
 #include <winrt/base.h>
 #include <winrt/Windows.Foundation.h>
 
+// Skyr URL
+#define RANGES_DISABLE_DEPRECATED_WARNINGS 1
+#pragma warning(push)
+#pragma warning(disable:4244 4459)
+#include "skyr/url.hpp"
+#pragma warning(pop)
+
 #endif //PCH_H

@@ -41,10 +41,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	if (!PortableModeUtil::CheckOnlyOneInstance())
 	{
-		constexpr std::wstring_view prefix = L"--pm=";
+		constexpr std::wstring_view pmPrefix = L"--pm=";
+		constexpr std::wstring_view urlPrefix = L"--url=";
 		std::wstring_view cmdLine(lpCmdLine);
-		if (cmdLine.size() > prefix.size() && cmdLine.starts_with(prefix))
-			return ProcessManager::SubProcess(cmdLine.substr(prefix.size()));
+		if (cmdLine.starts_with(pmPrefix))
+			return ProcessManager::SubProcess(cmdLine.substr(pmPrefix.size()));
+		else if (cmdLine.starts_with(urlPrefix))
+			return URLProtocolUtil::HandleURL(cmdLine.substr(urlPrefix.size()));
 		return EXIT_FAILURE;
 	}
 
@@ -52,6 +55,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	CreateDirectoryIgnoreExist(g_dataPath.c_str());
 	PortableModeUtil::CheckOnlyOneInstance();
 	PortableModeUtil::SetAppId();
+
+	try
+	{
+		URLProtocolUtil::CreateURLProtocols();
+	}
+	CATCH_LOG();
 
 	InitDarkMode();
 	InitDPIAPI();
@@ -69,7 +78,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	RegisterClassExW(&wcex);
 
-	auto hWnd = CreateWindowExW(WS_EX_TOPMOST, L"ClashXW", nullptr, WS_POPUP, 0, 0, 0, 0, nullptr, nullptr, hInstance, nullptr);
+	auto hWnd = CreateWindowExW(WS_EX_TOPMOST, L"ClashXW", g_portableMode ? nullptr : L"Global", WS_POPUP, 0, 0, 0, 0, nullptr, nullptr, hInstance, nullptr);
 	if (!hWnd)
 		return EXIT_FAILURE;
 
@@ -79,6 +88,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		TranslateMessage(&msg);
 		DispatchMessageW(&msg);
 	}
+
+	URLProtocolUtil::RemoveURLProtocols();
 
 	return static_cast<int>(msg.wParam);
 }
@@ -537,6 +548,25 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			ShowBalloon(_(L"Tap to reload config"), _(L"Config file have been changed"));
 		}
 		break;
+	case WM_ADDREMOTECONFIG:
+	try
+	{
+		wil::unique_handle hFileMapping(OpenFileMappingW(FILE_MAP_READ, FALSE, CLASHXW_URL_FILEMAP_NAME));
+		THROW_LAST_ERROR_IF_NULL(hFileMapping);
+
+		wil::unique_mapview_ptr<char> buffer(reinterpret_cast<char*>(MapViewOfFile(hFileMapping.get(), FILE_MAP_READ, 0, 0, 0)));
+		THROW_LAST_ERROR_IF_NULL(buffer);
+
+		std::string_view u8Url = buffer.get();
+		std::string_view u8Name = buffer.get() + u8Url.size() + 1;
+
+		[](std::wstring url, std::wstring name) -> winrt::fire_and_forget {
+			co_await ResumeForeground();
+			OpenEditConfigDialog(g_hWnd, url, name);
+		}(Utf8ToUtf16(u8Url), Utf8ToUtf16(u8Name));
+	}
+	CATCH_LOG();
+	break;
 	default:
 		if (WM_TASKBAR_CREATED && message == WM_TASKBAR_CREATED)
 		{

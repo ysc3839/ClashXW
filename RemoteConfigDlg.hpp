@@ -1,5 +1,9 @@
 #pragma once
 
+int g_openEditConfigDialog = 0;
+std::wstring g_editConfigUrl;
+std::wstring g_editConfigName;
+
 void AddOrUpdateRemoteConfigItem(HWND hListView, const RemoteConfig& config, int index = -1)
 {
 	LVITEMW item;
@@ -163,6 +167,13 @@ INT_PTR CALLBACK RemoteConfigDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPA
 
 		return (INT_PTR)TRUE;
 	}
+	case WM_WINDOWPOSCHANGED:
+		if ((reinterpret_cast<WINDOWPOS*>(lParam)->flags & SWP_SHOWWINDOW) && g_openEditConfigDialog == 1)
+		{
+			g_openEditConfigDialog = 2;
+			PostMessageW(hDlg, WM_COMMAND, MAKEWPARAM(IDC_REMOTECONFIG_ADD, 0), 0);
+		}
+		break;
 	case WM_COMMAND:
 		switch (LOWORD(wParam))
 		{
@@ -173,6 +184,12 @@ INT_PTR CALLBACK RemoteConfigDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPA
 		case IDC_REMOTECONFIG_ADD:
 		{
 			auto config = std::make_unique<RemoteConfig>();
+			if (g_openEditConfigDialog == 2)
+			{
+				g_openEditConfigDialog = 0;
+				config->url = std::move(g_editConfigUrl);
+				config->name = std::move(g_editConfigName);
+			}
 			if (EditRemoteConfig(hDlg, config->url, config->name))
 				AddOrUpdateRemoteConfigItem(GetDlgItem(hDlg, IDC_REMOTECONFIG_LISTVIEW), *g_settings.remoteConfig.emplace_back(std::move(config)));
 			else
@@ -322,5 +339,22 @@ void ShowRemoteConfigDialog(HWND hWndParent)
 	{
 		DialogBoxW(g_hInst, MAKEINTRESOURCEW(IDD_REMOTECONFIG), hWndParent, RemoteConfigDlgProc);
 		g_hWndRemoteConfigDlg = nullptr;
+	}
+}
+
+void OpenEditConfigDialog(HWND hWndParent, std::wstring& url, std::wstring& name)
+{
+	g_editConfigUrl = std::move(url);
+	g_editConfigName = std::move(name);
+
+	if (g_hWndRemoteConfigDlg)
+	{
+		g_openEditConfigDialog = 2;
+		PostMessageW(g_hWndRemoteConfigDlg, WM_COMMAND, MAKEWPARAM(IDC_REMOTECONFIG_ADD, 0), 0);
+	}
+	else
+	{
+		g_openEditConfigDialog = 1;
+		ShowRemoteConfigDialog(hWndParent);
 	}
 }

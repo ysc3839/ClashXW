@@ -53,6 +53,7 @@ BalloonClickAction g_balloonClickAction = BalloonClickAction::None;
 constexpr UINT WM_NOTIFYICON = WM_APP + 1;
 constexpr UINT WM_RESUMECORO = WM_APP + 2; // wParam=coroutine_handle.address
 constexpr UINT WM_CONFIGCHANGEDETECT = WM_APP + 3;
+constexpr UINT WM_ADDREMOTECONFIG = WM_APP + 4;
 
 // RemoteConfigDlg
 constexpr UINT WM_REFRESHCONFIGS = WM_APP + 1;
@@ -63,6 +64,7 @@ constexpr auto CLASHXW_DATA_DIR_PORTABLE = L"Data";
 constexpr auto CLASHXW_LINK_NAME = L"ClashXW.lnk";
 constexpr auto CLASHXW_CONFIG_NAME = L"ClashXW.json";
 constexpr auto CLASHXW_USERAGENT = L"ClashXW/" BOOST_PP_STRINGIZE(GIT_BASEVERSION_MAJOR) "." BOOST_PP_STRINGIZE(GIT_BASEVERSION_MINOR) "." BOOST_PP_STRINGIZE(GIT_BASEVERSION_PATCH);
+constexpr auto CLASHXW_URL_FILEMAP_NAME = L"Local\\ClashXWURL";
 constexpr auto CLASH_CONFIG_DIR_NAME = L"Config";
 constexpr auto CLASH_ASSETS_DIR_NAME = L"ClashAssets";
 constexpr auto CLASH_DASHBOARD_DIR_NAME = L"Dashboard";
@@ -88,6 +90,8 @@ constexpr auto CLASH_CTL_SECRET = L"";
 #include "RemoteConfigDlg.hpp"
 #include "IconUtil.hpp"
 #include "PortableModeUtil.hpp"
+#include "RegistryUtil.hpp"
+#include "URLProtocolUtil.hpp"
 
 std::unique_ptr<ClashApi> g_clashApi;
 
