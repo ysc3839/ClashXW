@@ -103,26 +103,26 @@ void HandleJSMessage(std::string_view handlerName, std::string_view callbackId, 
 	}
 }
 
-constexpr auto OLD_PROTOCOL_SCHEME = L"wvjbscheme";
-constexpr auto NEW_PROTOCOL_SCHEME = L"https";
-constexpr auto BRIDGE_LOADED = L"__bridge_loaded__";
+constexpr auto OLD_PROTOCOL_SCHEME = "wvjbscheme";
+constexpr auto NEW_PROTOCOL_SCHEME = "https";
+constexpr auto BRIDGE_LOADED = "__bridge_loaded__";
 // Minified version of EdgeWebView2JavascriptBridge.js
 constexpr auto JS_BRIDGE_CODE = LR"(!function(){function e(e,a){if(a){var r="cb_"+ ++i+"_"+ +new Date;n[r]=a,e.callbackId=r}window.chrome.webview.postMessage(e)}if(!window.WebViewJavascriptBridge){var a={},n={},i=0;window.chrome.webview.addEventListener("message",function(i){var r,t=i.data;if(t.responseId){if(r=n[t.responseId],!r)return;r(t.responseData),delete n[t.responseId]}else{if(t.callbackId){var o=t.callbackId;r=function(a){e({handlerName:t.handlerName,responseId:o,responseData:a})}}var s=a[t.handlerName];s?s(t.data,r):console.log("WebViewJavascriptBridge: WARNING: no handler for message from native:",t)}}),window.WebViewJavascriptBridge={registerHandler:function(e,n){a[e]=n},callHandler:function(a,n,i){2==arguments.length&&"function"==typeof n&&(i=n,n=null),e({handlerName:a,data:n},i)},disableJavscriptAlertBoxSafetyTimeout:function(){}},setTimeout(function(){var e=window.WVJBCallbacks;if(e){delete window.WVJBCallbacks;for(var a=0;a<e.length;++a)e[a](WebViewJavascriptBridge)}},0)}}();)";
 
-bool IsSchemeMatch(IUri* uri)
+inline bool IsSchemeMatch(const skyr::url& url)
 {
-	wil::unique_bstr scheme;
-	if (FAILED(uri->GetSchemeName(&scheme)))
-		return false;
-	return (_wcsicmp(scheme.get(), NEW_PROTOCOL_SCHEME) == 0) || (_wcsicmp(scheme.get(), OLD_PROTOCOL_SCHEME) == 0);
+	return url.scheme() == NEW_PROTOCOL_SCHEME || url.scheme() == OLD_PROTOCOL_SCHEME;
 }
 
-bool IsBridgeLoadedURI(IUri* uri)
+bool IsBridgeLoadedURI(std::wstring_view urlStr)
 {
-	wil::unique_bstr host;
-	if (FAILED(uri->GetHost(&host)))
-		return false;
-	return IsSchemeMatch(uri) && (_wcsicmp(host.get(), BRIDGE_LOADED) == 0);
+	try
+	{
+		skyr::url url(urlStr);
+		return IsSchemeMatch(url) && url.hostname() == BRIDGE_LOADED;
+	}
+	catch (...) {}
+	return false;
 }
 
 class EdgeWebView2
@@ -264,10 +264,7 @@ private:
 		wil::unique_cotaskmem_string uriStr;
 		RETURN_IF_FAILED(args->get_Uri(&uriStr));
 
-		wil::com_ptr_nothrow<IUri> uri;
-		RETURN_IF_FAILED(CreateUri(uriStr.get(), Uri_CREATE_CANONICALIZE | Uri_CREATE_NO_DECODE_EXTRA_INFO, 0, &uri));
-
-		if (IsBridgeLoadedURI(uri.get()))
+		if (IsBridgeLoadedURI(uriStr.get()))
 		{
 			args->put_Cancel(TRUE);
 			sender->ExecuteScript(JS_BRIDGE_CODE, nullptr);

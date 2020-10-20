@@ -183,26 +183,22 @@ std::wstring GetClipboardText()
 	return result;
 }
 
-bool IsUrlVaild(const wchar_t* url)
+bool IsUrlVaild(const wchar_t* urlStr)
 {
 	try
 	{
-		if (*url == 0)
+		if (*urlStr == 0)
 			return false;
 
-		wil::com_ptr<IUri> uri;
-		THROW_IF_FAILED(CreateUri(url, Uri_CREATE_CANONICALIZE | Uri_CREATE_NO_DECODE_EXTRA_INFO, 0, &uri));
+		skyr::url url{ std::wstring_view(urlStr) };
 
-		wil::unique_bstr host;
-		THROW_IF_FAILED(uri->GetHost(&host));
-
-		if (*host.get() == 0)
+		if (url.empty())
 			return false;
 
-		DWORD scheme = URL_SCHEME_UNKNOWN;
-		THROW_IF_FAILED(uri->GetScheme(&scheme));
+		if (url.hostname().empty())
+			return false;
 
-		return scheme == URL_SCHEME_HTTP || scheme == URL_SCHEME_HTTPS;
+		return url.scheme() == "http" || url.scheme() == "https";
 	}
 	CATCH_LOG();
 	return false;

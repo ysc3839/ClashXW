@@ -50,20 +50,15 @@ void UpdateRemoteConfigItems(HWND hListView)
 	SetWindowRedraw(hListView, TRUE);
 }
 
-bool CheckUrl(const wchar_t* url, BSTR* host)
+bool CheckUrl(std::wstring_view urlStr, std::wstring* host)
 {
 	try
 	{
-		wil::com_ptr_nothrow<IUri> uri;
-		THROW_IF_FAILED(CreateUri(url, Uri_CREATE_CANONICALIZE | Uri_CREATE_NO_DECODE_EXTRA_INFO, 0, &uri));
-
-		DWORD scheme = URL_SCHEME_UNKNOWN;
-		THROW_IF_FAILED(uri->GetScheme(&scheme));
-
-		if (scheme == URL_SCHEME_HTTP || scheme == URL_SCHEME_HTTPS)
+		skyr::url url(urlStr);
+		if (url.scheme() == "http" || url.scheme() == "https")
 		{
 			if (host)
-				THROW_IF_FAILED(uri->GetHost(host));
+				*host = Utf8ToUtf16(url.hostname());
 			return true;
 		}
 	}
@@ -83,10 +78,10 @@ bool EditRemoteConfig(HWND hWnd, std::wstring& url, std::wstring& configName)
 				auto url = GetWindowString(reinterpret_cast<HWND>(lParam));
 				if (!url.empty())
 				{
-					wil::unique_bstr host;
-					if (CheckUrl(url.c_str(), &host))
+					std::wstring host;
+					if (CheckUrl(url, &host))
 					{
-						Edit_SetCueBannerTextFocused(hWndEdit2, host.get(), TRUE);
+						Edit_SetCueBannerTextFocused(hWndEdit2, host.c_str(), TRUE);
 						return;
 					}
 				}
@@ -99,12 +94,10 @@ bool EditRemoteConfig(HWND hWnd, std::wstring& url, std::wstring& configName)
 		{
 			if (configName.empty())
 			{
-				wil::unique_bstr host;
-				if (!CheckUrl(url.c_str(), &host))
+				if (!CheckUrl(url, &configName))
 					return false;
-				configName = host.get();
 			}
-			else if (!CheckUrl(url.c_str(), nullptr))
+			else if (!CheckUrl(url, nullptr))
 				return false;
 
 			constexpr auto notAllowedChars = LR"(\/:*?"<>|)";

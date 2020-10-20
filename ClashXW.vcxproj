@@ -159,8 +159,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>winhttp.lib;uxtheme.lib;urlmon.lib;rasapi32.lib;wininet.lib;comctl32.lib;ntdll.lib;OneCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <DelayLoadDLLs>urlmon.dll;rasapi32.dll;wininet.dll;uxtheme.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <AdditionalDependencies>winhttp.lib;uxtheme.lib;rasapi32.lib;wininet.lib;comctl32.lib;ntdll.lib;OneCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>rasapi32.dll;wininet.dll;uxtheme.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <ResourceCompile>
       <PreprocessorDefinitions>DATE=$([System.DateTime]::Now.ToString(yyyy-MM-dd HH:mm));%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -183,8 +183,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>winhttp.lib;uxtheme.lib;urlmon.lib;rasapi32.lib;wininet.lib;comctl32.lib;ntdll.lib;OneCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <DelayLoadDLLs>urlmon.dll;rasapi32.dll;wininet.dll;uxtheme.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <AdditionalDependencies>winhttp.lib;uxtheme.lib;rasapi32.lib;wininet.lib;comctl32.lib;ntdll.lib;OneCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>rasapi32.dll;wininet.dll;uxtheme.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <ResourceCompile>
       <PreprocessorDefinitions>DATE=$([System.DateTime]::Now.ToString(yyyy-MM-dd HH:mm));%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -207,8 +207,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>winhttp.lib;uxtheme.lib;urlmon.lib;rasapi32.lib;wininet.lib;comctl32.lib;ntdll.lib;OneCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <DelayLoadDLLs>urlmon.dll;rasapi32.dll;wininet.dll;uxtheme.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <AdditionalDependencies>winhttp.lib;uxtheme.lib;rasapi32.lib;wininet.lib;comctl32.lib;ntdll.lib;OneCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>rasapi32.dll;wininet.dll;uxtheme.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <ResourceCompile>
       <PreprocessorDefinitions>DATE=$([System.DateTime]::Now.ToString(yyyy-MM-dd HH:mm));%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -237,8 +237,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalOptions>/PDBALTPATH:%_PDB% %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>winhttp.lib;uxtheme.lib;urlmon.lib;rasapi32.lib;wininet.lib;comctl32.lib;ntdll.lib;OneCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <DelayLoadDLLs>urlmon.dll;rasapi32.dll;wininet.dll;uxtheme.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <AdditionalDependencies>winhttp.lib;uxtheme.lib;rasapi32.lib;wininet.lib;comctl32.lib;ntdll.lib;OneCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>rasapi32.dll;wininet.dll;uxtheme.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <ResourceCompile>
       <PreprocessorDefinitions>DATE=$([System.DateTime]::Now.ToString(yyyy-MM-dd HH:mm));%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -266,8 +266,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalOptions>/PDBALTPATH:%_PDB% %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>winhttp.lib;uxtheme.lib;urlmon.lib;rasapi32.lib;wininet.lib;comctl32.lib;ntdll.lib;OneCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <DelayLoadDLLs>urlmon.dll;rasapi32.dll;wininet.dll;uxtheme.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <AdditionalDependencies>winhttp.lib;uxtheme.lib;rasapi32.lib;wininet.lib;comctl32.lib;ntdll.lib;OneCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>rasapi32.dll;wininet.dll;uxtheme.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <ResourceCompile>
       <PreprocessorDefinitions>DATE=$([System.DateTime]::Now.ToString(yyyy-MM-dd HH:mm));%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -295,8 +295,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalOptions>/PDBALTPATH:%_PDB% %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>winhttp.lib;uxtheme.lib;urlmon.lib;rasapi32.lib;wininet.lib;comctl32.lib;ntdll.lib;OneCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <DelayLoadDLLs>urlmon.dll;rasapi32.dll;wininet.dll;uxtheme.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <AdditionalDependencies>winhttp.lib;uxtheme.lib;rasapi32.lib;wininet.lib;comctl32.lib;ntdll.lib;OneCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>rasapi32.dll;wininet.dll;uxtheme.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <ResourceCompile>
       <PreprocessorDefinitions>DATE=$([System.DateTime]::Now.ToString(yyyy-MM-dd HH:mm));%(PreprocessorDefinitions)</PreprocessorDefinitions>
