@@ -32,6 +32,12 @@ jobs:
         nuget restore ClashXW.sln
       shell: bash
     - run: |
+        vcpkg install skyr-url --triplet=arm64-windows-static
+        vcpkg install skyr-url --triplet=x64-windows-static
+        vcpkg install skyr-url --triplet=x86-windows-static
+        vcpkg integrate install
+      shell: cmd
+    - run: |
         Start-Job -Init ([ScriptBlock]::Create("Set-Location '$pwd'")) -Script {
           msbuild ClashXW.sln "-p:Configuration=Release;Platform=x64" }
         Start-Job -Init ([ScriptBlock]::Create("Set-Location '$pwd'")) -Script {
