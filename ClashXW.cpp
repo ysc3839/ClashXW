@@ -514,7 +514,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 						g_clashConfig = g_clashApi->GetConfig();
 					}
 					CATCH_LOG();
-				}().wait_for(500ms);
+				}().wait_for(100ms);
 
 				co_await ResumeForeground();
 				UpdateMenus();
