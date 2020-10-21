@@ -66,7 +66,14 @@ bool CheckUrl(std::wstring_view urlStr, std::wstring* host)
 	return false;
 }
 
-bool EditRemoteConfig(HWND hWnd, std::wstring& url, std::wstring& configName)
+enum class EditConfigResult
+{
+	Ok,
+	Invalid,
+	Cancelled
+};
+
+EditConfigResult EditRemoteConfig(HWND hWnd, std::wstring& url, std::wstring& configName)
 {
 	int button = 0;
 	LabelTextVector labelText = { {_(L"Url:"), url}, {_(L"Config Name:"), configName} };
@@ -92,20 +99,17 @@ bool EditRemoteConfig(HWND hWnd, std::wstring& url, std::wstring& configName)
 	{
 		if (!url.empty())
 		{
-			if (configName.empty())
+			auto host = configName.empty() ? &configName : nullptr;
+			if (CheckUrl(url, host))
 			{
-				if (!CheckUrl(url, &configName))
-					return false;
+				constexpr auto notAllowedChars = LR"(\/:*?"<>|)";
+				if (configName.find_first_of(notAllowedChars) == std::wstring::npos)
+					return EditConfigResult::Ok;
 			}
-			else if (!CheckUrl(url, nullptr))
-				return false;
-
-			constexpr auto notAllowedChars = LR"(\/:*?"<>|)";
-			if (configName.find_first_of(notAllowedChars) == std::wstring::npos)
-				return true;
 		}
+		return EditConfigResult::Invalid;
 	}
-	return false;
+	return EditConfigResult::Cancelled;
 }
 
 INT_PTR CALLBACK RemoteConfigDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
@@ -183,10 +187,15 @@ INT_PTR CALLBACK RemoteConfigDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPA
 				config->url = std::move(g_editConfigUrl);
 				config->name = std::move(g_editConfigName);
 			}
-			if (EditRemoteConfig(hDlg, config->url, config->name))
+			switch (EditRemoteConfig(hDlg, config->url, config->name))
+			{
+			case EditConfigResult::Ok:
 				AddOrUpdateRemoteConfigItem(GetDlgItem(hDlg, IDC_REMOTECONFIG_LISTVIEW), *g_settings.remoteConfig.emplace_back(std::move(config)));
-			else
+				break;
+			case EditConfigResult::Invalid:
 				TaskDialog(hDlg, nullptr, _(L"Warning"), nullptr, _(L"Invalid input"), TDCBF_OK_BUTTON, TD_WARNING_ICON, nullptr);
+				break;
+			}
 		}
 		break;
 		case IDC_REMOTECONFIG_DELETE:
@@ -287,14 +296,17 @@ INT_PTR CALLBACK RemoteConfigDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPA
 			{
 				auto& config = g_settings.remoteConfig[nmia->iItem];
 				std::wstring url = config->url, name = config->name;
-				if (EditRemoteConfig(hDlg, url, name))
+				switch (EditRemoteConfig(hDlg, url, name))
 				{
+				case EditConfigResult::Ok:
 					config->url = std::move(url);
 					config->name = std::move(name);
 					AddOrUpdateRemoteConfigItem(nmia->hdr.hwndFrom, *config, nmia->iItem);
-				}
-				else
+					break;
+				case EditConfigResult::Invalid:
 					TaskDialog(hDlg, nullptr, _(L"Warning"), nullptr, _(L"Invalid input"), TDCBF_OK_BUTTON, TD_WARNING_ICON, nullptr);
+					break;
+				}
 			}
 		}
 		break;
