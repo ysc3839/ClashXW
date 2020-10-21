@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ClashXW\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-19 22:36+0800\n"
+"POT-Creation-Date: 2020-10-21 15:22+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,72 +21,73 @@ msgstr ""
 msgid "Error occoured, Please try to fix it by restarting ClashXW."
 msgstr ""
 
-#: ClashXW.cpp:140
+#: ClashXW.cpp:151
 msgid ""
 "Clash process was alive less than 5 seconds\n"
 "Tap to view console log"
 msgstr ""
 
-#: ClashXW.cpp:140 ClashXW.cpp:177 ClashXW.cpp:181 EdgeWebView2.hpp:153
-#: RemoteConfigDlg.hpp:203 RemoteConfigManager.hpp:124
+#: ClashXW.cpp:151 ClashXW.cpp:188 ClashXW.cpp:192 EdgeWebView2.hpp:153
+#: RemoteConfigDlg.hpp:229 RemoteConfigManager.hpp:124
 msgid "Error"
 msgstr ""
 
-#: ClashXW.cpp:177
+#: ClashXW.cpp:188
 msgid ""
 "Clash started, but failed to communiacte\n"
 "Tap to view console log"
 msgstr ""
 
-#: ClashXW.cpp:181
+#: ClashXW.cpp:192
 msgid "Failed to start clash."
 msgstr ""
 
-#: ClashXW.cpp:211
+#: ClashXW.cpp:222
 msgid "Reload Config Fail"
 msgstr ""
 
-#: ClashXW.cpp:213
+#: ClashXW.cpp:224
 msgid "Success"
 msgstr ""
 
-#: ClashXW.cpp:213
+#: ClashXW.cpp:224
 msgid "Reload Config Succeed"
 msgstr ""
 
-#: ClashXW.cpp:261
+#: ClashXW.cpp:272
 msgid "ClashXW"
 msgstr ""
 
-#: ClashXW.cpp:417
+#: ClashXW.cpp:428
 msgid "Set benchmark url"
 msgstr ""
 
-#: ClashXW.cpp:423 RemoteConfigDlg.hpp:179 RemoteConfigDlg.hpp:287
+#: ClashXW.cpp:434 RemoteConfigDlg.hpp:199 RemoteConfigDlg.hpp:203
+#: RemoteConfigDlg.hpp:314
 msgid "Warning"
 msgstr ""
 
-#: ClashXW.cpp:423
+#: ClashXW.cpp:434
 msgid "URL is not valid"
 msgstr ""
 
-#: ClashXW.cpp:477
+#: ClashXW.cpp:488
 msgid "Copy shell command (External IP)\tCtrl+Alt+C"
 msgstr ""
 
-#: ClashXW.cpp:478 MenuUtil.hpp:128
+#: ClashXW.cpp:489 MenuUtil.hpp:128
 msgid "Copy shell command\tCtrl+C"
 msgstr ""
 
-#: ClashXW.cpp:537
+#: ClashXW.cpp:547
 msgid "Tap to reload config"
 msgstr ""
 
-#: ClashXW.cpp:537
+#: ClashXW.cpp:547
 msgid "Config file have been changed"
 msgstr ""
 
-#: ClashXW.cpp:591
+#: ClashXW.cpp:620
 msgid "ClashXW License"
 msgstr ""
 
@@ -146,7 +147,7 @@ msgstr ""
 msgid ""
 "Do you want to enable portable mode?\n"
 "Enabling portable mode will disable non-portable features like start at "
-"login."
+"login and url protocol."
 msgstr ""
 
 #: ProcessManager.hpp:283
@@ -155,35 +156,39 @@ msgid ""
 "[Process completed]\n"
 msgstr ""
 
-#: RemoteConfigDlg.hpp:73
+#: RemoteConfigDlg.hpp:79
 msgid "Url:"
 msgstr ""
 
-#: RemoteConfigDlg.hpp:73
+#: RemoteConfigDlg.hpp:79
 msgid "Config Name:"
 msgstr ""
 
-#: RemoteConfigDlg.hpp:74
+#: RemoteConfigDlg.hpp:80
 msgid "Remote Config"
 msgstr ""
 
-#: RemoteConfigDlg.hpp:130
+#: RemoteConfigDlg.hpp:131
 msgid "Url"
 msgstr ""
 
-#: RemoteConfigDlg.hpp:133
+#: RemoteConfigDlg.hpp:134
 msgid "Config Name"
 msgstr ""
 
-#: RemoteConfigDlg.hpp:136
+#: RemoteConfigDlg.hpp:137
 msgid "Update Time"
 msgstr ""
 
-#: RemoteConfigDlg.hpp:179 RemoteConfigDlg.hpp:287
+#: RemoteConfigDlg.hpp:199
+msgid "The remote config name is duplicated"
+msgstr ""
+
+#: RemoteConfigDlg.hpp:203 RemoteConfigDlg.hpp:314
 msgid "Invalid input"
 msgstr ""
 
-#: RemoteConfigDlg.hpp:203 RemoteConfigManager.hpp:124
+#: RemoteConfigDlg.hpp:229 RemoteConfigManager.hpp:124
 msgid "Remote Config Update Fail"
 msgstr ""
 
