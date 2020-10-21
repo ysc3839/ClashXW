@@ -190,8 +190,15 @@ INT_PTR CALLBACK RemoteConfigDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPA
 			switch (EditRemoteConfig(hDlg, config->url, config->name))
 			{
 			case EditConfigResult::Ok:
-				AddOrUpdateRemoteConfigItem(GetDlgItem(hDlg, IDC_REMOTECONFIG_LISTVIEW), *g_settings.remoteConfig.emplace_back(std::move(config)));
-				break;
+			{
+				const auto& v = g_settings.remoteConfig;
+				auto it = std::find_if(v.cbegin(), v.cend(), [&config](auto& v) { return v->name == config->name; });
+				if (it == v.cend())
+					AddOrUpdateRemoteConfigItem(GetDlgItem(hDlg, IDC_REMOTECONFIG_LISTVIEW), *g_settings.remoteConfig.emplace_back(std::move(config)));
+				else
+					TaskDialog(hDlg, nullptr, _(L"Warning"), nullptr, _(L"The remote config name is duplicated"), TDCBF_OK_BUTTON, TD_WARNING_ICON, nullptr);
+			}
+			break;
 			case EditConfigResult::Invalid:
 				TaskDialog(hDlg, nullptr, _(L"Warning"), nullptr, _(L"Invalid input"), TDCBF_OK_BUTTON, TD_WARNING_ICON, nullptr);
 				break;
