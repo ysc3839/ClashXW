@@ -492,14 +492,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 	case WM_SETTINGCHANGE:
-	{
 		if (g_darkModeSupported && IsColorSchemeChangeMessage(lParam))
 		{
 			systemUsesLightTheme = ShouldSystemUseLightTheme();
 			nid.hIcon = SelectNotifyIcon();
 			Shell_NotifyIconW(NIM_MODIFY, &nid);
 		}
-	}
+		break;
 	case WM_NOTIFYICON:
 		switch (LOWORD(lParam))
 		{
