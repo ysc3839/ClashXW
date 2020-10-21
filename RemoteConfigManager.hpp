@@ -41,7 +41,7 @@ namespace RemoteConfigManager
 			wil::unique_winhttp_hinternet hConnect(WinHttpConnect(hSession.get(), urlComp.lpszHostName, urlComp.nPort, 0));
 			THROW_LAST_ERROR_IF_NULL(hConnect);
 
-			wil::unique_winhttp_hinternet hRequest(WinHttpOpenRequest(hConnect.get(), L"GET", urlComp.lpszUrlPath, nullptr, WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, urlComp.nScheme == INTERNET_SCHEME_HTTPS ? WINHTTP_FLAG_SECURE : 0));
+			wil::unique_winhttp_hinternet hRequest(WinHttpOpenRequest(hConnect.get(), L"GET", urlComp.lpszUrlPath, nullptr, WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, (urlComp.nScheme == INTERNET_SCHEME_HTTPS ? WINHTTP_FLAG_SECURE : 0) | WINHTTP_FLAG_REFRESH));
 			THROW_LAST_ERROR_IF_NULL(hRequest);
 
 			THROW_IF_WIN32_BOOL_FALSE(WinHttpSendRequest(hRequest.get(), WINHTTP_NO_ADDITIONAL_HEADERS, 0, WINHTTP_NO_REQUEST_DATA, 0, 0, 0));
