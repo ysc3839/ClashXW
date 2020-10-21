@@ -115,7 +115,6 @@ public:
 				errorDesp = Utf8ToUtf16(json::parse(res.data).at("message").get<std::string_view>());
 			}
 			CATCH_LOG();
-			LOG_HR_MSG(HTTP_E_STATUS_UNEXPECTED, "message: %s", errorDesp.c_str());
 			return errorDesp;
 		}
 		return std::nullopt;
