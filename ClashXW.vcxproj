@@ -304,6 +304,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ClashModel.hpp" />
     <ClInclude Include="Coroutine.hpp" />
     <ClInclude Include="DarkMode.hpp" />
     <ClInclude Include="DialogUtil.hpp" />

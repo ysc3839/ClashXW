@@ -1,8 +1,5 @@
 #pragma once
 
-#define JSON_TO(k) j[#k] = value.k;
-#define JSON_TRY_FROM(k) try { j.at(#k).get_to(value.k); } CATCH_LOG()
-
 struct RemoteConfig
 {
 	std::wstring url;

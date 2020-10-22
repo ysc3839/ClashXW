@@ -26,6 +26,10 @@
 #define JSON_USE_IMPLICIT_CONVERSIONS 0
 #include "nlohmann/json.hpp"
 
+#define JSON_TO(k) j[#k] = value.k;
+#define JSON_FROM(k) j.at(#k).get_to(value.k);
+#define JSON_TRY_FROM(k) try { j.at(#k).get_to(value.k); } CATCH_LOG()
+
 // Edge WebView2
 #include "WebView2.h"
 #include "WebView2EnvironmentOptions.h"

@@ -78,6 +78,7 @@ constexpr auto CLASH_CTL_SECRET = L"";
 #include "Util.hpp"
 #include "SysProxy.hpp"
 #include "SettingsUtil.hpp"
+#include "ClashModel.hpp"
 #include "ClashApi.hpp"
 #include "ConfigFileManager.hpp"
 #include "MenuUtil.hpp"

@@ -154,6 +154,15 @@ public:
 		return u16milliseconds(json::parse(res.data).at("delay").get<uint16_t>());
 	}
 
+	ClashProxies GetProxies()
+	{
+		auto res = Request(L"/proxies");
+
+		THROW_HR_IF(HTTP_E_STATUS_UNEXPECTED, res.statusCode != 200);
+
+		return json::parse(res.data).get<ClashProxies>();
+	}
+
 private:
 	void Connect()
 	{
