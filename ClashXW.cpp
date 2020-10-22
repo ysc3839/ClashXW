@@ -222,7 +222,7 @@ winrt::fire_and_forget UpdateConfigFile(fs::path name, bool showSuccess = false)
 		ShowBalloon(errorDesp->c_str(), _(L"Reload Config Fail"), NIIF_ERROR);
 	else if (showSuccess)
 		ShowBalloon(_(L"Success"), _(L"Reload Config Succeed"));
-	UpdateMenus();
+	MenuUtil::UpdateMenus();
 }
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -253,7 +253,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 		g_hWnd = hWnd;
 
-		SetupMenu();
+		MenuUtil::SetupMenu();
 
 		auto hdc = wil::GetDC(hWnd);
 		auto bitmap = LoadPNGFromResource();
@@ -325,7 +325,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 						co_return;
 					}
 					co_await ResumeForeground();
-					UpdateMenus();
+					MenuUtil::UpdateMenus();
 				}();
 			}
 			break;
@@ -345,7 +345,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 						co_return;
 					}
 					co_await ResumeForeground();
-					UpdateMenus();
+					MenuUtil::UpdateMenus();
 				}();
 			}
 			break;
@@ -370,7 +370,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 						co_return;
 					}
 					co_await ResumeForeground();
-					UpdateMenus();
+					MenuUtil::UpdateMenus();
 				}();
 			}
 			break;
@@ -487,7 +487,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				auto text = currentAltState ?
 					_(L"Copy shell command (External IP)\tCtrl+Alt+C") :
 					_(L"Copy shell command\tCtrl+C");
-				SetMenuItemText(g_hContextMenu, 3, text);
+				MenuUtil::SetMenuItemText(g_hContextMenu, 3, text);
 			}
 		}
 		break;
@@ -517,8 +517,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				}().wait_for(100ms);
 
 				co_await ResumeForeground();
-				UpdateMenus();
-				ShowContextMenu(hWnd, GET_X_LPARAM(wParam), GET_Y_LPARAM(wParam));
+				MenuUtil::UpdateMenus();
+				MenuUtil::ShowContextMenu(hWnd, GET_X_LPARAM(wParam), GET_Y_LPARAM(wParam));
 			}(hWnd, wParam);
 			break;
 		case NIN_BALLOONUSERCLICK:
