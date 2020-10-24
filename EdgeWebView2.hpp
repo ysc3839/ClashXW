@@ -125,34 +125,149 @@ bool IsBridgeLoadedURI(std::wstring_view urlStr)
 	return false;
 }
 
+bool ShowWebViewFailedDialog(HWND hWndParent, bool failedToLoad)
+{
+	std::wstring content;
+	if (failedToLoad)
+		content = _(L"It looks like Edge WebView is not installed.");
+	else // Failed in callback
+		content = _(L"It looks like Edge WebView is installed but doesn't work properly.");
+	content.append(L"\n");
+	content.append(_(L"Do you want install Edge WebView or open in browser?"));
+
+	constexpr int ID_DOWNLOAD_AND_INSTALL = 100;
+	constexpr int ID_OPEN_IN_BROWSER = 101;
+	TASKDIALOG_BUTTON buttons[] = { {
+		.nButtonID = ID_DOWNLOAD_AND_INSTALL,
+		.pszButtonText = _(L"Download and install Edge WebView runtime")
+	}, {
+		.nButtonID = ID_OPEN_IN_BROWSER,
+		.pszButtonText = _(L"Open Dashboard in browser\nYou can turn off this behavior in Experimental menu")
+	} };
+
+	auto fileName = fs::temp_directory_path() / L"MicrosoftEdgeWebview2Setup.exe";
+	auto callback = [&fileName](HWND hWnd, UINT msg, WPARAM wParam, LPARAM) -> HRESULT {
+		switch (msg)
+		{
+		case TDN_DIALOG_CONSTRUCTED:
+			SendMessageW(hWnd, TDM_SET_BUTTON_ELEVATION_REQUIRED_STATE, ID_DOWNLOAD_AND_INSTALL, TRUE);
+			break;
+		case TDN_BUTTON_CLICKED:
+			if (wParam == ID_DOWNLOAD_AND_INSTALL)
+			{
+				auto config = MakeTaskDialogDownloadPage(_(L"Downloading Edge WebView"), L"go.microsoft.com", 443, L"/fwlink/p/?LinkId=2124703", true, fileName.c_str(), [](HWND hWnd, LPCWSTR fileName) {
+					SendMessageW(hWnd, TDM_SET_MARQUEE_PROGRESS_BAR, TRUE, 0);
+					SendMessageW(hWnd, TDM_UPDATE_ELEMENT_TEXT, TDE_MAIN_INSTRUCTION, reinterpret_cast<LPARAM>(_(L"Installing Edge WebView")));
+					SendMessageW(hWnd, TDM_UPDATE_ELEMENT_TEXT, TDE_CONTENT, reinterpret_cast<LPARAM>(L" "));
+
+					bool preventClosingDialog = false;
+
+					SHELLEXECUTEINFOW sei = {
+						.cbSize = sizeof(sei),
+						.fMask = SEE_MASK_NOCLOSEPROCESS | SEE_MASK_NOASYNC | SEE_MASK_NOZONECHECKS,
+						.hwnd = hWnd,
+						.lpVerb = L"runas",
+						.lpFile = fileName,
+						.lpParameters = L"/install",
+						.nShow = SW_SHOW,
+					};
+					if (ShellExecuteExW(&sei))
+					{
+						wil::unique_process_handle hProcess(sei.hProcess);
+						if (hProcess)
+						{
+							SendMessageW(hWnd, TDM_ENABLE_BUTTON, IDCANCEL, FALSE);
+							WaitForSingleObject(hProcess.get(), INFINITE);
+						}
+					}
+					else
+					{
+						auto error = LOG_LAST_ERROR();
+						ShowTaskDialogErrorInfo(hWnd, HRESULT_FROM_WIN32(error), _(L"Install failed"));
+						preventClosingDialog = true;
+					}
+
+					DeleteFileW(fileName);
+
+					return preventClosingDialog;
+				});
+				SendMessageW(hWnd, TDM_NAVIGATE_PAGE, 0, reinterpret_cast<LPARAM>(&config));
+				return S_FALSE;
+			}
+			break;
+		}
+		return S_OK;
+	};
+
+	TASKDIALOGCONFIG config = {
+		.cbSize = sizeof(config),
+		.hwndParent = hWndParent,
+		.hInstance = g_hInst,
+		.dwFlags = TDF_USE_COMMAND_LINKS,
+		.dwCommonButtons = TDCBF_CANCEL_BUTTON,
+		.pszWindowTitle = _(L"Dashboard"),
+		.pszMainIcon = MAKEINTRESOURCEW(IDI_CLASHXW),
+		.pszMainInstruction = _(L"Failed to load Edge WebView"),
+		.pszContent = content.c_str(),
+		.cButtons = static_cast<UINT>(std::size(buttons)),
+		.pButtons = buttons,
+		.nDefaultButton = IDCANCEL,
+		.pfCallback = [](HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam, LONG_PTR lpRefData) -> HRESULT {
+			return (*reinterpret_cast<decltype(callback)*>(lpRefData))(hWnd, msg, wParam, lParam);
+		},
+		.lpCallbackData = reinterpret_cast<LONG_PTR>(&callback)
+	};
+	int button = 0;
+	if (SUCCEEDED(TaskDialogIndirect(&config, &button, nullptr, nullptr)))
+	{
+		switch (button)
+		{
+		case ID_OPEN_IN_BROWSER:
+			g_settings.openDashboardInBrowser = true;
+			CheckMenuItem(g_hContextMenu, IDM_EXPERIMENTAL_OPENDASHBOARDINBROWSER, MF_BYCOMMAND | (g_settings.openDashboardInBrowser ? MF_CHECKED : MF_UNCHECKED));
+			ShellExecuteW(hWndParent, nullptr, L"http://127.0.0.1:9090/ui/", nullptr, nullptr, SW_SHOWNORMAL);
+			break;
+		case 1024: // Download page
+			return true; // Try create webview again
+		}
+	}
+	return false;
+}
+
 class EdgeWebView2
 {
 public:
-	static void Create(HWND hWndParent)
+	static void Create()
 	{
-		if (s_webViewEnv)
+		bool tryAgain = false;
+		do
 		{
-			CreateWindow(hWndParent);
-		}
-		else
-		{
-			auto options = wrl::Make<CoreWebView2EnvironmentOptions>();
-			options->put_AdditionalBrowserArguments(LR"(--user-agent="ClashX Runtime")");
-			HRESULT hr = CreateCoreWebView2EnvironmentWithOptions(nullptr, g_dataPath.c_str(), options.Get(),
-				wrl::Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>(
-					[hWndParent](HRESULT result, ICoreWebView2Environment* env) {
-						RETURN_IF_FAILED(result);
-						s_webViewEnv = env;
-						CreateWindow(hWndParent);
-						return S_OK;
-					}).Get());
+			tryAgain = false;
 
-			if (FAILED(hr))
+			if (s_webViewEnv)
 			{
-				LOG_HR(hr);
-				TaskDialog(nullptr, nullptr, _(L"Error"), nullptr, _(L"Failed to load Edge WebView2."), TDCBF_OK_BUTTON, TD_ERROR_ICON, nullptr);
+				CreateWindow(nullptr);
 			}
-		}
+			else
+			{
+				auto options = wrl::Make<CoreWebView2EnvironmentOptions>();
+				options->put_AdditionalBrowserArguments(LR"(--user-agent="ClashX Runtime")");
+				HRESULT callbackResult = E_FAIL;
+				HRESULT hr = CreateCoreWebView2EnvironmentWithOptions(nullptr, g_dataPath.c_str(), options.Get(),
+					wrl::Callback<ICoreWebView2CreateCoreWebView2EnvironmentCompletedHandler>(
+						[&callbackResult](HRESULT result, ICoreWebView2Environment* env) {
+							callbackResult = result;
+							RETURN_IF_FAILED(result);
+							s_webViewEnv = env;
+							return S_OK;
+						}).Get());
+
+				if (SUCCEEDED_LOG(hr) && SUCCEEDED_LOG(callbackResult))
+					CreateWindow(nullptr);
+				else
+					tryAgain = ShowWebViewFailedDialog(g_hWnd, FAILED(hr));
+			}
+		} while (tryAgain);
 	}
 
 	static auto GetCount() { return s_instances; }

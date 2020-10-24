@@ -86,7 +86,7 @@ constexpr auto CLASH_CTL_SECRET = L"";
 #include "DarkMode.hpp"
 #include "DialogUtil.hpp"
 #include "OSLicensesDlg.hpp"
-#include "TaskDialogInput.hpp"
+#include "TaskDialogUtil.hpp"
 #include "RemoteConfigManager.hpp"
 #include "RemoteConfigDlg.hpp"
 #include "IconUtil.hpp"

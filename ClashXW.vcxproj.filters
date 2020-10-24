@@ -66,9 +66,6 @@
     <ClInclude Include="SettingsUtil.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TaskDialogInput.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="DarkMode.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -91,6 +88,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ClashModel.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TaskDialogUtil.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

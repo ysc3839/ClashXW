@@ -399,7 +399,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 				else
 				{
 					if (EdgeWebView2::GetCount() == 0)
-						EdgeWebView2::Create(nullptr);
+						EdgeWebView2::Create();
 				}
 				break;
 			case IDM_CONFIG_OPENFOLDER:

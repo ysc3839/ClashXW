@@ -327,7 +327,7 @@
     <ClInclude Include="SettingsUtil.hpp" />
     <ClInclude Include="SysProxy.hpp" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="TaskDialogInput.hpp" />
+    <ClInclude Include="TaskDialogUtil.hpp" />
     <ClInclude Include="URLProtocolUtil.hpp" />
     <ClInclude Include="Util.hpp" />
   </ItemGroup>
