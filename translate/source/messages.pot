@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ClashXW\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-21 15:22+0800\n"
+"POT-Creation-Date: 2020-10-25 00:38+0800\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,8 +27,8 @@ msgid ""
 "Tap to view console log"
 msgstr ""
 
-#: ClashXW.cpp:151 ClashXW.cpp:188 ClashXW.cpp:192 EdgeWebView2.hpp:153
-#: RemoteConfigDlg.hpp:229 RemoteConfigManager.hpp:124
+#: ClashXW.cpp:151 ClashXW.cpp:188 ClashXW.cpp:192 RemoteConfigDlg.hpp:229
+#: RemoteConfigManager.hpp:124
 msgid "Error"
 msgstr ""
 
@@ -75,7 +75,7 @@ msgstr ""
 msgid "Copy shell command (External IP)\tCtrl+Alt+C"
 msgstr ""
 
-#: ClashXW.cpp:489 MenuUtil.hpp:128
+#: ClashXW.cpp:489 MenuUtil.hpp:207
 msgid "Copy shell command\tCtrl+C"
 msgstr ""
 
@@ -91,46 +91,80 @@ msgstr ""
 msgid "ClashXW License"
 msgstr ""
 
-#: EdgeWebView2.hpp:153
-msgid "Failed to load Edge WebView2."
+#: EdgeWebView2.hpp:132
+msgid "It looks like Edge WebView is not installed."
 msgstr ""
 
-#: EdgeWebView2.hpp:253
+#: EdgeWebView2.hpp:134
+msgid "It looks like Edge WebView is installed but doesn't work properly."
+msgstr ""
+
+#: EdgeWebView2.hpp:136
+msgid "Do you want install Edge WebView or open in browser?"
+msgstr ""
+
+#: EdgeWebView2.hpp:142
+msgid "Download and install Edge WebView runtime"
+msgstr ""
+
+#: EdgeWebView2.hpp:145
+msgid ""
+"Open Dashboard in browser\n"
+"You can turn off this behavior in Experimental menu"
+msgstr ""
+
+#: EdgeWebView2.hpp:158
+msgid "Downloading Edge WebView"
+msgstr ""
+
+#: EdgeWebView2.hpp:160
+msgid "Installing Edge WebView"
+msgstr ""
+
+#: EdgeWebView2.hpp:186
+msgid "Install failed"
+msgstr ""
+
+#: EdgeWebView2.hpp:208 EdgeWebView2.hpp:368
 msgid "Dashboard"
 msgstr ""
 
-#: MenuUtil.hpp:174
+#: EdgeWebView2.hpp:210
+msgid "Failed to load Edge WebView"
+msgstr ""
+
+#: MenuUtil.hpp:121
 msgid "Global"
 msgstr ""
 
-#: MenuUtil.hpp:177
+#: MenuUtil.hpp:124
 msgid "Rule"
 msgstr ""
 
-#: MenuUtil.hpp:180
+#: MenuUtil.hpp:127
 msgid "Direct"
 msgstr ""
 
-#: MenuUtil.hpp:183
+#: MenuUtil.hpp:130
 msgid "Unknown"
 msgstr ""
 
-#: MenuUtil.hpp:187
+#: MenuUtil.hpp:134
 #, c-format
 msgid "Proxy Mode (%s)"
 msgstr ""
 
-#: MenuUtil.hpp:225
+#: MenuUtil.hpp:172
 #, c-format
 msgid "Http Port: %hu"
 msgstr ""
 
-#: MenuUtil.hpp:228
+#: MenuUtil.hpp:175
 #, c-format
 msgid "Socks Port: %hu"
 msgstr ""
 
-#: MenuUtil.hpp:231
+#: MenuUtil.hpp:178
 #, c-format
 msgid "Mixed Port: %hu"
 msgstr ""
@@ -147,7 +181,7 @@ msgstr ""
 msgid ""
 "Do you want to enable portable mode?\n"
 "Enabling portable mode will disable non-portable features like start at "
-"login and url protocol."
+"login and URL protocol."
 msgstr ""
 
 #: ProcessManager.hpp:283
@@ -192,10 +226,31 @@ msgstr ""
 msgid "Remote Config Update Fail"
 msgstr ""
 
-#: SettingsUtil.hpp:16
+#: SettingsUtil.hpp:13
 msgid "Updating"
 msgstr ""
 
-#: SettingsUtil.hpp:18
+#: SettingsUtil.hpp:15
 msgid "Never"
+msgstr ""
+
+#: TaskDialogUtil.hpp:232
+#, c-format
+msgid "Error code: 0x%X"
+msgstr ""
+
+#: TaskDialogUtil.hpp:361
+msgid "Download failed"
+msgstr ""
+
+#: TaskDialogUtil.hpp:392
+msgid "B/s"
+msgstr ""
+
+#: TaskDialogUtil.hpp:397
+msgid "KiB/s"
+msgstr ""
+
+#: TaskDialogUtil.hpp:401
+msgid "MiB/s"
 msgstr ""

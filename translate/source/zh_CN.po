@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-21 15:22+0800\n"
-"PO-Revision-Date: 2020-10-21 15:24+0800\n"
+"POT-Creation-Date: 2020-10-25 00:38+0800\n"
+"PO-Revision-Date: 2020-10-25 01:16+0800\n"
 "Last-Translator: Richard Yu <yurichard3839@gmail.com>\n"
 "Language-Team: \n"
 "Language: zh_CN\n"
@@ -30,8 +30,8 @@ msgstr ""
 "Clash 进程在启动后 5 秒内退出\n"
 "点击以查看控制台日志"
 
-#: ClashXW.cpp:151 ClashXW.cpp:188 ClashXW.cpp:192 EdgeWebView2.hpp:153
-#: RemoteConfigDlg.hpp:229 RemoteConfigManager.hpp:124
+#: ClashXW.cpp:151 ClashXW.cpp:188 ClashXW.cpp:192 RemoteConfigDlg.hpp:229
+#: RemoteConfigManager.hpp:124
 msgid "Error"
 msgstr "错误"
 
@@ -80,7 +80,7 @@ msgstr "链接不合法"
 msgid "Copy shell command (External IP)\tCtrl+Alt+C"
 msgstr "复制终端代理命令 (外部IP)\tCtrl+Alt+C"
 
-#: ClashXW.cpp:489 MenuUtil.hpp:128
+#: ClashXW.cpp:489 MenuUtil.hpp:207
 msgid "Copy shell command\tCtrl+C"
 msgstr "复制终端代理命令\tCtrl+C"
 
@@ -96,46 +96,82 @@ msgstr "配置文件已被修改"
 msgid "ClashXW License"
 msgstr "ClashXW 许可证"
 
-#: EdgeWebView2.hpp:153
-msgid "Failed to load Edge WebView2."
-msgstr "Edge WebView2 加载失败。"
+#: EdgeWebView2.hpp:132
+msgid "It looks like Edge WebView is not installed."
+msgstr "看上去 Edge WebView 没有安装。"
 
-#: EdgeWebView2.hpp:253
+#: EdgeWebView2.hpp:134
+msgid "It looks like Edge WebView is installed but doesn't work properly."
+msgstr "看上去 Edge WebView 已经安装但无法正常工作。"
+
+#: EdgeWebView2.hpp:136
+msgid "Do you want install Edge WebView or open in browser?"
+msgstr "你想安装 Edge WebView 还是在浏览器中打开？"
+
+#: EdgeWebView2.hpp:142
+msgid "Download and install Edge WebView runtime"
+msgstr "下载并安装 Edge WebView 运行库"
+
+#: EdgeWebView2.hpp:145
+msgid ""
+"Open Dashboard in browser\n"
+"You can turn off this behavior in Experimental menu"
+msgstr ""
+"在浏览器中打开控制台\n"
+"你可以在试验性功能菜单中关闭此行为"
+
+#: EdgeWebView2.hpp:158
+msgid "Downloading Edge WebView"
+msgstr "正在下载 Edge WebView"
+
+#: EdgeWebView2.hpp:160
+msgid "Installing Edge WebView"
+msgstr "正在安装 Edge WebView"
+
+#: EdgeWebView2.hpp:186
+msgid "Install failed"
+msgstr "安装失败"
+
+#: EdgeWebView2.hpp:208 EdgeWebView2.hpp:368
 msgid "Dashboard"
 msgstr "控制台"
 
-#: MenuUtil.hpp:174
+#: EdgeWebView2.hpp:210
+msgid "Failed to load Edge WebView"
+msgstr "Edge WebView 加载失败"
+
+#: MenuUtil.hpp:121
 msgid "Global"
 msgstr "全局"
 
-#: MenuUtil.hpp:177
+#: MenuUtil.hpp:124
 msgid "Rule"
 msgstr "规则"
 
-#: MenuUtil.hpp:180
+#: MenuUtil.hpp:127
 msgid "Direct"
 msgstr "直连"
 
-#: MenuUtil.hpp:183
+#: MenuUtil.hpp:130
 msgid "Unknown"
 msgstr "未知"
 
-#: MenuUtil.hpp:187
+#: MenuUtil.hpp:134
 #, c-format
 msgid "Proxy Mode (%s)"
 msgstr "出站模式 (%s)"
 
-#: MenuUtil.hpp:225
+#: MenuUtil.hpp:172
 #, c-format
 msgid "Http Port: %hu"
 msgstr ""
 
-#: MenuUtil.hpp:228
+#: MenuUtil.hpp:175
 #, c-format
 msgid "Socks Port: %hu"
 msgstr ""
 
-#: MenuUtil.hpp:231
+#: MenuUtil.hpp:178
 #, c-format
 msgid "Mixed Port: %hu"
 msgstr ""
@@ -152,7 +188,7 @@ msgstr "便捷模式"
 msgid ""
 "Do you want to enable portable mode?\n"
 "Enabling portable mode will disable non-portable features like start at "
-"login and url protocol."
+"login and URL protocol."
 msgstr ""
 "你想启用便捷模式吗？\n"
 "启用便捷模式将会禁用不兼容的功能，如开机启动和 URL 协议。"
@@ -201,10 +237,31 @@ msgstr "输入不合法"
 msgid "Remote Config Update Fail"
 msgstr "托管配置文件更新失败"
 
-#: SettingsUtil.hpp:16
+#: SettingsUtil.hpp:13
 msgid "Updating"
 msgstr "更新中"
 
-#: SettingsUtil.hpp:18
+#: SettingsUtil.hpp:15
 msgid "Never"
 msgstr "从未"
+
+#: TaskDialogUtil.hpp:232
+#, c-format
+msgid "Error code: 0x%X"
+msgstr "错误代码: 0x%X"
+
+#: TaskDialogUtil.hpp:361
+msgid "Download failed"
+msgstr "下载失败"
+
+#: TaskDialogUtil.hpp:392
+msgid "B/s"
+msgstr ""
+
+#: TaskDialogUtil.hpp:397
+msgid "KiB/s"
+msgstr ""
+
+#: TaskDialogUtil.hpp:401
+msgid "MiB/s"
+msgstr ""

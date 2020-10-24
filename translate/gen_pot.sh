@@ -1,6 +1,6 @@
 #!/bin/sh
 
-FILES="ClashApi.hpp ClashXW.cpp EdgeWebView2.hpp MenuUtil.hpp OSLicensesDlg.hpp PortableModeUtil.hpp ProcessManager.hpp RemoteConfigDlg.hpp RemoteConfigManager.hpp SettingsUtil.hpp"
+FILES="ClashApi.hpp ClashXW.cpp EdgeWebView2.hpp MenuUtil.hpp OSLicensesDlg.hpp PortableModeUtil.hpp ProcessManager.hpp RemoteConfigDlg.hpp RemoteConfigManager.hpp SettingsUtil.hpp TaskDialogUtil.hpp"
 
 COPYRIGHT_HOLDER="Richard Yu <yurichard3839@gmail.com>"
 PKG_NAME="ClashXW"
