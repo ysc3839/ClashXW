@@ -11,11 +11,11 @@ jobs:
         submodules: true
         fetch-depth: 0
     - name: Add msbuild to PATH
-      uses: microsoft/setup-msbuild@v1.0.0
+      uses: microsoft/setup-msbuild@v1
     - uses: nuget/setup-nuget@v1
       with:
         nuget-version: latest
-    - uses: actions/setup-python@v1
+    - uses: actions/setup-python@v2
       with:
         python-version: 3.7
     - run: |
