@@ -132,7 +132,7 @@ IAsyncAction ProcessMonitor()
 
 	g_clashRunning = false;
 
-	if (!ProcessManager::IsRunning()) // Manually stop
+	if (ProcessManager::IsRunning() != ProcessManager::State::Running) // Manually stop
 		co_return;
 
 	DWORD exitCode = 0;
@@ -152,7 +152,7 @@ IAsyncAction ProcessMonitor()
 		co_await winrt::resume_on_signal(hSubProcess);
 	}
 
-	if (!ProcessManager::IsRunning()) // Manually stop
+	if (ProcessManager::IsRunning() != ProcessManager::State::Running) // Manually stop
 		co_return;
 
 	ProcessManager::Stop();
@@ -468,12 +468,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	}
 	break;
 	case WM_DESTROY:
+		ProcessManager::SendStopSignal();
 		StopWatchConfigFile();
 		g_hMenuHook.reset();
 		if (g_processMonitor)
 			g_processMonitor.Cancel();
-		ProcessManager::Stop();
 		SaveSettings();
+		WaitForSingleObject(ProcessManager::GetClashProcessInfo().hProcess, 3000);
+		ProcessManager::Stop();
 		Shell_NotifyIconW(NIM_DELETE, &nid);
 		PostQuitMessage(0);
 		break;

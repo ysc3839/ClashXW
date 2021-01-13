@@ -33,14 +33,22 @@ struct ProcessInfo
 
 namespace ProcessManager
 {
+	enum struct State
+	{
+		Stop,
+		Running,
+		WaitStop
+	};
+
 	namespace // private
 	{
-		bool _running = false;
+		State _state = State::Stop;
 		fs::path _exePath, _homeDir, _configFile, _uiDir;
 		std::wstring _ctlAddr, _ctlSecret, _clashCmd;
 		wil::unique_handle _hJob;
 		wil::unique_process_information _subProcInfo, _clashProcInfo;
 		HWND _hWndConsole = nullptr;
+		wil::unique_handle _hEvent;
 
 		void _UpdateClashCmd()
 		{
@@ -98,14 +106,14 @@ namespace ProcessManager
 		_UpdateClashCmd();
 	}
 
-	bool IsRunning() { return _running; }
+	State IsRunning() { return _state; }
 	const PROCESS_INFORMATION& GetSubProcessInfo() { return _subProcInfo; }
 	const PROCESS_INFORMATION& GetClashProcessInfo() { return _clashProcInfo; }
 	HWND GetConsoleWindow() { return _hWndConsole; }
 
 	bool Start()
 	{
-		if (_running)
+		if (_state != State::Stop)
 			return false;
 
 		try
@@ -215,6 +223,7 @@ namespace ProcessManager
 				return false;
 			}
 
+			_hEvent = std::move(hEvent);
 			ResumeThread(_clashProcInfo.hThread);
 		}
 		catch (...)
@@ -223,19 +232,29 @@ namespace ProcessManager
 			LOG_CAUGHT_EXCEPTION();
 			return false;
 		}
-		_running = true;
+		_state = State::Running;
 		return true;
 	}
 
 	void Stop()
 	{
-		if (_running)
+		if (_state != State::Stop)
 		{
-			_running = false;
+			_state = State::Stop;
 			_hJob.reset();
 			_subProcInfo.reset();
 			_clashProcInfo.reset();
 			_hWndConsole = nullptr;
+			_hEvent.reset();
+		}
+	}
+
+	void SendStopSignal()
+	{
+		if (_state == State::Running)
+		{
+			_state = State::WaitStop;
+			SetEvent(_hEvent.get());
 		}
 	}
 
@@ -254,7 +273,7 @@ namespace ProcessManager
 			THROW_LAST_ERROR_IF_NULL(buffer);
 
 			objName[prefixSize + i] = L'E';
-			wil::unique_handle hEvent(OpenEventW(EVENT_MODIFY_STATE, FALSE, objName));
+			wil::unique_handle hEvent(OpenEventW(EVENT_MODIFY_STATE | SYNCHRONIZE, FALSE, objName));
 			THROW_LAST_ERROR_IF_NULL(hEvent);
 
 			THROW_IF_WIN32_BOOL_FALSE(AllocConsole());
@@ -276,8 +295,31 @@ namespace ProcessManager
 				.hWndConsole = hWndConsole
 			};
 
+			SetConsoleCtrlHandler(nullptr, TRUE); // Ignores Ctrl+C
+
 			THROW_IF_WIN32_BOOL_FALSE(SetEvent(hEvent.get()));
-			THROW_LAST_ERROR_IF(WaitForSingleObject(procInfo.hProcess, INFINITE) == WAIT_FAILED);
+
+			while (true)
+			{
+				HANDLE handles[] = { hEvent.get(), procInfo.hProcess };
+				auto ret = WaitForMultipleObjects(static_cast<DWORD>(std::size(handles)), handles, FALSE, INFINITE);
+				if (ret == WAIT_OBJECT_0) // Event signaled
+				{
+					GenerateConsoleCtrlEvent(CTRL_C_EVENT, 0);
+				}
+				else if (ret == WAIT_OBJECT_0 + 1) // Clash process exited
+				{
+					break;
+				}
+				else if (ret == WAIT_FAILED)
+				{
+					THROW_LAST_ERROR();
+				}
+				else if (ret == WAIT_TIMEOUT)
+				{
+					THROW_WIN32(ERROR_TIMEOUT);
+				}
+			}
 
 			const std::wstring_view msg = _(
 				L"\n"
