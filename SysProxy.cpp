@@ -38,39 +38,39 @@
 
 void SetSystemProxy(const wchar_t* server, const wchar_t* bypass = L"<local>")
 {
-	std::vector<INTERNET_PER_CONN_OPTIONW> options;
+	INTERNET_PER_CONN_OPTIONW options[3];
+	INTERNET_PER_CONN_OPTION_LISTW optList = {
+		.dwSize = sizeof(optList),
+		.dwOptionCount = 1,
+		.pOptions = options
+	};
+
 	if (!server) // off
 	{
-		options.emplace_back(INTERNET_PER_CONN_OPTIONW{
+		options[0] = {
 			.dwOption = INTERNET_PER_CONN_FLAGS,
 			.Value = { .dwValue = PROXY_TYPE_DIRECT }
-		});
+		};
 	}
 	else // global
 	{
-		options.reserve(3);
+		optList.dwOptionCount = 3;
 
-		options.emplace_back(INTERNET_PER_CONN_OPTIONW{
+		options[0] = {
 			.dwOption = INTERNET_PER_CONN_FLAGS,
 			.Value = { .dwValue = PROXY_TYPE_PROXY | PROXY_TYPE_DIRECT }
-		});
+		};
 
-		options.emplace_back(INTERNET_PER_CONN_OPTIONW{
+		options[1] = {
 			.dwOption = INTERNET_PER_CONN_PROXY_SERVER,
 			.Value = { .pszValue = const_cast<LPWSTR>(server) }
-		});
+		};
 
-		options.emplace_back(INTERNET_PER_CONN_OPTIONW{
+		options[2] = {
 			.dwOption = INTERNET_PER_CONN_PROXY_BYPASS,
 			.Value = { .pszValue = const_cast<LPWSTR>(bypass) }
-		});
+		};
 	}
-
-	INTERNET_PER_CONN_OPTION_LISTW optList = {
-		.dwSize = sizeof(optList),
-		.dwOptionCount = static_cast<DWORD>(options.size()),
-		.pOptions = options.data()
-	};
 
 	THROW_IF_WIN32_BOOL_FALSE(InternetSetOptionW(nullptr, INTERNET_OPTION_PER_CONNECTION_OPTION, &optList, sizeof(optList)));
 
