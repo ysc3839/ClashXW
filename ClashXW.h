@@ -80,6 +80,7 @@ constexpr auto CLASH_CTL_SECRET = L"";
 #include "SettingsUtil.hpp"
 #include "ClashModel.hpp"
 #include "ClashApi.hpp"
+std::unique_ptr<ClashApi> g_clashApi;
 #include "ConfigFileManager.hpp"
 #include "MenuUtil.hpp"
 #include "ProcessManager.hpp"
@@ -93,7 +94,4 @@ constexpr auto CLASH_CTL_SECRET = L"";
 #include "PortableModeUtil.hpp"
 #include "RegistryUtil.hpp"
 #include "URLProtocolUtil.hpp"
-
-std::unique_ptr<ClashApi> g_clashApi;
-
 #include "EdgeWebView2.hpp"

@@ -1,5 +1,15 @@
 #pragma once
 
+struct ClashProxySpeedHistory
+{
+	// Date time; // FIXME
+	uint32_t delay;
+
+	friend void from_json(const json& j, ClashProxySpeedHistory& value) {
+		JSON_FROM(delay);
+	}
+};
+
 struct ClashProxy
 {
 	using Name = std::string; // UTF-8
@@ -24,16 +34,17 @@ struct ClashProxy
 	};
 
 	Name name;
-	Type type;
+	Type type = Type::Unknown;
 	std::vector<Name> all;
-	// ClashProxySpeedHistory history; // FIXME
+	std::vector<ClashProxySpeedHistory> history;
 	std::optional<Name> now;
 
 	friend void from_json(const json& j, ClashProxy& value) {
 		JSON_FROM(name);
 		JSON_FROM(type);
 		JSON_TRY_FROM(all);
-		try { value.now.emplace(j.at("now").get<decltype(now)::value_type>()); } CATCH_LOG();
+		JSON_FROM(history);
+		try { value.now.emplace(j.at("now").get<decltype(now)::value_type>()); } catch (...) {}
 	}
 };
 
@@ -57,12 +68,16 @@ NLOHMANN_JSON_SERIALIZE_ENUM(ClashProxy::Type, {
 
 struct ClashProxies
 {
-	std::map<ClashProxy::Name, ClashProxy> proxiesMap;
+	using MapType = std::unordered_map<ClashProxy::Name, ClashProxy>;
+
+	MapType proxies;
 
 	friend void from_json(const json& j, ClashProxies& value) {
-		j.at("proxies").get_to(value.proxiesMap);
+		JSON_FROM(proxies);
 	}
 };
+
+ClashProxies g_clashProxies;
 
 struct ClashProvider
 {
@@ -104,9 +119,9 @@ NLOHMANN_JSON_SERIALIZE_ENUM(ClashProvider::VehicleType, {
 
 struct ClashProviders
 {
-	std::map<ClashProvider::Name, ClashProxy> allProviders;
+	std::map<ClashProvider::Name, ClashProvider> providers;
 
-	friend void from_json(const json& j, ClashProviders& value) {
-		j.at("providers").get_to(value.allProviders);
-	}
+	/*friend void from_json(const json& j, ClashProviders& value) {
+		JSON_FROM(providers);
+	}*/
 };

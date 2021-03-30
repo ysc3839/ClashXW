@@ -28,7 +28,8 @@
 
 #define JSON_TO(k) j[#k] = value.k;
 #define JSON_FROM(k) j.at(#k).get_to(value.k);
-#define JSON_TRY_FROM(k) try { j.at(#k).get_to(value.k); } CATCH_LOG()
+#define JSON_TRY_FROM(k) try { j.at(#k).get_to(value.k); } catch (...) {}
+#define JSON_TRY_FROM_LOG(k) try { j.at(#k).get_to(value.k); } CATCH_LOG()
 
 // Edge WebView2
 #include "WebView2.h"

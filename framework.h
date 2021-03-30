@@ -35,5 +35,6 @@
 #include <experimental/coroutine>
 #include <fstream>
 #include <conio.h>
+#include <unordered_set>
 
 #include <delayimp.h>

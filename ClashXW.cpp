@@ -301,169 +301,186 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_COMMAND:
 	{
 		WORD wmId = LOWORD(wParam);
-		auto type = static_cast<MenuIdType>(wmId >> 14);
-		if (type == MenuIdType::Command)
+		switch (wmId)
 		{
-			switch (wmId)
-			{
-			case IDM_MODE_GLOBAL:
-			case IDM_MODE_RULE:
-			case IDM_MODE_DIRECT:
-			{
-				ClashProxyMode mode = static_cast<ClashProxyMode>(wmId - IDM_MODE_GLOBAL + 1);
-				[mode]() -> winrt::fire_and_forget {
-					co_await winrt::resume_background();
-					try
-					{
-						if (!g_clashApi->UpdateProxyMode(mode))
-							co_return;
-						g_clashConfig = g_clashApi->GetConfig();
-					}
-					catch (...)
-					{
-						LOG_CAUGHT_EXCEPTION();
+		case IDM_MODE_GLOBAL:
+		case IDM_MODE_RULE:
+		case IDM_MODE_DIRECT:
+		{
+			ClashProxyMode mode = static_cast<ClashProxyMode>(wmId - IDM_MODE_GLOBAL + 1);
+			[mode]() -> winrt::fire_and_forget {
+				co_await winrt::resume_background();
+				try
+				{
+					if (!g_clashApi->UpdateProxyMode(mode))
 						co_return;
-					}
-					co_await ResumeForeground();
-					MenuUtil::UpdateMenus();
-				}();
-			}
-			break;
-			case IDM_ALLOWFROMLAN:
-			{
-				[]() -> winrt::fire_and_forget {
-					co_await winrt::resume_background();
-					try
-					{
-						if (!g_clashApi->UpdateAllowLan(!g_clashConfig.allowLan))
-							co_return;
-						g_clashConfig = g_clashApi->GetConfig();
-					}
-					catch (...)
-					{
-						LOG_CAUGHT_EXCEPTION();
+					g_clashConfig = g_clashApi->GetConfig();
+				}
+				catch (...)
+				{
+					LOG_CAUGHT_EXCEPTION();
+					co_return;
+				}
+				co_await ResumeForeground();
+				MenuUtil::UpdateMenus();
+			}();
+		}
+		break;
+		case IDM_ALLOWFROMLAN:
+		{
+			[]() -> winrt::fire_and_forget {
+				co_await winrt::resume_background();
+				try
+				{
+					if (!g_clashApi->UpdateAllowLan(!g_clashConfig.allowLan))
 						co_return;
-					}
-					co_await ResumeForeground();
-					MenuUtil::UpdateMenus();
-				}();
-			}
-			break;
-			case IDM_LOGLEVEL_ERROR:
-			case IDM_LOGLEVEL_WARNING:
-			case IDM_LOGLEVEL_INFO:
-			case IDM_LOGLEVEL_DEBUG:
-			case IDM_LOGLEVEL_SILENT:
-			{
-				ClashLogLevel level = static_cast<ClashLogLevel>(wmId - IDM_LOGLEVEL_ERROR + 1);
-				[level]() -> winrt::fire_and_forget {
-					co_await winrt::resume_background();
-					try
-					{
-						if (!g_clashApi->UpdateLogLevel(level))
-							co_return;
-						g_clashConfig = g_clashApi->GetConfig();
-					}
-					catch (...)
-					{
-						LOG_CAUGHT_EXCEPTION();
+					g_clashConfig = g_clashApi->GetConfig();
+				}
+				catch (...)
+				{
+					LOG_CAUGHT_EXCEPTION();
+					co_return;
+				}
+				co_await ResumeForeground();
+				MenuUtil::UpdateMenus();
+			}();
+		}
+		break;
+		case IDM_LOGLEVEL_ERROR:
+		case IDM_LOGLEVEL_WARNING:
+		case IDM_LOGLEVEL_INFO:
+		case IDM_LOGLEVEL_DEBUG:
+		case IDM_LOGLEVEL_SILENT:
+		{
+			ClashLogLevel level = static_cast<ClashLogLevel>(wmId - IDM_LOGLEVEL_ERROR + 1);
+			[level]() -> winrt::fire_and_forget {
+				co_await winrt::resume_background();
+				try
+				{
+					if (!g_clashApi->UpdateLogLevel(level))
 						co_return;
-					}
-					co_await ResumeForeground();
-					MenuUtil::UpdateMenus();
-				}();
-			}
+					g_clashConfig = g_clashApi->GetConfig();
+				}
+				catch (...)
+				{
+					LOG_CAUGHT_EXCEPTION();
+					co_return;
+				}
+				co_await ResumeForeground();
+				MenuUtil::UpdateMenus();
+			}();
+		}
+		break;
+		case IDM_SYSTEMPROXY:
+			EnableSystemProxy(!g_settings.systemProxy);
+			nid.hIcon = SelectNotifyIcon();
+			Shell_NotifyIconW(NIM_MODIFY, &nid);
 			break;
-			case IDM_SYSTEMPROXY:
-				EnableSystemProxy(!g_settings.systemProxy);
-				nid.hIcon = SelectNotifyIcon();
-				Shell_NotifyIconW(NIM_MODIFY, &nid);
-				break;
-			case IDM_STARTATLOGIN:
-				StartAtLogin::SetEnable(!StartAtLogin::IsEnabled());
-				break;
-			case IDM_HELP_ABOUT:
+		case IDM_STARTATLOGIN:
+			StartAtLogin::SetEnable(!StartAtLogin::IsEnabled());
+			break;
+		case IDM_HELP_ABOUT:
+		{
+			static bool opened = false;
+			if (!opened)
 			{
-				static bool opened = false;
-				if (!opened)
-				{
-					opened = true;
-					DialogBoxW(g_hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
-					opened = false;
-				}
-			}
-			break;
-			case IDM_DASHBOARD:
-				if (g_settings.openDashboardInBrowser)
-					ShellExecuteW(hWnd, nullptr, L"http://127.0.0.1:9090/ui/", nullptr, nullptr, SW_SHOWNORMAL);
-				else
-				{
-					if (EdgeWebView2::GetCount() == 0)
-						EdgeWebView2::Create();
-				}
-				break;
-			case IDM_CONFIG_OPENFOLDER:
-				ShellExecuteW(hWnd, nullptr, g_configPath.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
-				break;
-			case IDM_CONFIG_RELOAD:
-				UpdateConfigFile({});
-				break;
-			case IDM_REMOTECONFIG_MANAGE:
-				ShowRemoteConfigDialog(hWnd);
-				break;
-			case IDM_REMOTECONFIG_UPDATE:
-				[]() -> winrt::fire_and_forget {
-					co_await winrt::resume_background();
-					RemoteConfigManager::CheckUpdate(true);
-				}();
-				break;
-			case IDM_REMOTECONFIG_AUTOUPDATE:
-				g_settings.configAutoUpdate = !g_settings.configAutoUpdate;
-				CheckMenuItem(g_hContextMenu, IDM_REMOTECONFIG_AUTOUPDATE, MF_BYCOMMAND | (g_settings.configAutoUpdate ? MF_CHECKED : MF_UNCHECKED));
-				break;
-			case IDM_EXPERIMENTAL_SETBENCHURL:
-			{
-				auto benchmarkUrl = g_settings.benchmarkUrl;
-				int button = 0;
-				auto hr = TaskDialogInput(hWnd, g_hInst, _(L"Set benchmark url"), nullptr, _(L"Set benchmark url"), TDCBF_OK_BUTTON | TDCBF_CANCEL_BUTTON, MAKEINTRESOURCEW(IDI_CLASHXW), &button, benchmarkUrl);
-				if (SUCCEEDED(hr) && button == IDOK)
-				{
-					if (IsUrlVaild(benchmarkUrl.c_str()))
-						g_settings.benchmarkUrl = benchmarkUrl;
-					else
-						TaskDialog(hWnd, nullptr, _(L"Warning"), nullptr, _(L"URL is not valid"), TDCBF_OK_BUTTON, TD_WARNING_ICON, nullptr);
-				}
-			}
-			break;
-			case IDM_EXPERIMENTAL_OPENDASHBOARDINBROWSER:
-				g_settings.openDashboardInBrowser = !g_settings.openDashboardInBrowser;
-				CheckMenuItem(g_hContextMenu, IDM_EXPERIMENTAL_OPENDASHBOARDINBROWSER, MF_BYCOMMAND | (g_settings.openDashboardInBrowser ? MF_CHECKED : MF_UNCHECKED));
-				break;
-			case IDM_EXPERIMENTAL_SHOWCLASHCONSOLE:
-			{
-				const HWND hWndConsole = ProcessManager::GetConsoleWindow();
-				if (hWndConsole)
-				{
-					ShowConsoleWindow(!IsWindowVisible(hWndConsole));
-				}
-				else
-					ShowConsoleWindow(false);
-			}
-			break;
-			case IDM_QUIT:
-				DestroyWindow(hWnd);
-				break;
-			default:
-				return DefWindowProcW(hWnd, message, wParam, lParam);
+				opened = true;
+				DialogBoxW(g_hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+				opened = false;
 			}
 		}
-		else if (type == MenuIdType::Config)
+		break;
+		case IDM_DASHBOARD:
+			if (g_settings.openDashboardInBrowser)
+				ShellExecuteW(hWnd, nullptr, L"http://127.0.0.1:9090/ui/", nullptr, nullptr, SW_SHOWNORMAL);
+			else
+			{
+				if (EdgeWebView2::GetCount() == 0)
+					EdgeWebView2::Create();
+			}
+			break;
+		case IDM_CONFIG_OPENFOLDER:
+			ShellExecuteW(hWnd, nullptr, g_configPath.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
+			break;
+		case IDM_CONFIG_RELOAD:
+			UpdateConfigFile({});
+			break;
+		case IDM_REMOTECONFIG_MANAGE:
+			ShowRemoteConfigDialog(hWnd);
+			break;
+		case IDM_REMOTECONFIG_UPDATE:
+			[]() -> winrt::fire_and_forget {
+				co_await winrt::resume_background();
+				RemoteConfigManager::CheckUpdate(true);
+			}();
+			break;
+		case IDM_REMOTECONFIG_AUTOUPDATE:
+			g_settings.configAutoUpdate = !g_settings.configAutoUpdate;
+			CheckMenuItem(g_hContextMenu, IDM_REMOTECONFIG_AUTOUPDATE, MF_BYCOMMAND | (g_settings.configAutoUpdate ? MF_CHECKED : MF_UNCHECKED));
+			break;
+		case IDM_EXPERIMENTAL_SETBENCHURL:
 		{
-			size_t i = wmId & 0x3FFF;
+			auto benchmarkUrl = g_settings.benchmarkUrl;
+			int button = 0;
+			auto hr = TaskDialogInput(hWnd, g_hInst, _(L"Set benchmark url"), nullptr, _(L"Set benchmark url"), TDCBF_OK_BUTTON | TDCBF_CANCEL_BUTTON, MAKEINTRESOURCEW(IDI_CLASHXW), &button, benchmarkUrl);
+			if (SUCCEEDED(hr) && button == IDOK)
+			{
+				if (IsUrlVaild(benchmarkUrl.c_str()))
+					g_settings.benchmarkUrl = benchmarkUrl;
+				else
+					TaskDialog(hWnd, nullptr, _(L"Warning"), nullptr, _(L"URL is not valid"), TDCBF_OK_BUTTON, TD_WARNING_ICON, nullptr);
+			}
+		}
+		break;
+		case IDM_EXPERIMENTAL_OPENDASHBOARDINBROWSER:
+			g_settings.openDashboardInBrowser = !g_settings.openDashboardInBrowser;
+			CheckMenuItem(g_hContextMenu, IDM_EXPERIMENTAL_OPENDASHBOARDINBROWSER, MF_BYCOMMAND | (g_settings.openDashboardInBrowser ? MF_CHECKED : MF_UNCHECKED));
+			break;
+		case IDM_EXPERIMENTAL_SHOWCLASHCONSOLE:
+		{
+			const HWND hWndConsole = ProcessManager::GetConsoleWindow();
+			if (hWndConsole)
+			{
+				ShowConsoleWindow(!IsWindowVisible(hWndConsole));
+			}
+			else
+				ShowConsoleWindow(false);
+		}
+		break;
+		case IDM_QUIT:
+			DestroyWindow(hWnd);
+			break;
+		default:
+			return DefWindowProcW(hWnd, message, wParam, lParam);
+		}
+	}
+	break;
+	case WM_MENUCOMMAND:
+	{
+		size_t i = static_cast<size_t>(wParam);
+		HMENU hMenu = reinterpret_cast<HMENU>(lParam);
+
+		if (hMenu == g_hTopMenu || hMenu == g_hPortsMenu) {}
+		else if (hMenu == g_hContextMenu ||
+			hMenu == g_hProxyModeMenu ||
+			hMenu == g_hLogLevelMenu)
+		{
+			MenuUtil::PostCommandByMenuIndex(hWnd, hMenu, i);
+		}
+		else if (hMenu == g_hConfigMenu)
+		{
 			if (i < g_configFilesList.size())
 			{
 				UpdateConfigFile(g_configFilesList[i]);
 			}
+			else
+			{
+				MenuUtil::PostCommandByMenuIndex(hWnd, hMenu, i);
+			}
+		}
+		else if (!MenuUtil::HandleProxyGroupsItemChoose(hMenu, i))
+		{
+			MenuUtil::PostCommandByMenuIndex(hWnd, hMenu, i);
 		}
 	}
 	break;
@@ -514,10 +531,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 					try
 					{
 						g_clashConfig = g_clashApi->GetConfig();
+						g_clashProxies = g_clashApi->GetProxies();
 					}
 					CATCH_LOG();
-				}().wait_for(100ms);
-
+#ifdef _DEBUG
+				}().wait_for(1000ms);
+#else
+				}().wait_for(200ms);
+#endif
 				co_await ResumeForeground();
 				MenuUtil::UpdateMenus();
 				MenuUtil::ShowContextMenu(hWnd, GET_X_LPARAM(wParam), GET_Y_LPARAM(wParam));

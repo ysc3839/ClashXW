@@ -163,6 +163,14 @@ public:
 		return json::parse(res.data).get<ClashProxies>();
 	}
 
+	bool UpdateProxyGroup(std::string_view group, std::string_view selectProxy)
+	{
+		std::wstring path = L"/proxies/";
+		path.append(Utf8ToUtf16(group));
+		auto res = Request(path.c_str(), L"PUT", { {"name", selectProxy} });
+		return res.statusCode == 204; // HTTP 204 No Content
+	}
+
 private:
 	void Connect()
 	{

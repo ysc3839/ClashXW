@@ -63,12 +63,6 @@ const std::unordered_map<AccelKey, WORD> MenuAccel = {
 };
 wil::unique_hhook g_hMenuHook;
 
-enum class MenuIdType
-{
-	Command,
-	Config,
-};
-
 namespace MenuUtil
 {
 	BOOL SetMenuItemText(HMENU hMenu, UINT pos, const wchar_t* text) noexcept
@@ -83,6 +77,16 @@ namespace MenuUtil
 
 	namespace
 	{
+		struct MenuProxyGroup
+		{
+			ClashProxy* model;
+			std::vector<ClashProxy*> allProxies;
+			HMENU hMenu;
+		};
+
+		std::vector<MenuProxyGroup> s_menuProxyGroups;
+		ClashProxies::MapType s_menuProxies;
+
 		bool ProcessAccelerator(LPMSG msg)
 		{
 			if (msg->message == WM_KEYDOWN || msg->message == WM_SYSKEYDOWN)
@@ -107,9 +111,9 @@ namespace MenuUtil
 
 		void UpdateContextMenu() noexcept
 		{
-			CheckMenuItem(g_hContextMenu, 2, MF_BYPOSITION | (g_settings.systemProxy ? MF_CHECKED : MF_UNCHECKED));
-			CheckMenuItem(g_hContextMenu, 5, MF_BYPOSITION | (StartAtLogin::IsEnabled() ? MF_CHECKED : MF_UNCHECKED));
-			CheckMenuItem(g_hContextMenu, 7, MF_BYPOSITION | (g_clashConfig.allowLan ? MF_CHECKED : MF_UNCHECKED));
+			CheckMenuItem(g_hContextMenu, IDM_SYSTEMPROXY, g_settings.systemProxy ? MF_CHECKED : MF_UNCHECKED);
+			CheckMenuItem(g_hContextMenu, IDM_STARTATLOGIN, StartAtLogin::IsEnabled() ? MF_CHECKED : MF_UNCHECKED);
+			CheckMenuItem(g_hContextMenu, IDM_ALLOWFROMLAN, g_clashConfig.allowLan ? MF_CHECKED : MF_UNCHECKED);
 		}
 
 		void UpdateProxyModeMenu()
@@ -150,10 +154,9 @@ namespace MenuUtil
 				auto stem = n.stem();
 				MENUITEMINFOW mii = {
 					.cbSize = sizeof(mii),
-					.fMask = MIIM_FTYPE | MIIM_STATE | MIIM_ID | MIIM_STRING,
+					.fMask = MIIM_FTYPE | MIIM_STATE | MIIM_STRING,
 					.fType = MFT_RADIOCHECK,
 					.fState = static_cast<UINT>(n == g_settings.configFile ? MFS_CHECKED : MFS_UNCHECKED),
-					.wID = (static_cast<UINT>(MenuIdType::Config) << 14) | i,
 					.dwTypeData = const_cast<LPWSTR>(stem.c_str())
 				};
 				InsertMenuItemW(g_hConfigMenu, i, TRUE, &mii);
@@ -178,6 +181,121 @@ namespace MenuUtil
 			swprintf_s(text, _(L"Mixed Port: %hu"), g_clashConfig.mixedPort);
 			SetMenuItemText(g_hPortsMenu, 2, text);
 		}
+
+		void AddMenuProxyGroup(ClashProxy& group)
+		{
+			std::vector<ClashProxy*> allProxies;
+			allProxies.reserve(group.all.size());
+			for (const auto& key : group.all)
+			{
+				auto& proxy = s_menuProxies.at(key);
+				allProxies.emplace_back(&proxy);
+			}
+			s_menuProxyGroups.emplace_back(&group, std::move(allProxies));
+		}
+
+		void BuildMenuProxyGroups()
+		{
+			s_menuProxyGroups.clear();
+			s_menuProxies = std::move(g_clashProxies.proxies);
+
+			auto& global = s_menuProxies.at("GLOBAL");
+			if (g_clashConfig.mode == ClashProxyMode::Global)
+			{
+				AddMenuProxyGroup(global);
+			}
+			else
+			{
+				static const std::unordered_set<ClashProxy::Name> unusedProxy = { "DIRECT", "REJECT", "GLOBAL" };
+				for (const auto& key : global.all)
+				{
+					if (unusedProxy.contains(key))
+						continue;
+					auto& proxy = s_menuProxies.at(key);
+					if (proxy.type == ClashProxy::Type::URLTest ||
+						proxy.type == ClashProxy::Type::Fallback ||
+						proxy.type == ClashProxy::Type::LoadBalance ||
+						proxy.type == ClashProxy::Type::Selector) // group type
+					{
+						AddMenuProxyGroup(proxy);
+					}
+				}
+			}
+		}
+
+		void DeleteProxyGroupsMenu()
+		{
+			const size_t count = s_menuProxyGroups.size() + 2 + (s_menuProxyGroups.empty() ? 0 : 1);
+			for (size_t i = 2; i < count; ++i)
+				DeleteMenu(g_hContextMenu, static_cast<UINT>(i), MF_BYPOSITION);
+		}
+
+		void RebuildProxyGroupsMenu()
+		{
+			UINT i = 2;
+			for (auto& group : s_menuProxyGroups)
+			{
+				wil::unique_hmenu hMenu(CreatePopupMenu());
+				THROW_LAST_ERROR_IF_NULL(hMenu);
+
+				for (auto proxy : group.allProxies)
+				{
+					bool selected = group.model->now && *group.model->now == proxy->name;
+					std::wstring text = Utf8ToUtf16(proxy->name);
+					if (!proxy->history.empty())
+					{
+						text += L'\t';
+						auto delay = proxy->history.back().delay;
+						if (delay == 0)
+						{
+							text += L"fail";
+						}
+						else
+						{
+							text += std::to_wstring(delay);
+							text += L"ms";
+						}
+					}
+					AppendMenuW(hMenu.get(), selected ? MF_CHECKED : 0, 0, text.c_str());
+				}
+
+				group.hMenu = hMenu.release();
+				InsertMenuW(g_hContextMenu, i, MF_BYPOSITION | MF_POPUP, reinterpret_cast<UINT_PTR>(group.hMenu), Utf8ToUtf16(group.model->name).c_str());
+				++i;
+			}
+
+			if (!s_menuProxyGroups.empty())
+			{
+				InsertMenuW(g_hContextMenu, i, MF_BYPOSITION | MF_SEPARATOR, 0, nullptr);
+			}
+		}
+
+		void UpdateProxyGroupsMenu()
+		{
+			bool rebuild = s_menuProxies.size() != g_clashProxies.proxies.size();
+			if (!rebuild)
+			{
+				for (auto& [name, proxy] : s_menuProxies)
+				{
+					auto it = g_clashProxies.proxies.find(name);
+					if (it == g_clashProxies.proxies.end())
+					{
+						rebuild = true;
+						break;
+					}
+					auto& newProxy = it->second;
+					proxy.history = newProxy.history; // copy
+					proxy.now = newProxy.now;
+				}
+			}
+
+			if (rebuild)
+			{
+				DeleteProxyGroupsMenu();
+				BuildMenuProxyGroups();
+				RebuildProxyGroupsMenu();
+			}
+		}
 	}
 
 	void SetupMenu() noexcept
@@ -188,6 +306,13 @@ namespace MenuUtil
 
 			g_hContextMenu = GetSubMenu(g_hTopMenu, 0);
 			THROW_LAST_ERROR_IF_NULL(g_hContextMenu);
+
+			MENUINFO mi = {
+					.cbSize = sizeof(mi),
+					.fMask = MIM_STYLE,
+					.dwStyle = MNS_NOTIFYBYPOS
+			};
+			SetMenuInfo(g_hContextMenu, &mi);
 
 			g_hProxyModeMenu = GetSubMenu(g_hContextMenu, 0);
 			THROW_LAST_ERROR_IF_NULL(g_hProxyModeMenu);
@@ -210,19 +335,28 @@ namespace MenuUtil
 				if (code == MSGF_MENU)
 				{
 					auto msg = reinterpret_cast<LPMSG>(lParam);
+					//LOG_HR_MSG(E_FAIL, "menu: %d", msg->message);
 					if (msg->message == WM_SYSKEYDOWN && msg->wParam == VK_MENU)
 						return TRUE; // Prevent menu closing
 					if (ProcessAccelerator(msg))
 						msg->wParam = VK_ESCAPE; // Force menu to close
 				}
 				return CallNextHookEx(g_hMenuHook.get(), code, wParam, lParam);
-				}, nullptr, GetCurrentThreadId()));
+			}, nullptr, GetCurrentThreadId()));
 		}
 		CATCH_FAIL_FAST();
 	}
 
 	void ShowContextMenu(HWND hWnd, int x, int y) noexcept
 	{
+		static wil::unique_hhook mouseHook;
+		mouseHook.reset(SetWindowsHookExW(WH_MOUSE_LL, [](int code, WPARAM wParam, LPARAM lParam) -> LRESULT {
+			if (code == HC_ACTION)
+			{
+				//LOG_HR_MSG(E_FAIL, "mouse hook: %d", wParam);
+			}
+			return CallNextHookEx(mouseHook.get(), code, wParam, lParam);
+		}, nullptr, 0));
 		try {
 			THROW_IF_WIN32_BOOL_FALSE(SetForegroundWindow(hWnd));
 
@@ -234,7 +368,9 @@ namespace MenuUtil
 
 			THROW_IF_WIN32_BOOL_FALSE(TrackPopupMenuEx(g_hContextMenu, flags, x, y, hWnd, nullptr));
 		}
-		CATCH_LOG_RETURN();
+		CATCH_LOG();
+		mouseHook.reset();
+		//UnregisterTouchWindow(hWnd);
 	}
 
 	void UpdateMenus()
@@ -244,5 +380,52 @@ namespace MenuUtil
 		UpdateConfigMenu();
 		UpdateLogLevelMenu();
 		UpdatePortsMenu();
+		UpdateProxyGroupsMenu();
+	}
+
+	void PostCommandByMenuIndex(HWND hWnd, HMENU hMenu, size_t i)
+	{
+		UINT id = GetMenuItemID(hMenu, static_cast<int>(i));
+		if (id != UINT_ERROR)
+			PostMessageW(hWnd, WM_COMMAND, MAKEWPARAM(id, 1), 0);
+	}
+
+	bool HandleProxyGroupsItemChoose(HMENU hMenu, size_t i)
+	{
+		auto it = std::find_if(s_menuProxyGroups.begin(), s_menuProxyGroups.end(), [hMenu](const MenuProxyGroup& g) { return g.hMenu == hMenu; });
+		if (it != s_menuProxyGroups.end())
+		{
+			MenuProxyGroup& group = *it;
+			if (i < group.allProxies.size())
+			{
+				[](HMENU hMenu, size_t i, MenuProxyGroup& group) -> winrt::fire_and_forget {
+					co_await winrt::resume_background();
+					try
+					{
+						if (!g_clashApi->UpdateProxyGroup(group.model->name, group.allProxies[i]->name))
+							co_return;
+					}
+					catch (...)
+					{
+						LOG_CAUGHT_EXCEPTION();
+						co_return;
+					}
+
+					group.model->now = group.allProxies[i]->name;
+
+					co_await ResumeForeground();
+					DWORD ret;
+					UINT j = 0;
+					do
+					{
+						ret = CheckMenuItem(hMenu, j, MF_BYPOSITION | MF_UNCHECKED);
+						++j;
+					} while (ret != DWORD_ERROR);
+					CheckMenuItem(hMenu, static_cast<UINT>(i), MF_BYPOSITION | MF_CHECKED);
+				}(hMenu, i, group);
+			}
+			return true;
+		}
+		return false;
 	}
 }
