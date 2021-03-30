@@ -22,7 +22,7 @@
 template <typename T, typename TExecutor>
 [[nodiscard]] inline auto Promise(TExecutor&& executor) noexcept
 {
-	using std::experimental::coroutine_handle;
+	using std::coroutine_handle;
 
 	struct _Promise
 	{
@@ -111,7 +111,7 @@ template <typename T, typename TExecutor>
 template <typename T, typename TExecutor>
 [[nodiscard]] inline auto LazyPromise(TExecutor&& executor) noexcept
 {
-	using std::experimental::coroutine_handle;
+	using std::coroutine_handle;
 
 	struct _LazyPromise
 	{
@@ -208,7 +208,7 @@ template <typename T, typename TExecutor>
 		{
 		}
 
-		void await_suspend(std::experimental::coroutine_handle<> handle) const noexcept
+		void await_suspend(std::coroutine_handle<> handle) const noexcept
 		{
 			PostMessageW(g_hWnd, WM_RESUMECORO, reinterpret_cast<WPARAM>(handle.address()), 0);
 		}
@@ -219,7 +219,7 @@ template <typename T, typename TExecutor>
 
 [[nodiscard]] inline auto ResumeAfterTimer(std::chrono::duration<UINT, std::milli> duration) noexcept
 {
-	using std::experimental::coroutine_handle;
+	using std::coroutine_handle;
 
 	struct awaitable
 	{

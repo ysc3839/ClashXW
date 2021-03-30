@@ -561,7 +561,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}
 		break;
 	case WM_RESUMECORO:
-		std::experimental::coroutine_handle<>::from_address(reinterpret_cast<void*>(wParam)).resume();
+		std::coroutine_handle<>::from_address(reinterpret_cast<void*>(wParam)).resume();
 		break;
 	case WM_CONFIGCHANGEDETECT:
 		if (g_balloonClickAction == BalloonClickAction::None)
