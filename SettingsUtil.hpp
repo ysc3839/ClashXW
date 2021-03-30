@@ -206,10 +206,18 @@ namespace StartAtLogin
 
 void EnableSystemProxy(bool enable)
 {
+	auto port = g_clashConfig.port;
+	if (port == 0)
+	{
+		port = g_clashConfig.mixedPort;
+		if (port == 0)
+			enable = false;
+	}
+
 	if (enable)
 	{
 		wchar_t server[sizeof("255.255.255.255:65535")];
-		swprintf_s(server, L"127.0.0.1:%hu", g_clashConfig.port);
+		swprintf_s(server, L"127.0.0.1:%hu", port);
 		SetSystemProxy(server);
 	}
 	else
