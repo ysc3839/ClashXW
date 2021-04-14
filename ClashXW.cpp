@@ -222,7 +222,6 @@ winrt::fire_and_forget UpdateConfigFile(fs::path name, bool showSuccess = false)
 		ShowBalloon(errorDesp->c_str(), _(L"Reload Config Fail"), NIIF_ERROR);
 	else if (showSuccess)
 		ShowBalloon(_(L"Success"), _(L"Reload Config Succeed"));
-	MenuUtil::UpdateMenus();
 }
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)

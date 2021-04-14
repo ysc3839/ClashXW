@@ -225,9 +225,9 @@ namespace MenuUtil
 
 		void DeleteProxyGroupsMenu()
 		{
-			const size_t count = s_menuProxyGroups.size() + 2 + (s_menuProxyGroups.empty() ? 0 : 1);
-			for (size_t i = 2; i < count; ++i)
-				DeleteMenu(g_hContextMenu, static_cast<UINT>(i), MF_BYPOSITION);
+			const size_t count = s_menuProxyGroups.size() + (s_menuProxyGroups.empty() ? 0 : 1);
+			for (size_t i = 0; i < count; ++i)
+				DeleteMenu(g_hContextMenu, 2, MF_BYPOSITION);
 		}
 
 		void RebuildProxyGroupsMenu()
