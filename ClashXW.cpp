@@ -245,7 +245,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		return g_settings.systemProxy ? NotifyIcon->normal : NotifyIcon->disabled;
 	};
 
-	static bool altState = false; // true=down, used by WM_ENTERIDLE
 	switch (message)
 	{
 	case WM_CREATE:
@@ -486,7 +485,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_DESTROY:
 		ProcessManager::SendStopSignal();
 		StopWatchConfigFile();
-		g_hMenuHook.reset();
 		if (g_processMonitor)
 			g_processMonitor.Cancel();
 		SaveSettings();
@@ -497,17 +495,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_ENTERIDLE:
 		if (wParam == MSGF_MENU)
-		{
-			bool currentAltState = (GetKeyState(VK_MENU) & 0x8000);
-			if (altState != currentAltState)
-			{
-				altState = currentAltState;
-				auto text = currentAltState ?
-					_(L"Copy shell command (External IP)\tCtrl+Alt+C") :
-					_(L"Copy shell command\tCtrl+C");
-				MenuUtil::SetMenuItemText(g_hContextMenu, 3, text);
-			}
-		}
+			MenuUtil::OnMenuEnterIdle(reinterpret_cast<HWND>(lParam));
 		break;
 	case WM_SETTINGCHANGE:
 		if (g_darkModeSupported && IsColorSchemeChangeMessage(lParam))

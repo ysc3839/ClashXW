@@ -61,7 +61,6 @@ const std::unordered_map<AccelKey, WORD> MenuAccel = {
 	{ {FCONTROL, 'U'}, IDM_REMOTECONFIG_UPDATE },
 	{ {FCONTROL, 'Q'}, IDM_QUIT },
 };
-wil::unique_hhook g_hMenuHook;
 
 namespace MenuUtil
 {
@@ -86,6 +85,9 @@ namespace MenuUtil
 
 		std::vector<MenuProxyGroup> s_menuProxyGroups;
 		ClashProxies::MapType s_menuProxies;
+
+		std::unordered_map<HWND, bool> s_openedMenus; // bool = isScrollable
+		std::unordered_map<HWND, int> s_menuScrollDelta;
 
 		bool ProcessAccelerator(LPMSG msg)
 		{
@@ -296,6 +298,71 @@ namespace MenuUtil
 				RebuildProxyGroupsMenu();
 			}
 		}
+
+		void UpdateMenuAltText()
+		{
+			static bool altState = false; // true=down
+			bool currentAltState = (GetKeyState(VK_MENU) & 0x8000);
+			if (altState != currentAltState)
+			{
+				altState = currentAltState;
+				auto text = currentAltState ?
+					_(L"Copy shell command (External IP)\tCtrl+Alt+C") :
+					_(L"Copy shell command\tCtrl+C");
+				MenuUtil::SetMenuItemText(g_hContextMenu, 3, text);
+			}
+		}
+
+		LRESULT MenuSubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, [[maybe_unused]] UINT_PTR uIdSubclass, [[maybe_unused]] DWORD_PTR dwRefData)
+		{
+			switch (uMsg)
+			{
+			case WM_NCDESTROY:
+				s_openedMenus.erase(hWnd);
+				s_menuScrollDelta.erase(hWnd);
+				RemoveWindowSubclass(hWnd, MenuSubclassProc, uIdSubclass);
+				break;
+			case WM_MOUSEWHEEL:
+			{
+				UINT scrollLines;
+				if (!SystemParametersInfoW(SPI_GETWHEELSCROLLLINES, 0, &scrollLines, 0)) {
+					scrollLines = 3;
+				}
+				if (scrollLines == 0)
+					break;
+				if (scrollLines == WHEEL_PAGESCROLL)
+					scrollLines = 20;
+
+				auto& lastDelta = s_menuScrollDelta[hWnd];
+				int delta = GET_WHEEL_DELTA_WPARAM(wParam) + lastDelta;
+				int ticks = delta * static_cast<int>(scrollLines) / WHEEL_DELTA;
+				lastDelta = delta - ticks * WHEEL_DELTA / static_cast<int>(scrollLines);
+
+				if (ticks == 0)
+					break;
+
+				RECT rc;
+				GetWindowRect(hWnd, &rc);
+				LPARAM pos;
+				if (ticks < 0)
+				{
+					ticks = -ticks;
+					pos = MAKELPARAM(rc.left + 6, rc.bottom - 6);
+				}
+				else
+					pos = MAKELPARAM(rc.left + 6, rc.top + 6);
+
+				for (int i = 0; i < ticks; ++i)
+				{
+					PostMessageW(hWnd, WM_LBUTTONDOWN, 0, pos);
+					PostMessageW(hWnd, WM_LBUTTONUP, 0, pos);
+				}
+				PostMessageW(hWnd, WM_MOUSEMOVE, 0, lParam);
+			}
+			break;
+			}
+			return DefSubclassProc(hWnd, uMsg, wParam, lParam);
+		}
 	}
 
 	void SetupMenu() noexcept
@@ -330,34 +397,42 @@ namespace MenuUtil
 			THROW_LAST_ERROR_IF_NULL(g_hPortsMenu);
 
 			SetMenuItemText(g_hContextMenu, 3, _(L"Copy shell command\tCtrl+C"));
-
-			g_hMenuHook.reset(SetWindowsHookExW(WH_MSGFILTER, [](int code, WPARAM wParam, LPARAM lParam) -> LRESULT {
-				if (code == MSGF_MENU)
-				{
-					auto msg = reinterpret_cast<LPMSG>(lParam);
-					//LOG_HR_MSG(E_FAIL, "menu: %d", msg->message);
-					if (msg->message == WM_SYSKEYDOWN && msg->wParam == VK_MENU)
-						return TRUE; // Prevent menu closing
-					if (ProcessAccelerator(msg))
-						msg->wParam = VK_ESCAPE; // Force menu to close
-				}
-				return CallNextHookEx(g_hMenuHook.get(), code, wParam, lParam);
-			}, nullptr, GetCurrentThreadId()));
 		}
 		CATCH_FAIL_FAST();
 	}
 
 	void ShowContextMenu(HWND hWnd, int x, int y) noexcept
 	{
-		static wil::unique_hhook mouseHook;
-		mouseHook.reset(SetWindowsHookExW(WH_MOUSE_LL, [](int code, WPARAM wParam, LPARAM lParam) -> LRESULT {
-			if (code == HC_ACTION)
+		static wil::unique_hhook hMouseHook;
+		hMouseHook.reset(SetWindowsHookExW(WH_MOUSE_LL, [](int code, WPARAM wParam, LPARAM lParam) -> LRESULT {
+			if (code == HC_ACTION && wParam == WM_MOUSEWHEEL)
 			{
-				//LOG_HR_MSG(E_FAIL, "mouse hook: %d", wParam);
+				auto info = reinterpret_cast<LPMSLLHOOKSTRUCT>(lParam);
+				HWND hWnd = WindowFromPhysicalPoint(info->pt);
+				auto it = s_openedMenus.find(hWnd);
+				if (it != s_openedMenus.end() && it->second)
+				{
+					return PostMessageW(hWnd, WM_MOUSEWHEEL, MAKEWPARAM(0, GET_WHEEL_DELTA_WPARAM(info->mouseData)), POINTTOPOINTS(info->pt));
+				}
 			}
-			return CallNextHookEx(mouseHook.get(), code, wParam, lParam);
+			return CallNextHookEx(hMouseHook.get(), code, wParam, lParam);
 		}, nullptr, 0));
-		try {
+
+		static wil::unique_hhook hMenuHook;
+		hMenuHook.reset(SetWindowsHookExW(WH_MSGFILTER, [](int code, WPARAM wParam, LPARAM lParam) -> LRESULT {
+			if (code == MSGF_MENU)
+			{
+				auto msg = reinterpret_cast<LPMSG>(lParam);
+				if (msg->message == WM_SYSKEYDOWN && msg->wParam == VK_MENU)
+					return TRUE; // Prevent menu closing
+				if (ProcessAccelerator(msg))
+					msg->wParam = VK_ESCAPE; // Force menu to close
+			}
+			return CallNextHookEx(hMenuHook.get(), code, wParam, lParam);
+		}, nullptr, GetCurrentThreadId()));
+
+		try
+		{
 			THROW_IF_WIN32_BOOL_FALSE(SetForegroundWindow(hWnd));
 
 			UINT flags = TPM_RIGHTBUTTON;
@@ -369,8 +444,11 @@ namespace MenuUtil
 			THROW_IF_WIN32_BOOL_FALSE(TrackPopupMenuEx(g_hContextMenu, flags, x, y, hWnd, nullptr));
 		}
 		CATCH_LOG();
-		mouseHook.reset();
-		//UnregisterTouchWindow(hWnd);
+
+		hMenuHook.reset();
+		hMouseHook.reset();
+		s_openedMenus.clear();
+		s_menuScrollDelta.clear();
 	}
 
 	void UpdateMenus()
@@ -427,5 +505,27 @@ namespace MenuUtil
 			return true;
 		}
 		return false;
+	}
+
+	void OnMenuEnterIdle(HWND hWndMenu)
+	{
+		if (!s_openedMenus.contains(hWndMenu))
+		{
+			// Get menu non-client size
+			RECT rc;
+			GetWindowRect(hWndMenu, &rc);
+			POINT pt = { rc.left, rc.top };
+			ScreenToClient(hWndMenu, &pt);
+			auto x = -pt.x, y = -pt.y;
+
+			bool isScrollable = y > x * 2; // x = 3, y = 25, scrollable
+			s_openedMenus.emplace(hWndMenu, isScrollable);
+
+			if (isScrollable)
+			{
+				SetWindowSubclass(hWndMenu, MenuSubclassProc, 0, 0);
+			}
+		}
+		UpdateMenuAltText();
 	}
 }
