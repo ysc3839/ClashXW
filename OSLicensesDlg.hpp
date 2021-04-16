@@ -60,7 +60,9 @@ INT_PTR CALLBACK RichEditDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM 
 
 		CHARFORMATW cf;
 		cf.cbSize = sizeof(cf);
-		cf.dwMask = CFM_FACE;
+		cf.dwMask = CFM_FACE | CFM_CHARSET | CFM_BOLD;
+		cf.dwEffects = 0;
+		cf.bCharSet = ANSI_CHARSET;
 		wcscpy_s(cf.szFaceName, L"Consolas");
 		SendMessageW(hRichEdit, EM_SETCHARFORMAT, SCF_ALL, reinterpret_cast<LPARAM>(&cf));
 
