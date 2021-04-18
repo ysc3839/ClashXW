@@ -94,6 +94,26 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	return static_cast<int>(msg.wParam);
 }
 
+static NOTIFYICONDATAW g_nid = {
+	.cbSize = sizeof(g_nid),
+	.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP | NIF_SHOWTIP,
+	.uCallbackMessage = WM_NOTIFYICON,
+	.uVersion = NOTIFYICON_VERSION_4
+};
+static struct {
+	HICON normal;
+	HICON disabled;
+} NotifyIconLight, NotifyIconDark;
+static bool systemUsesLightTheme = true;
+
+HICON SelectNotifyIcon()
+{
+	auto NotifyIcon = &NotifyIconLight;
+	if (!systemUsesLightTheme)
+		NotifyIcon = &NotifyIconDark;
+	return g_settings.systemProxy ? NotifyIcon->normal : NotifyIcon->disabled;
+}
+
 void ShowBalloon(const wchar_t* info, const wchar_t* title, DWORD flag = NIIF_INFO)
 {
 	NOTIFYICONDATAW nid = {
@@ -175,6 +195,10 @@ winrt::fire_and_forget StartClash()
 			try
 			{
 				g_clashVersion = g_clashApi->GetVersion();
+				g_clashConfig = g_clashApi->GetConfig();
+				EnableSystemProxy(g_settings.systemProxy);
+				g_nid.hIcon = SelectNotifyIcon();
+				Shell_NotifyIconW(NIM_MODIFY, &g_nid);
 			}
 			catch (...)
 			{
@@ -227,23 +251,6 @@ winrt::fire_and_forget UpdateConfigFile(fs::path name, bool showSuccess = false)
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	static UINT WM_TASKBAR_CREATED = 0;
-	static NOTIFYICONDATAW nid = {
-		.cbSize = sizeof(nid),
-		.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP | NIF_SHOWTIP,
-		.uCallbackMessage = WM_NOTIFYICON,
-		.uVersion = NOTIFYICON_VERSION_4
-	};
-	static struct {
-		HICON normal;
-		HICON disabled;
-	} NotifyIconLight, NotifyIconDark;
-	static bool systemUsesLightTheme = true;
-	static auto SelectNotifyIcon = []() {
-		auto NotifyIcon = &NotifyIconLight;
-		if (!systemUsesLightTheme)
-			NotifyIcon = &NotifyIconDark;
-		return g_settings.systemProxy ? NotifyIcon->normal : NotifyIcon->disabled;
-	};
 
 	switch (message)
 	{
@@ -265,13 +272,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			systemUsesLightTheme = ShouldSystemUseLightTheme();
 		}
 
-		nid.hWnd = hWnd;
-		nid.hIcon = SelectNotifyIcon();
-		wcscpy_s(nid.szTip, _(L"ClashXW"));
+		g_nid.hWnd = hWnd;
+		g_nid.hIcon = SelectNotifyIcon();
+		wcscpy_s(g_nid.szTip, _(L"ClashXW"));
 
-		if (Shell_NotifyIconW(NIM_ADD, &nid))
+		if (Shell_NotifyIconW(NIM_ADD, &g_nid))
 		{
-			FAIL_FAST_IF_WIN32_BOOL_FALSE(Shell_NotifyIconW(NIM_SETVERSION, &nid));
+			FAIL_FAST_IF_WIN32_BOOL_FALSE(Shell_NotifyIconW(NIM_SETVERSION, &g_nid));
 		}
 		else
 		{
@@ -288,7 +295,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		SetupDataDirectory();
 		StartClash();
 
-		EnableSystemProxy(g_settings.systemProxy);
 		CheckMenuItem(g_hContextMenu, IDM_REMOTECONFIG_AUTOUPDATE, MF_BYCOMMAND | (g_settings.configAutoUpdate ? MF_CHECKED : MF_UNCHECKED));
 		CheckMenuItem(g_hContextMenu, IDM_EXPERIMENTAL_OPENDASHBOARDINBROWSER, MF_BYCOMMAND | (g_settings.openDashboardInBrowser ? MF_CHECKED : MF_UNCHECKED));
 		EnableMenuItem(g_hContextMenu, IDM_STARTATLOGIN, MF_BYCOMMAND | (g_portableMode ? MF_DISABLED : MF_ENABLED));
@@ -371,8 +377,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 		case IDM_SYSTEMPROXY:
 			EnableSystemProxy(!g_settings.systemProxy);
-			nid.hIcon = SelectNotifyIcon();
-			Shell_NotifyIconW(NIM_MODIFY, &nid);
+			g_nid.hIcon = SelectNotifyIcon();
+			Shell_NotifyIconW(NIM_MODIFY, &g_nid);
 			break;
 		case IDM_STARTATLOGIN:
 			StartAtLogin::SetEnable(!StartAtLogin::IsEnabled());
@@ -483,6 +489,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	}
 	break;
 	case WM_DESTROY:
+		SetSystemProxy(nullptr);
 		ProcessManager::SendStopSignal();
 		StopWatchConfigFile();
 		if (g_processMonitor)
@@ -490,7 +497,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		SaveSettings();
 		WaitForSingleObject(ProcessManager::GetClashProcessInfo().hProcess, 3000);
 		ProcessManager::Stop();
-		Shell_NotifyIconW(NIM_DELETE, &nid);
+		Shell_NotifyIconW(NIM_DELETE, &g_nid);
 		PostQuitMessage(0);
 		break;
 	case WM_ENTERIDLE:
@@ -501,8 +508,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		if (g_darkModeSupported && IsColorSchemeChangeMessage(lParam))
 		{
 			systemUsesLightTheme = ShouldSystemUseLightTheme();
-			nid.hIcon = SelectNotifyIcon();
-			Shell_NotifyIconW(NIM_MODIFY, &nid);
+			g_nid.hIcon = SelectNotifyIcon();
+			Shell_NotifyIconW(NIM_MODIFY, &g_nid);
 		}
 		break;
 	case WM_NOTIFYICON:
@@ -581,11 +588,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			if (g_darkModeSupported)
 				systemUsesLightTheme = ShouldSystemUseLightTheme();
-			nid.hIcon = SelectNotifyIcon();
-			if (!Shell_NotifyIconW(NIM_MODIFY, &nid))
+			g_nid.hIcon = SelectNotifyIcon();
+			if (!Shell_NotifyIconW(NIM_MODIFY, &g_nid))
 			{
-				FAIL_FAST_IF_WIN32_BOOL_FALSE(Shell_NotifyIconW(NIM_ADD, &nid));
-				FAIL_FAST_IF_WIN32_BOOL_FALSE(Shell_NotifyIconW(NIM_SETVERSION, &nid));
+				FAIL_FAST_IF_WIN32_BOOL_FALSE(Shell_NotifyIconW(NIM_ADD, &g_nid));
+				FAIL_FAST_IF_WIN32_BOOL_FALSE(Shell_NotifyIconW(NIM_SETVERSION, &g_nid));
 			}
 		}
 		return DefWindowProcW(hWnd, message, wParam, lParam);
