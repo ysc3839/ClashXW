@@ -422,6 +422,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			g_settings.configAutoUpdate = !g_settings.configAutoUpdate;
 			CheckMenuItem(g_hContextMenu, IDM_REMOTECONFIG_AUTOUPDATE, MF_BYCOMMAND | (g_settings.configAutoUpdate ? MF_CHECKED : MF_UNCHECKED));
 			break;
+		case IDM_EXPERIMENTAL_SETBYPASSRULES:
+		{
+			auto bypassRules = g_settings.bypassRules;
+			int button = 0;
+			auto hr = TaskDialogInput(hWnd, g_hInst, _(L"Set system proxy bypass rules"), nullptr, _(L"Set system proxy bypass rules"), TDCBF_OK_BUTTON | TDCBF_CANCEL_BUTTON, MAKEINTRESOURCEW(IDI_CLASHXW), &button, bypassRules);
+			if (SUCCEEDED(hr) && button == IDOK)
+				g_settings.bypassRules = bypassRules;
+		}
+		break;
 		case IDM_EXPERIMENTAL_SETBENCHURL:
 		{
 			auto benchmarkUrl = g_settings.benchmarkUrl;

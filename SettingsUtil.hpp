@@ -70,6 +70,7 @@ struct Settings
 	std::wstring configFile;
 	std::vector<std::unique_ptr<RemoteConfig>> remoteConfig;
 	bool configAutoUpdate;
+	std::wstring bypassRules;
 
 	friend void to_json(json& j, const Settings& value) {
 		JSON_TO(systemProxy);
@@ -78,6 +79,7 @@ struct Settings
 		try { j["configFile"] = Utf16ToUtf8(value.configFile); } CATCH_LOG();
 		JSON_TO(remoteConfig);
 		JSON_TO(configAutoUpdate);
+		try { j["bypassRules"] = Utf16ToUtf8(value.bypassRules); } CATCH_LOG();
 	}
 
 	friend void from_json(const json& j, Settings& value) {
@@ -87,6 +89,7 @@ struct Settings
 		try { value.configFile = Utf8ToUtf16(j.at("configFile").get<std::string_view>()); } CATCH_LOG();
 		JSON_TRY_FROM(remoteConfig);
 		JSON_TRY_FROM(configAutoUpdate);
+		try { value.bypassRules = Utf8ToUtf16(j.at("bypassRules").get<std::string_view>()); } CATCH_LOG();
 	}
 };
 
@@ -99,6 +102,7 @@ void DefaultSettings()
 	g_settings.openDashboardInBrowser = false;
 	g_settings.configFile = CLASH_DEF_CONFIG_NAME;
 	g_settings.configAutoUpdate = false;
+	g_settings.bypassRules = L"<local>";
 }
 
 void LoadSettings()
@@ -218,7 +222,7 @@ void EnableSystemProxy(bool enable)
 	{
 		wchar_t server[sizeof("255.255.255.255:65535")];
 		swprintf_s(server, L"127.0.0.1:%hu", port);
-		SetSystemProxy(server);
+		SetSystemProxy(server, g_settings.bypassRules.c_str());
 	}
 	else
 		SetSystemProxy(nullptr);
