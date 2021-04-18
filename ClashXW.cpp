@@ -186,7 +186,7 @@ winrt::fire_and_forget StartClash()
 	{
 		g_clashRunning = true;
 		g_processMonitor = ProcessMonitor();
-		for (size_t i = 0; i < 3; ++i)
+		for (size_t i = 0; i < 5; ++i)
 		{
 			if (!g_clashRunning)
 				co_return;
