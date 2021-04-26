@@ -85,6 +85,7 @@ namespace MenuUtil
 
 		std::vector<MenuProxyGroup> s_menuProxyGroups;
 		ClashProxies::MapType s_menuProxies;
+		ClashProxyMode s_menuProxyMode = ClashProxyMode::Unknown;
 
 		std::unordered_map<HWND, bool> s_openedMenus; // bool = isScrollable
 		std::unordered_map<HWND, int> s_menuScrollDelta;
@@ -223,6 +224,8 @@ namespace MenuUtil
 					}
 				}
 			}
+
+			s_menuProxyMode = g_clashConfig.mode;
 		}
 
 		void DeleteProxyGroupsMenu()
@@ -274,7 +277,10 @@ namespace MenuUtil
 
 		void UpdateProxyGroupsMenu()
 		{
-			bool rebuild = s_menuProxies.size() != g_clashProxies.proxies.size();
+			if (g_clashProxies.proxies.empty())
+				return;
+
+			bool rebuild = (s_menuProxyMode != g_clashConfig.mode) || (s_menuProxies.size() != g_clashProxies.proxies.size());
 			if (!rebuild)
 			{
 				for (auto& [name, proxy] : s_menuProxies)
