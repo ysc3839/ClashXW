@@ -330,7 +330,7 @@ namespace MenuUtil
 			}
 		}
 
-		LRESULT MenuSubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, [[maybe_unused]] UINT_PTR uIdSubclass, [[maybe_unused]] DWORD_PTR dwRefData)
+		LRESULT CALLBACK MenuSubclassProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, [[maybe_unused]] UINT_PTR uIdSubclass, [[maybe_unused]] DWORD_PTR dwRefData)
 		{
 			switch (uMsg)
 			{
