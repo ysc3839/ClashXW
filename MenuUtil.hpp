@@ -191,8 +191,19 @@ namespace MenuUtil
 			allProxies.reserve(group.all.size());
 			for (const auto& key : group.all)
 			{
-				auto& proxy = s_menuProxies.at(key);
-				allProxies.emplace_back(&proxy);
+				auto it = s_menuProxies.find(key);
+				if (it == s_menuProxies.end())
+				{
+					// FIXME: If a proxy is not found, it may come from proxy provider.
+					// Currently add a dummy proxy to allow it shows in menu.
+					// Should load proxy provider data.
+					ClashProxy p;
+					p.name = key;
+					auto [newIt, _] = s_menuProxies.emplace(key, std::move(p));
+					it = std::move(newIt);
+				}
+				//auto& proxy = s_menuProxies.at(key);
+				allProxies.emplace_back(&it->second);
 			}
 			s_menuProxyGroups.emplace_back(&group, std::move(allProxies));
 		}
@@ -479,6 +490,7 @@ namespace MenuUtil
 		auto it = std::find_if(s_menuProxyGroups.begin(), s_menuProxyGroups.end(), [hMenu](const MenuProxyGroup& g) { return g.hMenu == hMenu; });
 		if (it != s_menuProxyGroups.end())
 		{
+			// FIXME: check if type is selector
 			MenuProxyGroup& group = *it;
 			if (i < group.allProxies.size())
 			{
