@@ -272,7 +272,7 @@ namespace MenuUtil
 							text += L"ms";
 						}
 					}
-					AppendMenuW(hMenu.get(), selected ? MF_CHECKED : 0, 0, text.c_str());
+					AppendMenuW(hMenu.get(), MFT_RADIOCHECK | (selected ? MF_CHECKED : 0), 0, text.c_str());
 				}
 
 				group.hMenu = hMenu.release();
@@ -510,14 +510,7 @@ namespace MenuUtil
 					group.model->now = group.allProxies[i]->name;
 
 					co_await ResumeForeground();
-					DWORD ret;
-					UINT j = 0;
-					do
-					{
-						ret = CheckMenuItem(hMenu, j, MF_BYPOSITION | MF_UNCHECKED);
-						++j;
-					} while (ret != DWORD_ERROR);
-					CheckMenuItem(hMenu, static_cast<UINT>(i), MF_BYPOSITION | MF_CHECKED);
+					CheckMenuRadioItem(hMenu, 0, static_cast<UINT>(group.allProxies.size()), static_cast<UINT>(i), MF_BYPOSITION);
 				}(hMenu, i, group);
 			}
 			return true;
