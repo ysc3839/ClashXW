@@ -64,14 +64,14 @@ const std::unordered_map<AccelKey, WORD> MenuAccel = {
 
 namespace MenuUtil
 {
-	BOOL SetMenuItemText(HMENU hMenu, UINT pos, const wchar_t* text) noexcept
+	BOOL SetMenuItemText(HMENU hMenu, UINT item, BOOL byPositon, const wchar_t* text) noexcept
 	{
 		MENUITEMINFOW mii = {
 			.cbSize = sizeof(mii),
 			.fMask = MIIM_STRING,
 			.dwTypeData = const_cast<LPWSTR>(text)
 		};
-		return SetMenuItemInfoW(hMenu, pos, TRUE, &mii);
+		return SetMenuItemInfoW(hMenu, item, byPositon, &mii);
 	}
 
 	namespace
@@ -139,7 +139,7 @@ namespace MenuUtil
 			}
 			wchar_t text[32];
 			swprintf_s(text, _(L"Proxy Mode (%s)"), modeText);
-			SetMenuItemText(g_hContextMenu, 0, text);
+			SetMenuItemText(g_hContextMenu, 0, TRUE, text);
 			CheckMenuRadioItem(g_hProxyModeMenu, 0, 2, static_cast<UINT>(g_clashConfig.mode) - 1, MF_BYPOSITION);
 		}
 
@@ -176,13 +176,13 @@ namespace MenuUtil
 		{
 			wchar_t text[32];
 			swprintf_s(text, _(L"Http Port: %hu"), g_clashConfig.port);
-			SetMenuItemText(g_hPortsMenu, 0, text);
+			SetMenuItemText(g_hPortsMenu, 0, TRUE, text);
 
 			swprintf_s(text, _(L"Socks Port: %hu"), g_clashConfig.socksPort);
-			SetMenuItemText(g_hPortsMenu, 1, text);
+			SetMenuItemText(g_hPortsMenu, 1, TRUE, text);
 
 			swprintf_s(text, _(L"Mixed Port: %hu"), g_clashConfig.mixedPort);
-			SetMenuItemText(g_hPortsMenu, 2, text);
+			SetMenuItemText(g_hPortsMenu, 2, TRUE, text);
 		}
 
 		void AddMenuProxyGroup(ClashProxy& group)
@@ -326,7 +326,7 @@ namespace MenuUtil
 				auto text = currentAltState ?
 					_(L"Copy shell command (External IP)\tCtrl+Alt+C") :
 					_(L"Copy shell command\tCtrl+C");
-				MenuUtil::SetMenuItemText(g_hContextMenu, 3, text);
+				SetMenuItemText(g_hContextMenu, IDM_COPYCOMMAND, FALSE, text);
 			}
 		}
 
@@ -413,7 +413,7 @@ namespace MenuUtil
 			g_hPortsMenu = GetSubMenu(hHelpMenu, 3);
 			THROW_LAST_ERROR_IF_NULL(g_hPortsMenu);
 
-			SetMenuItemText(g_hContextMenu, 3, _(L"Copy shell command\tCtrl+C"));
+			SetMenuItemText(g_hContextMenu, IDM_COPYCOMMAND, FALSE, _(L"Copy shell command\tCtrl+C"));
 		}
 		CATCH_FAIL_FAST();
 	}
