@@ -163,7 +163,7 @@ void FixDarkScrollBar()
 	HMODULE hComctl = GetModuleHandleW(L"comctl32.dll");
 	if (hComctl)
 	{
-		auto addr = FindDelayLoadThunkInModule(hComctl, "uxtheme.dll", 49); // OpenNcThemeData
+		auto addr = FindDelayLoadThunkInModule(hComctl, "UxTheme.dll", 49); // OpenNcThemeData
 		if (addr)
 		{
 			DWORD oldProtect;
@@ -188,18 +188,15 @@ void FixDarkScrollBar()
 constexpr bool CheckBuildNumber(DWORD buildNumber)
 {
 	return (buildNumber == 17763 || // 1809
-		buildNumber == 18362 || // 1903
-		buildNumber == 18363 || // 1909
-		buildNumber == 19041 || // 2004
-		buildNumber == 19042); // 20H2
+		buildNumber == 18362 || // 1903 & 1909
+		buildNumber == 19041); // 2004 & 20H2 & 21H1
 }
 
 void InitDarkMode()
 {
-	DWORD major, minor;
-	RtlGetNtVersionNumbers(&major, &minor, &g_buildNumber);
-	g_buildNumber = static_cast<DWORD>(LOWORD(g_buildNumber));
-	if (major == 10 && minor == 0 && CheckBuildNumber(g_buildNumber))
+	DWORD major, minor, build;
+	RtlGetNtVersionNumbers(&major, &minor, &build);
+	if (major == 10 && minor == 0)
 	{
 		__try
 		{
@@ -210,7 +207,39 @@ void InitDarkMode()
 			return;
 		}
 
-		g_darkModeSupported = true;
+		wchar_t path[MAX_PATH];
+		constexpr std::wstring_view uxtheme = L"uxtheme.dll";
+		size_t i = static_cast<size_t>(GetSystemDirectoryW(path, static_cast<UINT>(std::size(path))));
+		if (i + 1 + uxtheme.size() <= std::size(path))
+		{
+			path[i] = L'\\';
+			uxtheme.copy(path + i + 1, decltype(uxtheme)::npos);
+
+			DWORD handle;
+			DWORD size = GetFileVersionInfoSizeExW(0, path, &handle);
+			if (size != 0)
+			{
+				LPVOID data = malloc(size);
+				if (data)
+				{
+					if (GetFileVersionInfoExW(0, path, handle, size, data))
+					{
+						VS_FIXEDFILEINFO* fileInfo;
+						UINT len;
+						if (VerQueryValueW(data, L"\\", reinterpret_cast<LPVOID*>(&fileInfo), &len))
+						{
+							g_buildNumber = static_cast<DWORD>(HIWORD(fileInfo->dwFileVersionLS));
+							if (CheckBuildNumber(g_buildNumber))
+								g_darkModeSupported = true;
+						}
+					}
+					free(data);
+				}
+			}
+		}
+
+		if (!g_darkModeSupported)
+			return;
 
 		SetAppDarkMode(true);
 		RefreshImmersiveColorPolicyState();
