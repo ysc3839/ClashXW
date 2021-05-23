@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-CLASH_VER=v1.5.0
+CLASH_VER=v1.6.0
 
 mkdir pkg
 cd pkg
