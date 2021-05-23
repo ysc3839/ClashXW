@@ -73,6 +73,10 @@ jobs:
       with:
         name: ClashXWARM64
         path: ARM64/Release/ClashXWARM64.pdb
+    - name: Get git tag version
+      id: git_tag_version
+      run: echo "::set-output name=version::$(git describe --tags)"
+      shell: bash
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
@@ -90,7 +94,7 @@ jobs:
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: pkg/64.zip
-        asset_name: ClashXW64.zip
+        asset_name: ClashXW64-${{ steps.git_tag_version.outputs.version }}.zip
         asset_content_type: application/octet-stream
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
@@ -99,7 +103,7 @@ jobs:
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: pkg/32.zip
-        asset_name: ClashXW32.zip
+        asset_name: ClashXW32-${{ steps.git_tag_version.outputs.version }}.zip
         asset_content_type: application/octet-stream
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
@@ -108,5 +112,5 @@ jobs:
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: pkg/ARM64.zip
-        asset_name: ClashXWARM64.zip
+        asset_name: ClashXWARM64-${{ steps.git_tag_version.outputs.version }}.zip
         asset_content_type: application/octet-stream
