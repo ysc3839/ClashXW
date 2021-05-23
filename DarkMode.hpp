@@ -213,7 +213,7 @@ void InitDarkMode()
 		if (i + 1 + uxtheme.size() <= std::size(path))
 		{
 			path[i] = L'\\';
-			uxtheme.copy(path + i + 1, decltype(uxtheme)::npos);
+			memcpy(path + i + 1, uxtheme.data(), (uxtheme.size() + 1) * sizeof(wchar_t));
 
 			DWORD handle;
 			DWORD size = GetFileVersionInfoSizeExW(0, path, &handle);
