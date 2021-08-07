@@ -169,7 +169,7 @@ namespace MenuUtil
 
 		void UpdateLogLevelMenu() noexcept
 		{
-			CheckMenuRadioItem(g_hLogLevelMenu, 0, 4, static_cast<UINT>(g_clashConfig.logLevel), MF_BYPOSITION);
+			CheckMenuRadioItem(g_hLogLevelMenu, 0, 4, static_cast<UINT>(g_clashConfig.logLevel) - 1, MF_BYPOSITION);
 		}
 
 		void UpdatePortsMenu()
