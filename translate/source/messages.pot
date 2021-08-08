@@ -58,6 +58,10 @@ msgstr ""
 msgid "ClashXW"
 msgstr ""
 
+#: ClashXW.cpp:419
+msgid "Set system proxy bypass rules"
+msgstr ""
+
 #: ClashXW.cpp:428
 msgid "Set benchmark url"
 msgstr ""

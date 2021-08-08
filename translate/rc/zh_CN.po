@@ -131,6 +131,10 @@ msgstr "自动更新"
 msgid "Experimental"
 msgstr "试验性功能"
 
+#: MENU.IDC_MENU.MENUITEM.IDM_EXPERIMENTAL_SETBYPASSRULES
+msgid "Set system proxy bypass rules"
+msgstr "设置系统代理绕行规则"
+
 #: MENU.IDC_MENU.MENUITEM.IDM_EXPERIMENTAL_SETBENCHURL
 msgid "Set benchmark url"
 msgstr "设置延迟测速链接"
