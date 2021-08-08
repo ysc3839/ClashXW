@@ -63,6 +63,10 @@ msgstr "重载配置文件成功"
 msgid "ClashXW"
 msgstr ""
 
+#: ClashXW.cpp:419
+msgid "Set system proxy bypass rules"
+msgstr "设置系统代理绕行规则"
+
 #: ClashXW.cpp:428
 msgid "Set benchmark url"
 msgstr "设置延迟测速链接"

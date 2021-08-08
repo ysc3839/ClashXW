@@ -130,6 +130,10 @@ msgstr ""
 msgid "Experimental"
 msgstr ""
 
+#: MENU.IDC_MENU.MENUITEM.IDM_EXPERIMENTAL_SETBYPASSRULES
+msgid "Set system proxy bypass rules"
+msgstr ""
+
 #: MENU.IDC_MENU.MENUITEM.IDM_EXPERIMENTAL_SETBENCHURL
 msgid "Set benchmark url"
 msgstr ""
