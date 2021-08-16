@@ -289,7 +289,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		LOG_LAST_ERROR_IF(WM_TASKBAR_CREATED == 0);
 
 		auto assetsDir = g_exePath / CLASH_ASSETS_DIR_NAME;
-		ProcessManager::SetArgs(assetsDir / CLASH_EXE_NAME, assetsDir, g_configPath / g_settings.configFile, assetsDir / CLASH_DASHBOARD_DIR_NAME, CLASH_CTL_ADDR, CLASH_CTL_SECRET);
+		ProcessManager::SetArgs(assetsDir / CLASH_EXE_NAME, g_configPath, g_configPath / g_settings.configFile, assetsDir / CLASH_DASHBOARD_DIR_NAME, CLASH_CTL_ADDR, CLASH_CTL_SECRET);
 		g_clashApi = std::make_unique<ClashApi>(L"127.0.0.1", static_cast<INTERNET_PORT>(9090));
 
 		SetupDataDirectory();
