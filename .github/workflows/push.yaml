@@ -2,7 +2,7 @@ name: Push Build
 
 on:
   push:
-    tags-ignore:
+    branches:
       - '**'
 
 jobs:
