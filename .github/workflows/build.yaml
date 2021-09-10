@@ -11,6 +11,7 @@ jobs:
     - uses: actions/checkout@v2
       with:
         submodules: true
+        fetch-depth: 0
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1
     - uses: nuget/setup-nuget@v1
@@ -47,32 +48,38 @@ jobs:
           msbuild ClashXW.sln "-p:Configuration=Release;Platform=ARM64" }
         Get-Job | Wait-Job | Receive-Job
       shell: powershell
-    - run: sh create_package.sh
-      shell: bash
     - uses: actions/upload-artifact@v2
       with:
         name: ClashXW64
         path: x64/Release/ClashXW64.exe
+        if-no-files-found: error
     - uses: actions/upload-artifact@v2
       with:
         name: ClashXW64
         path: x64/Release/ClashXW64.pdb
+        if-no-files-found: error
     - uses: actions/upload-artifact@v2
       with:
         name: ClashXW32
         path: Release/ClashXW32.exe
+        if-no-files-found: error
     - uses: actions/upload-artifact@v2
       with:
         name: ClashXW32
         path: Release/ClashXW32.pdb
+        if-no-files-found: error
     - uses: actions/upload-artifact@v2
       with:
         name: ClashXWARM64
         path: ARM64/Release/ClashXWARM64.exe
+        if-no-files-found: error
     - uses: actions/upload-artifact@v2
       with:
         name: ClashXWARM64
         path: ARM64/Release/ClashXWARM64.pdb
+        if-no-files-found: error
+    - run: sh create_package.sh
+      shell: bash
     - name: Get git tag version
       id: git_tag_version
       run: echo "::set-output name=version::$(git describe --tags)"

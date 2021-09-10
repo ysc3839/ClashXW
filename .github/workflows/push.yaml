@@ -51,25 +51,31 @@ jobs:
       shell: powershell
     - uses: actions/upload-artifact@v2
       with:
-        name: ClashXW64.exe
+        name: ClashXW64
         path: x64/Release/ClashXW64.exe
+        if-no-files-found: error
     - uses: actions/upload-artifact@v2
       with:
-        name: ClashXW64.pdb
+        name: ClashXW64
         path: x64/Release/ClashXW64.pdb
+        if-no-files-found: error
     - uses: actions/upload-artifact@v2
       with:
-        name: ClashXW32.exe
+        name: ClashXW32
         path: Release/ClashXW32.exe
+        if-no-files-found: error
     - uses: actions/upload-artifact@v2
       with:
-        name: ClashXW32.pdb
+        name: ClashXW32
         path: Release/ClashXW32.pdb
+        if-no-files-found: error
     - uses: actions/upload-artifact@v2
       with:
-        name: ClashXWARM64.exe
+        name: ClashXWARM64
         path: ARM64/Release/ClashXWARM64.exe
+        if-no-files-found: error
     - uses: actions/upload-artifact@v2
       with:
-        name: ClashXWARM64.pdb
+        name: ClashXWARM64
         path: ARM64/Release/ClashXWARM64.pdb
+        if-no-files-found: error
